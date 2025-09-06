@@ -1,6 +1,7 @@
 import { Jost } from "next/font/google";
 import "./globals.css";
 import Nav from "./_components/Nav";
+import { Toaster } from "@/components/ui/sonner";
 
 const jost = Jost({ subsets: ["latin"] });
 
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
         <Nav>
           {children}
         </Nav>
+        <Toaster />
       </body>
     </html>
   );

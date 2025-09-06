@@ -1,11 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Combobox from "@/components/ui/combobox";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   ArrowLeft, 
   Save, 
@@ -15,12 +21,15 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-const NewProduct = () => {
+const EditProduct = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const params = useParams();
+  const productId = params.id;
+  
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
-  const [distributors, setDistributors] = useState([]);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -33,25 +42,55 @@ const NewProduct = () => {
     description: ''
   });
 
-  // Load filter options from API
+  // Load product data and filter options
   useEffect(() => {
-    const loadFilterOptions = async () => {
+    const loadData = async () => {
       try {
-        const response = await fetch('/api/products?limit=1');
-        const data = await response.json();
+        setLoading(true);
         
-        if (data.success) {
-          setCategories(data.data.filters.categories);
-          setSubCategories(data.data.filters.subCategories);
-          setDistributors(data.data.filters.distributors || []);
+        // Load product data and filter options in parallel
+        const [productResponse, filtersResponse] = await Promise.all([
+          fetch(`/api/products/${productId}`),
+          fetch('/api/products?limit=1')
+        ]);
+
+        const [productData, filtersData] = await Promise.all([
+          productResponse.json(),
+          filtersResponse.json()
+        ]);
+
+        if (productData.success) {
+          const product = productData.data;
+          setFormData({
+            title: product.title || '',
+            distributor: product.distributor || '',
+            category: product.category || '',
+            subCategory: product.subCategory || '',
+            price: product.price || '',
+            stock: product.stock || '',
+            gst: product.gst || 18,
+            description: product.description || ''
+          });
+        } else {
+          toast.error('Product not found');
+        }
+
+        if (filtersData.success) {
+          setCategories(filtersData.data.filters.categories);
+          setSubCategories(filtersData.data.filters.subCategories);
         }
       } catch (error) {
-        console.error('Error loading filter options:', error);
+        console.error('Error loading data:', error);
+        toast.error('Failed to load product data');
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadFilterOptions();
-  }, []);
+    if (productId) {
+      loadData();
+    }
+  }, [productId]);
 
   const handleInputChange = (field, value) => {
     // Handle decimal formatting for price and GST
@@ -126,55 +165,51 @@ const NewProduct = () => {
     
     if (!validateForm()) return;
 
-    setLoading(true);
+    setSaving(true);
 
     try {
-      // Prepare data for API call
-      const apiData = {
-        ...formData,
-        price: parseFloat(formData.price),
-        stock: parseInt(formData.stock),
-        gst: parseFloat(formData.gst)
-      };
-
-
-      const response = await fetch('/api/products', {
-        method: 'POST',
+      const response = await fetch(`/api/products/${productId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(apiData),
+        body: JSON.stringify({
+          ...formData,
+          price: parseFloat(formData.price),
+          stock: parseInt(formData.stock),
+          gst: parseFloat(formData.gst)
+        }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        toast.success('Product created successfully!');
-        // Reset form
-        setFormData({
-          title: '',
-          distributor: '',
-          category: '',
-          subCategory: '',
-          price: '',
-          stock: '',
-          gst: 18,
-          description: ''
-        });
+        toast.success('Product updated successfully!');
         // Redirect to inventory after 2 seconds
-        // setTimeout(() => {
-        //   router.push('/inventory');
-        // }, 2000);
+        setTimeout(() => {
+          router.push('/inventory');
+        }, 2000);
       } else {
-        toast.error(data.error || 'Failed to create product');
+        toast.error(data.error || 'Failed to update product');
       }
     } catch (error) {
-      console.error('Error creating product:', error);
-      toast.error('Failed to create product. Please try again.');
+      console.error('Error updating product:', error);
+      toast.error('Failed to update product. Please try again.');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-blue-600" />
+          <p className="text-gray-600">Loading product data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -191,8 +226,8 @@ const NewProduct = () => {
               Back to Inventory
             </Button>
             <div className="text-right">
-              <h1 className="text-3xl font-bold text-gray-900">Add New Product</h1>
-              <p className="text-gray-600 mt-1">Fill in the details to add a new product to your inventory.</p>
+              <h1 className="text-3xl font-bold text-gray-900">Edit Product</h1>
+              <p className="text-gray-600 mt-1">Update the product information below.</p>
             </div>
           </div>
         </div>
@@ -206,6 +241,7 @@ const NewProduct = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
                     Product Title *
@@ -219,17 +255,18 @@ const NewProduct = () => {
                   />
                 </div>
 
+              </div>
+
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
                   Distributor *
                 </label>
-                <Combobox
+                <Input
+                  type="text"
                   value={formData.distributor}
-                  onValueChange={(value) => handleInputChange('distributor', value)}
-                  options={distributors}
-                  placeholder="Select or enter distributor name"
+                  onChange={(e) => handleInputChange('distributor', e.target.value)}
+                  placeholder="Enter distributor name"
                   className="w-full"
-                  allowCustom={true}
                 />
               </div>
 
@@ -239,28 +276,36 @@ const NewProduct = () => {
                   <label className="text-sm font-medium text-gray-700">
                     Category *
                   </label>
-                  <Combobox
-                    value={formData.category}
-                    onValueChange={(value) => handleInputChange('category', value)}
-                    options={categories.filter(cat => cat !== 'All')}
-                    placeholder="Select or enter category"
-                    className="w-full"
-                    allowCustom={true}
-                  />
+                  <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.filter(cat => cat !== 'All').map((category) => (
+                        <SelectItem key={category} value={category}>
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700">
                     Sub-category *
                   </label>
-                  <Combobox
-                    value={formData.subCategory}
-                    onValueChange={(value) => handleInputChange('subCategory', value)}
-                    options={subCategories.filter(sub => sub !== 'All')}
-                    placeholder="Select or enter sub-category"
-                    className="w-full"
-                    allowCustom={true}
-                  />
+                  <Select value={formData.subCategory} onValueChange={(value) => handleInputChange('subCategory', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select sub-category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {subCategories.filter(sub => sub !== 'All').map((subCategory) => (
+                        <SelectItem key={subCategory} value={subCategory}>
+                          {subCategory}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -331,18 +376,18 @@ const NewProduct = () => {
                 <div className="flex-1 sm:flex-none">
                   <Button
                     type="submit"
-                    disabled={loading}
+                    disabled={saving}
                     className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 font-medium"
                   >
-                    {loading ? (
+                    {saving ? (
                       <>
                         <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Creating...
+                        Updating...
                       </>
                     ) : (
                       <>
                         <Save className="h-4 w-4 mr-2" />
-                        Create Product
+                        Update Product
                       </>
                     )}
                   </Button>
@@ -353,7 +398,7 @@ const NewProduct = () => {
                     type="button"
                     variant="outline"
                     onClick={() => router.back()}
-                    disabled={loading}
+                    disabled={saving}
                     className="w-full sm:w-auto px-8 py-2.5 font-medium border-gray-300 hover:bg-gray-50"
                   >
                     Cancel
@@ -368,4 +413,4 @@ const NewProduct = () => {
   );
 };
 
-export default NewProduct;
+export default EditProduct;

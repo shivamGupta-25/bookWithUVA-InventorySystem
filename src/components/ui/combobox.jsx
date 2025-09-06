@@ -1,0 +1,143 @@
+"use client";
+
+import React, { useState, useRef, useEffect } from 'react';
+import { Input } from './input';
+import { Button } from './button';
+import { ChevronDown, X } from 'lucide-react';
+
+const Combobox = ({ 
+  value, 
+  onValueChange, 
+  options = [], 
+  placeholder = "Select an option...", 
+  className = "",
+  disabled = false,
+  allowCustom = true
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredOptions, setFilteredOptions] = useState(options);
+  const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  // Filter options based on search term
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = options.filter(option =>
+        option.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredOptions(filtered);
+    } else {
+      setFilteredOptions(options);
+    }
+  }, [searchTerm, options]);
+
+  // Handle clicking outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+        setSearchTerm('');
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    setSearchTerm(newValue);
+    setIsOpen(true);
+    
+    // If allowCustom is true, update the value immediately
+    if (allowCustom) {
+      onValueChange(newValue);
+    }
+  };
+
+  const handleOptionSelect = (option) => {
+    onValueChange(option);
+    setSearchTerm('');
+    setIsOpen(false);
+  };
+
+  const handleClear = () => {
+    onValueChange('');
+    setSearchTerm('');
+    setIsOpen(false);
+  };
+
+  const handleInputFocus = () => {
+    setIsOpen(true);
+    if (!searchTerm) {
+      setSearchTerm(value);
+    }
+  };
+
+  const displayValue = isOpen ? searchTerm : value;
+
+  return (
+    <div className={`relative ${className}`} ref={dropdownRef}>
+      <div className="relative">
+        <Input
+          ref={inputRef}
+          type="text"
+          value={displayValue}
+          onChange={handleInputChange}
+          onFocus={handleInputFocus}
+          placeholder={placeholder}
+          disabled={disabled}
+          className="pr-20"
+        />
+        <div className="absolute right-1 top-1/2 transform -translate-y-1/2 flex items-center space-x-1">
+          {value && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleClear}
+              className="h-6 w-6 p-0 hover:bg-gray-200"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsOpen(!isOpen)}
+            className="h-6 w-6 p-0 hover:bg-gray-200"
+          >
+            <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          </Button>
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option, index) => (
+              <button
+                key={index}
+                type="button"
+                className="w-full px-3 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                onClick={() => handleOptionSelect(option)}
+              >
+                {option}
+              </button>
+            ))
+          ) : (
+            <div className="px-3 py-2 text-gray-500 text-sm">
+              {allowCustom ? 'Type to add new option' : 'No options found'}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Combobox;

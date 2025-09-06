@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { Menu, X, Home, FileText, Users, LogOut, DollarSign, QrCode, BarChart, Package, Plus, Search, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function Nav({ children }) {
   const pathname = usePathname();
@@ -65,11 +66,11 @@ export default function Nav({ children }) {
   const handleLogout = async () => {
     try {
       // For now, just show a success message
-      alert("Logged out successfully");
+      toast.success("Logged out successfully");
       // In a real app, you'd handle actual logout logic here
       window.location.href = "/";
     } catch (error) {
-      alert("Failed to logout");
+      toast.error("Failed to logout");
     }
   };
 
