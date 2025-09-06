@@ -38,6 +38,7 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import EditProductDialog from "@/app/_components/EditProductDialog";
+import api from '@/lib/api';
 
 const Inventory = () => {
   const router = useRouter();
@@ -98,8 +99,8 @@ const Inventory = () => {
         
         // Load products and stats in parallel
         const [productsResponse, statsResponse] = await Promise.all([
-          fetch('/api/products?limit=1000'),
-          fetch('/api/products/stats')
+          api.products.getAll({ limit: 1000 }),
+          api.stats.get()
         ]);
 
         const [productsData, statsData] = await Promise.all([
@@ -221,8 +222,8 @@ const Inventory = () => {
   const refreshInventoryData = async () => {
     try {
       const [productsResponse, statsResponse] = await Promise.all([
-        fetch('/api/products?limit=1000'),
-        fetch('/api/products/stats')
+        api.products.getAll({ limit: 1000 }),
+        api.stats.get()
       ]);
 
       const [productsData, statsData] = await Promise.all([
@@ -258,10 +259,7 @@ const Inventory = () => {
 
     setDeleting(true);
     try {
-      const response = await fetch(`/api/products/${productToDelete}`, {
-        method: 'DELETE',
-      });
-
+      const response = await api.products.delete(productToDelete);
       const data = await response.json();
 
       if (data.success) {
@@ -296,14 +294,7 @@ const Inventory = () => {
   const handleDeleteAllConfirm = async () => {
     setDeletingAll(true);
     try {
-      const response = await fetch('/api/products', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ confirmDeleteAll: true }),
-      });
-
+      const response = await api.products.deleteAll();
       const data = await response.json();
 
       if (data.success) {

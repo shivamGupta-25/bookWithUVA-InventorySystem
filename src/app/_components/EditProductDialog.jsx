@@ -17,6 +17,7 @@ import {
   X
 } from "lucide-react";
 import { toast } from "sonner";
+import api from '@/lib/api';
 
 const EditProductDialog = ({ 
   isOpen, 
@@ -49,7 +50,7 @@ const EditProductDialog = ({
       if (isOpen) {
         setLoadingOptions(true);
         try {
-          const response = await fetch('/api/products?limit=1');
+          const response = await api.products.getAll({ limit: 1 });
           const data = await response.json();
           
           if (data.success) {
@@ -164,17 +165,11 @@ const EditProductDialog = ({
     setSaving(true);
 
     try {
-      const response = await fetch(`/api/products/${product.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          price: parseFloat(formData.price),
-          stock: parseInt(formData.stock),
-          gst: parseFloat(formData.gst)
-        }),
+      const response = await api.products.update(product.id, {
+        ...formData,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        gst: parseFloat(formData.gst)
       });
 
       const data = await response.json();

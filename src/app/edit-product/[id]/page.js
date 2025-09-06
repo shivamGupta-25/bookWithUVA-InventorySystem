@@ -20,6 +20,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import api from '@/lib/api';
 
 const EditProduct = () => {
   const router = useRouter();
@@ -50,8 +51,8 @@ const EditProduct = () => {
         
         // Load product data and filter options in parallel
         const [productResponse, filtersResponse] = await Promise.all([
-          fetch(`/api/products/${productId}`),
-          fetch('/api/products?limit=1')
+          api.products.getById(productId),
+          api.products.getAll({ limit: 1 })
         ]);
 
         const [productData, filtersData] = await Promise.all([
@@ -168,17 +169,11 @@ const EditProduct = () => {
     setSaving(true);
 
     try {
-      const response = await fetch(`/api/products/${productId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          price: parseFloat(formData.price),
-          stock: parseInt(formData.stock),
-          gst: parseFloat(formData.gst)
-        }),
+      const response = await api.products.update(productId, {
+        ...formData,
+        price: parseFloat(formData.price),
+        stock: parseInt(formData.stock),
+        gst: parseFloat(formData.gst)
       });
 
       const data = await response.json();

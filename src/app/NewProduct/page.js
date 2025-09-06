@@ -14,6 +14,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import api from '@/lib/api';
 
 const NewProduct = () => {
   const router = useRouter();
@@ -37,7 +38,7 @@ const NewProduct = () => {
   useEffect(() => {
     const loadFilterOptions = async () => {
       try {
-        const response = await fetch('/api/products?limit=1');
+        const response = await api.products.getAll({ limit: 1 });
         const data = await response.json();
         
         if (data.success) {
@@ -138,13 +139,7 @@ const NewProduct = () => {
       };
 
 
-      const response = await fetch('/api/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(apiData),
-      });
+      const response = await api.products.create(apiData);
 
       const data = await response.json();
 
