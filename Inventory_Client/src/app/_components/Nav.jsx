@@ -19,7 +19,7 @@ export default function Nav({ children }) {
   // Handle responsive behavior
   useEffect(() => {
     const checkScreenSize = () => {
-      const isMobileView = window.innerWidth < 1024;
+      const isMobileView = window.innerWidth < 1280;
       setIsMobile(isMobileView);
       // Only auto-collapse on mobile, don't force collapse on desktop
       if (isMobileView) {
