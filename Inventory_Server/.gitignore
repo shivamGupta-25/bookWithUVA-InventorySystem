@@ -1,0 +1,14 @@
+.env
+.env*
+*.env
+*.env*
+
+/node_modules
+*/node_modules
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+package-lock.json
