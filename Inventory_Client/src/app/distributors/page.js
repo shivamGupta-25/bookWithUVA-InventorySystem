@@ -15,6 +15,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Loader2, Plus, Save, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api";
@@ -113,16 +121,29 @@ const DistributorsPage = () => {
   };
 
   return (
-    <div className="min-h-screen p-4">
-      <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold">Distributors</h1>
-            <p className="text-gray-600">Manage your distributor records</p>
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden">
+      {/* Header */}
+      <div className="mb-4 sm:mb-6">
+        <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+              <span className="truncate">Distributors</span>
+            </h1>
+            <p className="text-xs sm:text-sm md:text-base text-gray-600 mt-1">
+              Manage your distributor records
+            </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={openCreate} className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="h-4 w-4 mr-2" /> New Distributor
+          <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
+            <Button 
+              onClick={openCreate}
+              size="lg"
+              className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border-0 rounded-lg px-4 py-3 min-w-[140px] cursor-pointer"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-center justify-center gap-2">
+                <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
+                <span className="text-base font-medium">Add Distributor</span>
+              </div>
             </Button>
             <Button
               variant="outline"
@@ -133,15 +154,34 @@ const DistributorsPage = () => {
             </Button>
           </div>
         </div>
+      </div>
 
+      <div className="mx-auto w-full max-w-full overflow-x-hidden">
+        {/* Mobile Delete All Button */}
+        <div className="flex lg:hidden items-center gap-2 mb-4">
+          <Button
+            variant="outline"
+            className="text-red-600 border-red-200 hover:bg-red-50 w-full"
+            onClick={() => setDeleteAllOpen(true)}
+          >
+            Delete All
+          </Button>
+        </div>
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Distributors List</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-2 mb-3">
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name, phone, GSTIN, address" />
-              <Button variant="outline" onClick={loadDistributors}>Refresh</Button>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-3">
+              <Input 
+                value={search} 
+                onChange={(e) => setSearch(e.target.value)} 
+                placeholder="Search by name, phone, GSTIN, address"
+                className="w-full"
+              />
+              <Button variant="outline" onClick={loadDistributors} className="w-full sm:w-auto">
+                Refresh
+              </Button>
             </div>
 
             {loading ? (
@@ -151,36 +191,51 @@ const DistributorsPage = () => {
             ) : filtered.length === 0 ? (
               <div className="py-10 text-center text-gray-600">No distributors found.</div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-gray-600 border-b">
-                      <th className="py-2 pr-4">Name</th>
-                      <th className="py-2 pr-4">Phone</th>
-                      <th className="py-2 pr-4">GSTIN</th>
-                      <th className="py-2 pr-4">Address</th>
-                      <th className="py-2 pr-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <div className="rounded-md border overflow-x-auto sm:p-2 md:p-4 lg:p-2">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[100px]">Name</TableHead>
+                      <TableHead className="hidden sm:table-cell min-w-[100px]">Phone</TableHead>
+                      <TableHead className="hidden md:table-cell min-w-[100px]">GSTIN</TableHead>
+                      <TableHead className="hidden lg:table-cell min-w-[150px]">Address</TableHead>
+                      <TableHead className="text-right min-w-[80px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {filtered.map((d) => (
-                      <tr key={d.id} className="border-b hover:bg-gray-50/60">
-                        <td className="py-2 pr-4 font-medium">{d.name}</td>
-                        <td className="py-2 pr-4">{d.phoneNumber || "-"}</td>
-                        <td className="py-2 pr-4">{d.gstinNumber || "-"}</td>
-                        <td className="py-2 pr-4">{d.address || "-"}</td>
-                        <td className="py-2 pr-4 text-right">
-                          <Button size="sm" variant="ghost" onClick={() => openEdit(d)} className="mr-1">
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={() => softDelete(d)}>
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
-                        </td>
-                      </tr>
+                      <TableRow key={d.id}>
+                        <TableCell className="font-medium">
+                          <div>
+                            <div className="font-semibold">{d.name}</div>
+                            <div className="text-xs text-gray-500 sm:hidden">
+                              {d.phoneNumber && `Phone: ${d.phoneNumber}`}
+                            </div>
+                            <div className="text-xs text-gray-500 md:hidden">
+                              {d.gstinNumber && `GSTIN: ${d.gstinNumber}`}
+                            </div>
+                            <div className="text-xs text-gray-500 lg:hidden truncate max-w-[150px]">
+                              {d.address && `Address: ${d.address}`}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">{d.phoneNumber || "-"}</TableCell>
+                        <TableCell className="hidden md:table-cell">{d.gstinNumber || "-"}</TableCell>
+                        <TableCell className="hidden lg:table-cell max-w-[150px] truncate">{d.address || "-"}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button size="sm" variant="ghost" onClick={() => openEdit(d)}>
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => softDelete(d)}>
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
+                  </TableBody>
+                </Table>
               </div>
             )}
           </CardContent>
@@ -188,31 +243,67 @@ const DistributorsPage = () => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent>
+        <DialogContent className="w-[95vw] max-w-md sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit Distributor" : "New Distributor"}</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">{editing ? "Edit Distributor" : "New Distributor"}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs font-medium text-gray-700">Name *</label>
-              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Distributor name" />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Name *</label>
+              <Input 
+                value={form.name} 
+                onChange={(e) => setForm({ ...form, name: e.target.value })} 
+                placeholder="Distributor name"
+                className="w-full"
+              />
             </div>
-            <div>
-              <label className="text-xs font-medium text-gray-700">Phone</label>
-              <Input value={form.phoneNumber} onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} placeholder="Phone number" />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Phone</label>
+              <Input 
+                value={form.phoneNumber} 
+                onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} 
+                placeholder="Phone number"
+                className="w-full"
+              />
             </div>
-            <div>
-              <label className="text-xs font-medium text-gray-700">GSTIN</label>
-              <Input value={form.gstinNumber} onChange={(e) => setForm({ ...form, gstinNumber: e.target.value })} placeholder="GSTIN number" />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">GSTIN</label>
+              <Input 
+                value={form.gstinNumber} 
+                onChange={(e) => setForm({ ...form, gstinNumber: e.target.value })} 
+                placeholder="GSTIN number"
+                className="w-full"
+              />
             </div>
-            <div>
-              <label className="text-xs font-medium text-gray-700">Address</label>
-              <Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Address" />
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Address</label>
+              <Input 
+                value={form.address} 
+                onChange={(e) => setForm({ ...form, address: e.target.value })} 
+                placeholder="Address"
+                className="w-full"
+              />
             </div>
           </div>
-          <DialogFooter>
-            <Button onClick={save} disabled={saving} className="bg-blue-600 hover:bg-blue-700">
-              {saving ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</> : <><Save className="h-4 w-4 mr-2" /> Save</>}
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button 
+              onClick={save} 
+              disabled={saving} 
+              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 
+                  <span className="hidden sm:inline">Saving...</span>
+                  <span className="sm:hidden">Save</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4 mr-2" /> 
+                  <span className="hidden sm:inline">Save</span>
+                  <span className="sm:hidden">Save</span>
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -220,17 +311,17 @@ const DistributorsPage = () => {
 
       {/* Delete All Confirmation */}
       <AlertDialog open={deleteAllOpen} onOpenChange={setDeleteAllOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-[95vw] max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete all distributors?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-lg">Delete all distributors?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
               This action cannot be undone. This will permanently delete all distributor records.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
               onClick={async () => {
                 setDeleting(true);
                 try {
@@ -259,18 +350,18 @@ const DistributorsPage = () => {
 
       {/* Delete One Confirmation */}
       <AlertDialog open={deleteOneOpen} onOpenChange={setDeleteOneOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="w-[95vw] max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete distributor?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-lg">Delete distributor?</AlertDialogTitle>
+            <AlertDialogDescription className="text-sm">
               This action cannot be undone. This will permanently delete
               {deleteTarget ? ` "${deleteTarget.name}"` : " this distributor"}.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
               onClick={async () => {
                 if (!deleteTarget) return;
                 setDeleting(true);
@@ -298,6 +389,20 @@ const DistributorsPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Floating Action Button for Mobile */}
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 lg:hidden">
+        <Button
+          onClick={openCreate}
+          size="lg"
+          className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 rounded-full w-14 h-14 p-0"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative flex items-center justify-center">
+            <Plus className="h-6 w-6 transition-transform duration-300 group-hover:rotate-90" />
+          </div>
+        </Button>
+      </div>
     </div>
   );
 };

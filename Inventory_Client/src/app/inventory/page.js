@@ -12,6 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { 
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -313,7 +322,7 @@ const Inventory = () => {
   };
 
   return (
-    <div className="min-h-screen p-2 sm:p-4 md:p-4 lg:p-2">
+    <div className="min-h-screen p-2 sm:p-3 md:p-4 lg:p-2 overflow-x-hidden">
       {/* Header */}
       <div className="mb-4 sm:mb-6">
         <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
@@ -648,100 +657,82 @@ const Inventory = () => {
       ) : !loading && !error && (
         <>
           {/* Desktop Table View */}
-          <Card className="bg-white border-0 shadow-sm hidden lg:block">
-            <CardHeader className="px-6 py-4 border-b bg-gray-50/50">
-              <div className="grid grid-cols-12 gap-3 text-sm font-semibold text-gray-700">
-                <div className="col-span-3">Product</div>
-                <div className="col-span-2">Distributor</div>
-                <div className="col-span-1">Category</div>
-                <div className="col-span-1">Sub Category</div>
-                <div className="col-span-1">Price</div>
-                <div className="col-span-1">GST %</div>
-                <div className="col-span-1">Stock</div>
-                <div className="col-span-1">Status</div>
-                <div className="col-span-1">Actions</div>
-              </div>
-            </CardHeader>
+          <Card className="bg-white border-0 shadow-sm hidden lg:block p-2">
             <CardContent className="p-0">
-              {filteredBooks.map((book, index) => {
-                const stockStatus = getStockStatus(book.stock);
-                return (
-                  <div 
-                    key={book.id} 
-                    className={`px-6 py-4 border-b last:border-b-0 hover:bg-gray-50/80 transition-colors ${
-                      index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'
-                    }`}
-                  >
-                    <div className="grid grid-cols-12 gap-3 items-center">
-                      {/* Product */}
-                      <div className="col-span-3 min-w-0">
-                        <h3 className="font-semibold text-gray-900 truncate text-sm leading-tight">{book.title}</h3>
-                      </div>
-
-                      {/* Distributor */}
-                      <div className="col-span-2 min-w-0">
-                        <p className="text-sm text-gray-700 truncate leading-tight">{book.distributor}</p>
-                      </div>
-
-                      {/* Category */}
-                      <div className="col-span-1">
-                        <Badge variant="outline" className="text-xs px-2 py-1 font-medium">
-                          {book.category}
-                        </Badge>
-                      </div>
-
-                      {/* Sub Category */}
-                      <div className="col-span-1 min-w-0">
-                        <p className="text-sm text-gray-600 truncate leading-tight">{book.subCategory}</p>
-                      </div>
-
-                      {/* Price */}
-                      <div className="col-span-1">
-                        <p className="text-sm font-bold text-gray-900">₹{parseFloat(book.price).toFixed(2)}</p>
-                      </div>
-
-                      {/* GST */}
-                      <div className="col-span-1">
-                        <p className="text-sm text-gray-600 font-medium">{book.gst}%</p>
-                      </div>
-
-                      {/* Stock */}
-                      <div className="col-span-1">
-                        <p className="text-sm font-semibold text-gray-900">{book.stock}</p>
-                      </div>
-
-                      {/* Status */}
-                      <div className="col-span-1">
-                        <Badge variant={stockStatus.variant} className="text-xs px-2 py-1 font-medium">
-                          {stockStatus.label}
-                        </Badge>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="col-span-1 flex items-center gap-1 justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(book.id)}
-                          className="h-7 w-7 p-0 hover:bg-green-100 flex-shrink-0"
-                          title="Edit product"
-                        >
-                          <Edit className="h-4 w-4 text-green-600" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteClick(book.id)}
-                          className="h-7 w-7 p-0 hover:bg-red-100 flex-shrink-0"
-                          title="Delete product"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-600" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              <Table className="text-sm">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[200px]">Product</TableHead>
+                    <TableHead className="min-w-[120px]">Distributor</TableHead>
+                    <TableHead className="min-w-[100px]">Category</TableHead>
+                    <TableHead className="min-w-[120px]">Sub Category</TableHead>
+                    <TableHead className="min-w-[80px]">Price</TableHead>
+                    <TableHead className="min-w-[60px]">GST %</TableHead>
+                    <TableHead className="min-w-[60px]">Stock</TableHead>
+                    <TableHead className="min-w-[100px]">Status</TableHead>
+                    <TableHead className="min-w-[80px] text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredBooks.map((book) => {
+                    const stockStatus = getStockStatus(book.stock);
+                    return (
+                      <TableRow key={book.id}>
+                        <TableCell>
+                          <h3 className="font-semibold text-gray-900 text-sm leading-tight break-words">{book.title}</h3>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-700 leading-tight break-words">{book.distributor}</p>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs px-2 py-1 font-medium">
+                            {book.category}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-600 leading-tight break-words">{book.subCategory}</p>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm font-bold text-gray-900">₹{parseFloat(book.price).toFixed(2)}</p>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-600 font-medium">{book.gst}%</p>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm font-semibold text-gray-900">{book.stock}</p>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={stockStatus.variant} className="text-xs px-2 py-1 font-medium">
+                            {stockStatus.label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center gap-1 justify-end">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(book.id)}
+                              className="h-7 w-7 p-0 hover:bg-green-100 flex-shrink-0"
+                              title="Edit product"
+                            >
+                              <Edit className="h-4 w-4 text-green-600" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteClick(book.id)}
+                              className="h-7 w-7 p-0 hover:bg-red-100 flex-shrink-0"
+                              title="Delete product"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
 

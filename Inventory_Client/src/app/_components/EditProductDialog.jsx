@@ -206,185 +206,188 @@ const EditProductDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] sm:w-full">
-        <DialogHeader className="pb-2">
+      <DialogContent className="max-w-2xl w-[calc(100vw-2rem)] sm:w-full max-h-[calc(100vh-5rem)] sm:max-h-[calc(100vh-1rem)] flex flex-col">
+        <DialogHeader className="pb-2 flex-shrink-0">
           <DialogTitle className="flex items-center gap-2 text-lg">
             <Save className="h-4 w-4" />
             Edit Product
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Loading indicator for options */}
-          {loadingOptions && (
-            <div className="flex items-center justify-center py-2">
-              <Loader2 className="h-4 w-4 animate-spin text-blue-600 mr-2" />
-              <span className="text-xs text-gray-600">Loading options...</span>
-            </div>
-          )}
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <form onSubmit={handleSubmit} className="space-y-4 pr-1">
+            {/* Loading indicator for options */}
+            {loadingOptions && (
+              <div className="flex items-center justify-center py-2">
+                <Loader2 className="h-4 w-4 animate-spin text-blue-600 mr-2" />
+                <span className="text-xs text-gray-600">Loading options...</span>
+              </div>
+            )}
 
-          {/* Product Title */}
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-700">
-              Product Title *
-            </label>
-            <Input
-              type="text"
-              value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
-              placeholder="Enter product title"
-              className="w-full h-9"
-              disabled={saving}
-            />
-          </div>
-
-          {/* Distributor */}
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-700">
-              Distributor *
-            </label>
-            <Combobox
-              value={formData.distributor}
-              onValueChange={(value) => handleInputChange('distributor', value)}
-              options={localDistributors}
-              getLabel={(opt) => opt?.name || ''}
-              getValue={(opt) => opt?.id || ''}
-              placeholder="Select or enter distributor name"
-              className="w-full [&_input]:h-9"
-              allowCustom={true}
-              disabled={saving || loadingOptions}
-            />
-          </div>
-
-          {/* Category and Sub-category */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Product Title */}
             <div className="space-y-1">
               <label className="text-xs font-medium text-gray-700">
-                Category *
+                Product Title *
+              </label>
+              <Input
+                type="text"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                placeholder="Enter product title"
+                className="w-full h-9"
+                disabled={saving}
+              />
+            </div>
+
+            {/* Distributor */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-gray-700">
+                Distributor *
               </label>
               <Combobox
-                value={formData.category}
-                onValueChange={(value) => handleInputChange('category', value)}
-                options={localCategories.filter(cat => cat !== 'All')}
-                placeholder="Select or enter category"
+                value={formData.distributor}
+                onValueChange={(value) => handleInputChange('distributor', value)}
+                options={localDistributors}
+                getLabel={(opt) => opt?.name || ''}
+                getValue={(opt) => opt?.id || ''}
+                placeholder="Select or enter distributor name"
                 className="w-full [&_input]:h-9"
                 allowCustom={true}
                 disabled={saving || loadingOptions}
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-700">
-                Sub-category *
-              </label>
-              <Combobox
-                value={formData.subCategory}
-                onValueChange={(value) => handleInputChange('subCategory', value)}
-                options={localSubCategories.filter(sub => sub !== 'All')}
-                placeholder="Select or enter sub-category"
-                className="w-full [&_input]:h-9"
-                allowCustom={true}
-                disabled={saving || loadingOptions}
-              />
-            </div>
-          </div>
+            {/* Category and Sub-category */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700">
+                  Category *
+                </label>
+                <Combobox
+                  value={formData.category}
+                  onValueChange={(value) => handleInputChange('category', value)}
+                  options={localCategories.filter(cat => cat !== 'All')}
+                  placeholder="Select or enter category"
+                  className="w-full [&_input]:h-9"
+                  allowCustom={true}
+                  disabled={saving || loadingOptions}
+                />
+              </div>
 
-          {/* Pricing and Stock */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700">
+                  Sub-category *
+                </label>
+                <Combobox
+                  value={formData.subCategory}
+                  onValueChange={(value) => handleInputChange('subCategory', value)}
+                  options={localSubCategories.filter(sub => sub !== 'All')}
+                  placeholder="Select or enter sub-category"
+                  className="w-full [&_input]:h-9"
+                  allowCustom={true}
+                  disabled={saving || loadingOptions}
+                />
+              </div>
+            </div>
+
+            {/* Pricing and Stock */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700">
+                  Price (₹) *
+                </label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.price}
+                  onChange={(e) => handleInputChange('price', e.target.value)}
+                  placeholder="0.00"
+                  className="w-full h-9"
+                  disabled={saving}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700">
+                  Stock Quantity *
+                </label>
+                <Input
+                  type="number"
+                  min="0"
+                  value={formData.stock}
+                  onChange={(e) => handleInputChange('stock', e.target.value)}
+                  placeholder="0"
+                  className="w-full h-9"
+                  disabled={saving}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-700">
+                  GST (%) *
+                </label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  max="100"
+                  value={formData.gst}
+                  onChange={(e) => handleInputChange('gst', e.target.value)}
+                  placeholder="18"
+                  className="w-full h-9"
+                  disabled={saving}
+                />
+              </div>
+            </div>
+
+            {/* Description */}
             <div className="space-y-1">
               <label className="text-xs font-medium text-gray-700">
-                Price (₹) *
+                Description
               </label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.price}
-                onChange={(e) => handleInputChange('price', e.target.value)}
-                placeholder="0.00"
-                className="w-full h-9"
+              <textarea
+                value={formData.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                placeholder="Enter product description (optional)"
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                rows={2}
                 disabled={saving}
               />
             </div>
+          </form>
+        </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-700">
-                Stock Quantity *
-              </label>
-              <Input
-                type="number"
-                min="0"
-                value={formData.stock}
-                onChange={(e) => handleInputChange('stock', e.target.value)}
-                placeholder="0"
-                className="w-full h-9"
-                disabled={saving}
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-700">
-                GST (%) *
-              </label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                max="100"
-                value={formData.gst}
-                onChange={(e) => handleInputChange('gst', e.target.value)}
-                placeholder="18"
-                className="w-full h-9"
-                disabled={saving}
-              />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-gray-700">
-              Description
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="Enter product description (optional)"
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              rows={2}
-              disabled={saving}
-            />
-          </div>
-
-          <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={saving}
-              className="w-full sm:w-auto h-9"
-            >
-              <X className="h-3 w-3 mr-1" />
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={saving}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto h-9"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <Save className="h-3 w-3 mr-1" />
-                  Update Product
-                </>
-              )}
-            </Button>
-          </DialogFooter>
-        </form>
+        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 pt-4 border-t bg-white flex-shrink-0">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClose}
+            disabled={saving}
+            className="w-full sm:w-auto h-9"
+          >
+            <X className="h-3 w-3 mr-1" />
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={saving}
+            onClick={handleSubmit}
+            className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto h-9"
+          >
+            {saving ? (
+              <>
+                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              <>
+                <Save className="h-3 w-3 mr-1" />
+                Update Product
+              </>
+            )}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
