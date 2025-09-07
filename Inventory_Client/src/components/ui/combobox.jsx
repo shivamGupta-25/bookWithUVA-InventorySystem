@@ -12,7 +12,9 @@ const Combobox = ({
   placeholder = "Select an option...", 
   className = "",
   disabled = false,
-  allowCustom = true
+  allowCustom = true,
+  getLabel = (opt) => (typeof opt === 'string' ? opt : opt?.label ?? opt?.name ?? ''),
+  getValue = (opt) => (typeof opt === 'string' ? opt : opt?.value ?? opt?.id ?? ''),
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,7 +26,7 @@ const Combobox = ({
   useEffect(() => {
     if (searchTerm) {
       const filtered = options.filter(option =>
-        option.toLowerCase().includes(searchTerm.toLowerCase())
+        getLabel(option).toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredOptions(filtered);
     } else {
@@ -59,7 +61,8 @@ const Combobox = ({
   };
 
   const handleOptionSelect = (option) => {
-    onValueChange(option);
+    const val = typeof option === 'string' ? option : getValue(option);
+    onValueChange(val, option);
     setSearchTerm('');
     setIsOpen(false);
   };
@@ -73,11 +76,20 @@ const Combobox = ({
   const handleInputFocus = () => {
     setIsOpen(true);
     if (!searchTerm) {
-      setSearchTerm(value);
+      const currentLabel = (() => {
+        if (!value) return '';
+        const found = options.find(opt => getValue(opt) === value);
+        return found ? getLabel(found) : String(value);
+      })();
+      setSearchTerm(currentLabel);
     }
   };
 
-  const displayValue = isOpen ? searchTerm : value;
+  const displayValue = isOpen ? searchTerm : (() => {
+    if (!value) return '';
+    const found = options.find(opt => getValue(opt) === value);
+    return found ? getLabel(found) : String(value);
+  })();
 
   return (
     <div className={`relative ${className}`} ref={dropdownRef}>
@@ -126,7 +138,7 @@ const Combobox = ({
                 className="w-full px-3 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                 onClick={() => handleOptionSelect(option)}
               >
-                {option}
+                {getLabel(option)}
               </button>
             ))
           ) : (

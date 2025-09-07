@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import { FilterQuery } from "mongoose";
 import { product_model } from "../models/products";
+import distributor_model from "../models/distributor";
+import mongoose from "mongoose";
 
 // GET /api/product/:id - Fetch a single product
 export const get_product = async (req, res) => {
 	try {
-		const product = await product_model.findById(req.params.id);
+		const product = await product_model
+			.findById(req.params.id)
+			.populate({ path: "distributor", select: "name phoneNumber address gstinNumber" });
 
 		if (!product) {
 			return res.status(404).json({
@@ -37,14 +41,37 @@ export const get_product = async (req, res) => {
 // PUT /api/product/:id - Update a product
 export const put_product = async (req, res) => {
 	try {
+		// If updating with distributorName or non-ObjectId distributor string, resolve or create distributor
+		let updateBody = { ...req.body } as any;
+		const tryResolveDistributor = async () => {
+			if (updateBody.distributor && typeof updateBody.distributor === "string") {
+				const val = updateBody.distributor.trim();
+				const isObjectId = mongoose.Types.ObjectId.isValid(val);
+				if (!isObjectId) {
+					const existing = await distributor_model.findOne({ name: val });
+					const dist = existing || (await distributor_model.create({ name: val }));
+					updateBody.distributor = dist._id;
+				}
+			}
+			if (updateBody.distributorName && !updateBody.distributor) {
+				const name = String(updateBody.distributorName).trim();
+				if (name) {
+					const existing = await distributor_model.findOne({ name });
+					const dist = existing || (await distributor_model.create({ name }));
+					updateBody.distributor = dist._id;
+				}
+			}
+		};
+		await tryResolveDistributor();
+
 		const product = await product_model.findByIdAndUpdate(
 			req.params.id,
-			req.body,
+			updateBody,
 			{
 				new: true,
 				runValidators: true,
 			}
-		);
+		).populate({ path: "distributor", select: "name phoneNumber address gstinNumber" });
 
 		if (!product) {
 			return res.status(404).json({

@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 // Load environment variables
 config();
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
 	console.error("MONGODB_URI not found in environment variables");
@@ -15,11 +15,25 @@ if (!MONGODB_URI) {
 
 console.log("Connecting to MongoDB...");
 
-// Product schema
+// Distributor schema (new)
+const distributorSchema = new mongoose.Schema(
+	{
+		name: { type: String, required: true, trim: true },
+		phoneNumber: { type: String, trim: true },
+		address: { type: String, trim: true },
+		gstinNumber: { type: String, trim: true },
+		isActive: { type: Boolean, default: true },
+	},
+	{ timestamps: true }
+);
+
+const Distributor = mongoose.model("Distributor", distributorSchema);
+
+// Product schema (updated to reference Distributor)
 const productSchema = new mongoose.Schema(
 	{
 		title: { type: String, required: true },
-		distributor: { type: String, required: true },
+		distributor: { type: mongoose.Schema.Types.ObjectId, ref: "Distributor", required: true },
 		category: { type: String, required: true },
 		subCategory: { type: String, required: true },
 		price: { type: Number, required: true },
@@ -171,12 +185,32 @@ async function seedDatabase() {
 		await mongoose.connect(MONGODB_URI);
 		console.log("Connected to MongoDB successfully!");
 
-		// Clear existing products
-		await Product.deleteMany({});
-		console.log("Cleared existing products");
 
-		// Insert seed data
-		const products = await Product.insertMany(seedData);
+		// Drop existing collections if present (reset schema/data)
+		const collections = await mongoose.connection.db.listCollections().toArray();
+		const names = collections.map((c) => c.name);
+		if (names.includes("products")) {
+			await mongoose.connection.db.dropCollection("products");
+			console.log("Dropped collection: products");
+		}
+		if (names.includes("distributors")) {
+			await mongoose.connection.db.dropCollection("distributors");
+			console.log("Dropped collection: distributors");
+		}
+
+		// Create distributors from unique names in seed data
+		const uniqueNames = Array.from(new Set(seedData.map((p) => p.distributor)));
+		const distributorDocs = await Distributor.insertMany(uniqueNames.map((name) => ({ name })));
+		const nameToId = new Map(distributorDocs.map((d) => [d.name, d._id]));
+		console.log(`Inserted ${distributorDocs.length} distributors successfully!`);
+
+		// Insert products with distributor ObjectId
+		const products = await Product.insertMany(
+			seedData.map((p) => ({
+				...p,
+				distributor: nameToId.get(p.distributor),
+			}))
+		);
 		console.log(`Inserted ${products.length} products successfully!`);
 
 		console.log("Database seeded successfully!");

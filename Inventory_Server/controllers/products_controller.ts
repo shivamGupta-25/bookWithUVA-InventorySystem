@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { FilterQuery } from "mongoose";
 import { product_model } from "../models/products";
+import distributor_model from "../models/distributor";
+import mongoose from "mongoose";
 
 // GET /api/products - Fetch all products with optional filtering
 export const get_products = async (req: Request, res: Response) => {
@@ -20,11 +22,11 @@ export const get_products = async (req: Request, res: Response) => {
 		} = req.query as Record<string, string>;
 
 		// ✅ Build filter object
-		const filter: FilterQuery<typeof product_model> = { isActive: true };
+		const filter: any = { isActive: true };
 
-		// Text search
+		// Text search on title/description (distributor name search would require aggregation)
 		if (search) {
-			filter.$or = ["title", "distributor", "description"].map((field) => ({
+			filter.$or = ["title", "description"].map((field) => ({
 				[field]: { $regex: search, $options: "i" },
 			}));
 		}
@@ -56,13 +58,7 @@ export const get_products = async (req: Request, res: Response) => {
 		}
 
 		// ✅ Build sort object (cleaner)
-		const validSortFields = [
-			"title",
-			"distributor",
-			"price",
-			"stock",
-			"gst",
-		] as const;
+		const validSortFields = ["title", "price", "stock", "gst"] as const;
 		type SortableFields = (typeof validSortFields)[number];
 		const order: 1 | -1 = sortOrder === "desc" ? -1 : 1;
 
@@ -80,11 +76,17 @@ export const get_products = async (req: Request, res: Response) => {
 		// ✅ Execute query in parallel
 		const [products, total, categories, subCategories, distributors] =
 			await Promise.all([
-				product_model.find(filter).sort(sort).skip(skip).limit(limitNum).lean(),
+				product_model
+					.find(filter)
+					.sort(sort)
+					.skip(skip)
+					.limit(limitNum)
+					.populate({ path: "distributor", select: "name phoneNumber address gstinNumber" })
+					.lean(),
 				product_model.countDocuments(filter),
 				product_model.distinct("category", { isActive: true }),
 				product_model.distinct("subCategory", { isActive: true }),
-				product_model.distinct("distributor", { isActive: true }),
+				distributor_model.find({ isActive: true }).select("name phoneNumber address gstinNumber").sort({ name: 1 }).lean(),
 			]);
 
 		// Normalize _id → string
@@ -92,6 +94,10 @@ export const get_products = async (req: Request, res: Response) => {
 			...p,
 			id: p._id.toString(),
 			_id: p._id.toString(),
+			distributor:
+				p.distributor && typeof p.distributor === "object"
+					? ((p as any).distributor as any).name || ""
+					: p.distributor,
 		}));
 
 		// ✅ Send response
@@ -108,7 +114,7 @@ export const get_products = async (req: Request, res: Response) => {
 				filters: {
 					categories: ["All", ...categories],
 					subCategories: ["All", ...subCategories],
-					distributors: distributors.sort(),
+					distributors: distributors.map((d) => d.name).sort(),
 				},
 			},
 		});
@@ -127,22 +133,22 @@ export const post_products = async (
 	res: Response
 ): Promise<void> => {
 	try {
-		// Required fields
-		const requiredFields: (keyof typeof product_model.schema.obj)[] = [
+		// Required fields (accept either distributor ObjectId or distributorName string)
+		const requiredBase = [
 			"title",
-			"distributor",
 			"category",
 			"subCategory",
 			"price",
 			"stock",
 			"gst",
-		];
+		] as const;
 
-		// Check for missing fields
-		const missingFields = requiredFields.filter(
-			(field) => req.body[field] === undefined || req.body[field] === null
+		const missingBase = requiredBase.filter(
+			(field) => (req.body as any)[field] === undefined || (req.body as any)[field] === null
 		);
 
+		let hasDistributor = Boolean(req.body.distributor) || Boolean(req.body.distributorName);
+		const missingFields = [...missingBase, ...(hasDistributor ? [] : ["distributor"] as any)];
 		if (missingFields.length > 0) {
 			res.status(400).json({
 				success: false,
@@ -151,8 +157,28 @@ export const post_products = async (
 			return;
 		}
 
+		// Resolve distributor: accept ObjectId, name in distributor, or distributorName
+		let payload = { ...req.body } as any;
+		if (payload.distributor && typeof payload.distributor === "string") {
+			const val = payload.distributor.trim();
+			const isObjectId = mongoose.Types.ObjectId.isValid(val);
+			if (!isObjectId) {
+				const existing = await distributor_model.findOne({ name: val });
+				const dist = existing || (await distributor_model.create({ name: val }));
+				payload.distributor = dist._id;
+			}
+		}
+		if (payload.distributorName && !payload.distributor) {
+			const name = String(payload.distributorName).trim();
+			if (name) {
+				const existing = await distributor_model.findOne({ name });
+				const dist = existing || (await distributor_model.create({ name }));
+				payload.distributor = dist._id;
+			}
+		}
+
 		// Create product
-		const product = new product_model(req.body);
+		const product = new product_model(payload);
 		await product.save();
 
 		// Normalize _id

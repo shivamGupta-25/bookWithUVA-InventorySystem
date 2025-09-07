@@ -26,6 +26,7 @@ const NewProduct = () => {
   const [formData, setFormData] = useState({
     title: '',
     distributor: '',
+    distributorName: '',
     category: '',
     subCategory: '',
     price: '',
@@ -38,13 +39,17 @@ const NewProduct = () => {
   useEffect(() => {
     const loadFilterOptions = async () => {
       try {
-        const response = await api.products.getAll({ limit: 1 });
-        const data = await response.json();
+        const [prodRes, distRes] = await Promise.all([
+          api.products.getAll({ limit: 1 }),
+          api.distributors.getAll({ limit: 1000 })
+        ]);
+        const [data, dists] = await Promise.all([prodRes.json(), distRes.json()]);
         
         if (data.success) {
           setCategories(data.data.filters.categories);
           setSubCategories(data.data.filters.subCategories);
-          setDistributors(data.data.filters.distributors || []);
+          const distOpts = (dists?.data?.distributors || []).map(d => ({ id: d.id, name: d.name }));
+          setDistributors(distOpts);
         }
       } catch (error) {
         console.error('Error loading filter options:', error);
@@ -82,7 +87,7 @@ const NewProduct = () => {
   };
 
   const validateForm = () => {
-    const requiredFields = ['title', 'distributor', 'category', 'subCategory', 'price', 'stock'];
+    const requiredFields = ['title', 'category', 'subCategory', 'price', 'stock'];
     const missingFields = requiredFields.filter(field => !formData[field]);
     
     if (missingFields.length > 0) {
@@ -138,6 +143,16 @@ const NewProduct = () => {
         gst: parseFloat(formData.gst)
       };
 
+      // If distributor matches an option id, send distributor; otherwise send distributorName to create
+      const selected = distributors.find(d => d.id === formData.distributor);
+      if (selected) {
+        apiData.distributor = selected.id;
+        delete apiData.distributorName;
+      } else if (formData.distributor) {
+        apiData.distributorName = formData.distributor;
+        delete apiData.distributor;
+      }
+
 
       const response = await api.products.create(apiData);
 
@@ -149,6 +164,7 @@ const NewProduct = () => {
         setFormData({
           title: '',
           distributor: '',
+          distributorName: '',
           category: '',
           subCategory: '',
           price: '',
@@ -172,7 +188,7 @@ const NewProduct = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-6">

@@ -58,6 +58,7 @@ export default function Nav({ children }) {
     { name: "Dashboard", href: "/", icon: Home },
     { name: "Inventory", href: "/inventory", icon: Package },
     { name: "Add Product", href: "/NewProduct", icon: Plus },
+    { name: "Distributors", href: "/distributors", icon: Users },
     { name: "Search", href: "/search", icon: Search },
     { name: "Analytics", href: "/analytics", icon: BarChart },
     { name: "Settings", href: "/settings", icon: Settings },

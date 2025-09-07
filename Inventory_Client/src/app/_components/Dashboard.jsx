@@ -19,6 +19,15 @@ export default function Dashboard() {
       link: "/inventory",
     },
     {
+      title: "Distributors",
+      description: "Manage distributors and their details",
+      icon: <Users className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />,
+      iconBg: "bg-teal-100",
+      buttonColor: "bg-teal-600 hover:bg-teal-700",
+      details: "Add, edit, and manage distributor records. Keep contacts and GSTIN updated.",
+      link: "/distributors",
+    },
+    {
       title: "Add New Product",
       description: "Add new products to your inventory",
       icon: <Plus className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />,

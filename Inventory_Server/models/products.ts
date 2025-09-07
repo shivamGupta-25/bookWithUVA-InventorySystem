@@ -9,10 +9,9 @@ const ProductSchema = new mongoose.Schema(
 			maxLength: [200, "Title cannot exceed 200 characters"],
 		},
 		distributor: {
-			type: String,
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Distributor",
 			required: [true, "Distributor is required"],
-			trim: true,
-			maxLength: [100, "Distributor name cannot exceed 100 characters"],
 		},
 		category: {
 			type: String,
@@ -62,9 +61,9 @@ const ProductSchema = new mongoose.Schema(
 // Index for better search performance
 ProductSchema.index({
 	title: "text",
-	distributor: "text",
 	description: "text",
 });
+ProductSchema.index({ distributor: 1 });
 ProductSchema.index({ category: 1, subCategory: 1 });
 ProductSchema.index({ price: 1 });
 ProductSchema.index({ stock: 1 });

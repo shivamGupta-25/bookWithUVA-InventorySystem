@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Combobox from "@/components/ui/combobox";
 import { 
   ArrowLeft, 
   Save, 
@@ -31,6 +32,7 @@ const EditProduct = () => {
   const [saving, setSaving] = useState(false);
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
+  const [distributors, setDistributors] = useState([]);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -64,7 +66,7 @@ const EditProduct = () => {
           const product = productData.data;
           setFormData({
             title: product.title || '',
-            distributor: product.distributor || '',
+            distributor: (product.distributor && product.distributor.id) ? product.distributor.id : (product.distributor || ''),
             category: product.category || '',
             subCategory: product.subCategory || '',
             price: product.price || '',
@@ -80,6 +82,10 @@ const EditProduct = () => {
           setCategories(filtersData.data.filters.categories);
           setSubCategories(filtersData.data.filters.subCategories);
         }
+
+        const distsRes = await api.distributors.getAll({ limit: 1000 });
+        const dists = await distsRes.json();
+        setDistributors((dists?.data?.distributors || []).map(d => ({ id: d.id, name: d.name })));
       } catch (error) {
         console.error('Error loading data:', error);
         toast.error('Failed to load product data');
@@ -121,7 +127,7 @@ const EditProduct = () => {
   };
 
   const validateForm = () => {
-    const requiredFields = ['title', 'distributor', 'category', 'subCategory', 'price', 'stock'];
+    const requiredFields = ['title', 'category', 'subCategory', 'price', 'stock'];
     const missingFields = requiredFields.filter(field => !formData[field]);
     
     if (missingFields.length > 0) {
@@ -169,12 +175,21 @@ const EditProduct = () => {
     setSaving(true);
 
     try {
-      const response = await api.products.update(productId, {
+      const payload = {
         ...formData,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
         gst: parseFloat(formData.gst)
-      });
+      };
+      const selected = distributors.find(d => d.id === formData.distributor);
+      if (selected) {
+        payload.distributor = selected.id;
+        delete payload.distributorName;
+      } else if (formData.distributor) {
+        payload.distributorName = formData.distributor;
+        delete payload.distributor;
+      }
+      const response = await api.products.update(productId, payload);
 
       const data = await response.json();
 
@@ -254,14 +269,17 @@ const EditProduct = () => {
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
-                  Distributor *
+                  Distributor
                 </label>
-                <Input
-                  type="text"
+                <Combobox
                   value={formData.distributor}
-                  onChange={(e) => handleInputChange('distributor', e.target.value)}
-                  placeholder="Enter distributor name"
+                  onValueChange={(value) => handleInputChange('distributor', value)}
+                  options={distributors}
+                  getLabel={(opt) => opt?.name || ''}
+                  getValue={(opt) => opt?.id || ''}
+                  placeholder="Select or enter distributor name"
                   className="w-full"
+                  allowCustom={true}
                 />
               </div>
 

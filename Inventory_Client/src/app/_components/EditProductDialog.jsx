@@ -56,14 +56,14 @@ const EditProductDialog = ({
           if (data.success) {
             setLocalCategories(data.data.filters.categories);
             setLocalSubCategories(data.data.filters.subCategories);
-            setLocalDistributors(data.data.filters.distributors || []);
+            setLocalDistributors((data.data.filters.distributors || []).map((name) => ({ id: name, name })));
           }
         } catch (error) {
           console.error('Error loading filter options:', error);
           // Fallback to props if API fails
           setLocalCategories(categories);
           setLocalSubCategories(subCategories);
-          setLocalDistributors(distributors);
+          setLocalDistributors((distributors || []).map((name) => ({ id: name, name })));
         } finally {
           setLoadingOptions(false);
         }
@@ -78,7 +78,7 @@ const EditProductDialog = ({
     if (product) {
       setFormData({
         title: product.title || '',
-        distributor: product.distributor || '',
+        distributor: (product.distributor && product.distributor.id) ? product.distributor.id : (product.distributor || ''),
         category: product.category || '',
         subCategory: product.subCategory || '',
         price: product.price || '',
@@ -165,12 +165,21 @@ const EditProductDialog = ({
     setSaving(true);
 
     try {
-      const response = await api.products.update(product.id, {
+      const payload = {
         ...formData,
         price: parseFloat(formData.price),
         stock: parseInt(formData.stock),
         gst: parseFloat(formData.gst)
-      });
+      };
+      const selected = localDistributors.find((d) => d.id === formData.distributor);
+      if (selected) {
+        payload.distributor = selected.id;
+        delete payload.distributorName;
+      } else if (formData.distributor) {
+        payload.distributorName = formData.distributor;
+        delete payload.distributor;
+      }
+      const response = await api.products.update(product.id, payload);
 
       const data = await response.json();
 
@@ -238,6 +247,8 @@ const EditProductDialog = ({
               value={formData.distributor}
               onValueChange={(value) => handleInputChange('distributor', value)}
               options={localDistributors}
+              getLabel={(opt) => opt?.name || ''}
+              getValue={(opt) => opt?.id || ''}
               placeholder="Select or enter distributor name"
               className="w-full [&_input]:h-9"
               allowCustom={true}
