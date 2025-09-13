@@ -5,14 +5,14 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
+import {
   Table,
   TableBody,
   TableCaption,
@@ -32,10 +32,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { 
-  Search, 
-  Edit, 
-  Trash2, 
+import {
+  Search,
+  Edit,
+  Trash2,
   Plus,
   BookOpen,
   TrendingUp,
@@ -58,7 +58,7 @@ const Inventory = () => {
   const [selectedPriceRange, setSelectedPriceRange] = useState('All Prices');
   const [selectedStockStatus, setSelectedStockStatus] = useState('all');
   const [sortBy, setSortBy] = useState('title');
-  
+
   // API data states
   const [products, setProducts] = useState([]);
   const [stats, setStats] = useState({
@@ -77,7 +77,7 @@ const Inventory = () => {
   const [deleting, setDeleting] = useState(false);
   const [deleteAllDialogOpen, setDeleteAllDialogOpen] = useState(false);
   const [deletingAll, setDeletingAll] = useState(false);
-  
+
   // Edit dialog states
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [productToEdit, setProductToEdit] = useState(null);
@@ -105,7 +105,7 @@ const Inventory = () => {
       try {
         setLoading(true);
         setError('');
-        
+
         // Load products and stats in parallel
         const [productsResponse, statsResponse] = await Promise.all([
           api.products.getAll({ limit: 1000 }),
@@ -120,10 +120,10 @@ const Inventory = () => {
         if (productsData.success) {
           setProducts(productsData.data.products);
           // Filter out any existing "All" entries to prevent duplicates
-          const filteredCategories = productsData.data.filters.categories.filter(cat => 
+          const filteredCategories = productsData.data.filters.categories.filter(cat =>
             cat !== 'All' && cat !== 'All Categories'
           );
-          const filteredSubCategories = productsData.data.filters.subCategories.filter(subCat => 
+          const filteredSubCategories = productsData.data.filters.subCategories.filter(subCat =>
             subCat !== 'All' && subCat !== 'All Sub Categories'
           );
           setCategories(['All Categories', ...filteredCategories]);
@@ -150,21 +150,20 @@ const Inventory = () => {
   // Filter and search products
   const filteredBooks = useMemo(() => {
     let filtered = products.filter(book => {
-      const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           book.distributor.toLowerCase().includes(searchTerm.toLowerCase());
-      
+      const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) || book.distributor.toLowerCase().includes(searchTerm.toLowerCase());
+
       const matchesCategory = selectedCategory === 'All Categories' || book.category === selectedCategory;
       const matchesSubCategory = selectedSubCategory === 'All Sub Categories' || book.subCategory === selectedSubCategory;
       const matchesDistributor = selectedDistributor === 'All Distributors' || book.distributor === selectedDistributor;
-      
+
       const priceRange = priceRanges.find(range => range.label === selectedPriceRange);
       const matchesPrice = !priceRange || (book.price >= priceRange.min && book.price < priceRange.max);
-      
+
       let matchesStock = true;
       if (selectedStockStatus === 'in-stock') matchesStock = book.stock > 10;
       else if (selectedStockStatus === 'low-stock') matchesStock = book.stock > 0 && book.stock <= 10;
       else if (selectedStockStatus === 'out-of-stock') matchesStock = book.stock === 0;
-      
+
       return matchesSearch && matchesCategory && matchesSubCategory && matchesDistributor && matchesPrice && matchesStock;
     });
 
@@ -243,10 +242,10 @@ const Inventory = () => {
       if (productsData.success) {
         setProducts(productsData.data.products);
         // Filter out any existing "All" entries to prevent duplicates
-        const filteredCategories = productsData.data.filters.categories.filter(cat => 
+        const filteredCategories = productsData.data.filters.categories.filter(cat =>
           cat !== 'All' && cat !== 'All Categories'
         );
-        const filteredSubCategories = productsData.data.filters.subCategories.filter(subCat => 
+        const filteredSubCategories = productsData.data.filters.subCategories.filter(subCat =>
           subCat !== 'All' && subCat !== 'All Sub Categories'
         );
         setCategories(['All Categories', ...filteredCategories]);
@@ -336,7 +335,7 @@ const Inventory = () => {
             </p>
           </div>
           <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
-            <Button 
+            <Button
               onClick={handleAddProduct}
               size="lg"
               className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border-0 rounded-lg px-6 py-3 min-w-[160px] cursor-pointer"
@@ -635,8 +634,8 @@ const Inventory = () => {
             <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-red-600 mx-auto mb-3 sm:mb-4" />
             <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Error loading inventory</h3>
             <p className="text-sm sm:text-base text-gray-600 mb-4">{error}</p>
-            <Button 
-              onClick={() => window.location.reload()} 
+            <Button
+              onClick={() => window.location.reload()}
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               Try Again

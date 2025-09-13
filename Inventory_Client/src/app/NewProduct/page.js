@@ -6,9 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Combobox from "@/components/ui/combobox";
-import { 
-  ArrowLeft, 
-  Save, 
+import {
+  ArrowLeft,
+  Save,
   Loader2,
   AlertCircle,
   CheckCircle
@@ -44,7 +44,7 @@ const NewProduct = () => {
           api.distributors.getAll({ limit: 1000 })
         ]);
         const [data, dists] = await Promise.all([prodRes.json(), distRes.json()]);
-        
+
         if (data.success) {
           setCategories(data.data.filters.categories);
           setSubCategories(data.data.filters.subCategories);
@@ -79,7 +79,7 @@ const NewProduct = () => {
       // Allow only whole numbers for stock
       value = value.replace(/[^0-9]/g, '');
     }
-    
+
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -89,7 +89,7 @@ const NewProduct = () => {
   const validateForm = () => {
     const requiredFields = ['title', 'category', 'subCategory', 'price', 'stock'];
     const missingFields = requiredFields.filter(field => !formData[field]);
-    
+
     if (missingFields.length > 0) {
       toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
       return false;
@@ -129,7 +129,7 @@ const NewProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setLoading(true);
@@ -217,18 +217,18 @@ const NewProduct = () => {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Basic Information */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">
-                    Product Title *
-                  </label>
-                  <Input
-                    type="text"
-                    value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
-                    placeholder="Enter product title"
-                    className="w-full"
-                  />
-                </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Product Title *
+                </label>
+                <Input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => handleInputChange('title', e.target.value)}
+                  placeholder="Enter product title"
+                  className="w-full"
+                />
+              </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
@@ -358,7 +358,7 @@ const NewProduct = () => {
                     )}
                   </Button>
                 </div>
-                
+
                 <div className="flex-1 sm:flex-none">
                   <Button
                     type="button"
