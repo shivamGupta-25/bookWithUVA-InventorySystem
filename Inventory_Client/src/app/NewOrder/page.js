@@ -233,12 +233,39 @@ const NewOrderPage = () => {
     });
   };
 
+  // Validate phone number
+  const validatePhoneNumber = (phone) => {
+    if (!phone) return true; // Allow empty phone numbers
+    const digits = phone.replace(/\D/g, '');
+    return digits.length === 10 && !digits.startsWith('0');
+  };
+
+  // Validate email
+  const validateEmail = (email) => {
+    if (!email) return true; // Allow empty emails
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return emailRegex.test(email);
+  };
+
   // Validate form
   const isFormValid = () => {
     if (!customer.name.trim()) {
       toast.error('Customer name is required');
       return false;
     }
+    
+    // Validate phone number
+    if (customer.phone && !validatePhoneNumber(customer.phone)) {
+      toast.error('Phone number must be exactly 10 digits and cannot start with 0');
+      return false;
+    }
+    
+    // Validate email
+    if (customer.email && !validateEmail(customer.email)) {
+      toast.error('Please enter a valid email address');
+      return false;
+    }
+    
     if (orderItems.length === 0) {
       toast.error('Please add at least one item to the order');
       return false;

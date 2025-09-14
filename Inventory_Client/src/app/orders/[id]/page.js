@@ -285,9 +285,22 @@ const OrderDetailPage = ({ params }) => {
       return;
     }
 
-    if (editData.customer.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editData.customer.email)) {
-      toast.error('Please enter a valid email address');
-      return;
+    // Validate phone number
+    if (editData.customer.phone) {
+      const digits = editData.customer.phone.replace(/\D/g, '');
+      if (digits.length !== 10 || digits.startsWith('0')) {
+        toast.error('Phone number must be exactly 10 digits and cannot start with 0');
+        return;
+      }
+    }
+
+    // Validate email with more comprehensive regex
+    if (editData.customer.email) {
+      const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+      if (!emailRegex.test(editData.customer.email)) {
+        toast.error('Please enter a valid email address');
+        return;
+      }
     }
 
     if (editData.shippingCharges < 0) {

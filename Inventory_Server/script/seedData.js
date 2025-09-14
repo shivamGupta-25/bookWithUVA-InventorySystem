@@ -422,7 +422,7 @@ const orderSeedData = [
 		customer: {
 			name: "Rajesh Kumar",
 			email: "rajesh.kumar@email.com",
-			phone: "+91-9876543210",
+			phone: "9876543210",
 			address: {
 				street: "123 MG Road, Near City Mall",
 				city: "Mumbai",
@@ -458,7 +458,7 @@ const orderSeedData = [
 		customer: {
 			name: "Priya Sharma",
 			email: "priya.sharma@gmail.com",
-			phone: "+91-8765432109",
+			phone: "8765432109",
 			address: {
 				street: "456 Park Street, Sector 15",
 				city: "Delhi",
@@ -494,7 +494,7 @@ const orderSeedData = [
 		customer: {
 			name: "Amit Patel",
 			email: "amit.patel@yahoo.com",
-			phone: "+91-7654321098",
+			phone: "7654321098",
 			address: {
 				street: "789 Brigade Road",
 				city: "Bangalore",
@@ -536,7 +536,7 @@ const orderSeedData = [
 		customer: {
 			name: "Sneha Reddy",
 			email: "sneha.reddy@outlook.com",
-			phone: "+91-6543210987",
+			phone: "6543210987",
 			address: {
 				street: "321 Anna Salai",
 				city: "Chennai",
@@ -566,7 +566,7 @@ const orderSeedData = [
 		customer: {
 			name: "Vikram Singh",
 			email: "vikram.singh@hotmail.com",
-			phone: "+91-5432109876",
+			phone: "5432109876",
 			address: {
 				street: "654 Commercial Street",
 				city: "Kolkata",
@@ -606,7 +606,7 @@ const orderSeedData = [
 		customer: {
 			name: "Anita Desai",
 			email: "anita.desai@email.com",
-			phone: "+91-4321098765",
+			phone: "4321098765",
 			address: {
 				street: "987 Linking Road",
 				city: "Mumbai",

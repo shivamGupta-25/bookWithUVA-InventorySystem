@@ -34,7 +34,7 @@ const DistributorsPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState({ name: "", phoneNumber: "", address: "", gstinNumber: "" });
+  const [form, setForm] = useState({ name: "", phoneNumber: "", address: "", gstinNumber: "", email: "" });
   const [deleteAllOpen, setDeleteAllOpen] = useState(false);
   const [deleteOneOpen, setDeleteOneOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -63,20 +63,32 @@ const DistributorsPage = () => {
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return items.filter((d) =>
-      [d.name, d.phoneNumber, d.gstinNumber, d.address].some((v) => (v || "").toLowerCase().includes(q))
+      [d.name, d.phoneNumber, d.gstinNumber, d.address, d.email].some((v) => (v || "").toLowerCase().includes(q))
     );
   }, [items, search]);
 
   const openCreate = () => {
     setEditing(null);
-    setForm({ name: "", phoneNumber: "", address: "", gstinNumber: "" });
+    setForm({ name: "", phoneNumber: "", address: "", gstinNumber: "", email: "" });
     setDialogOpen(true);
   };
 
   const openEdit = (d) => {
     setEditing(d);
-    setForm({ name: d.name || "", phoneNumber: d.phoneNumber || "", address: d.address || "", gstinNumber: d.gstinNumber || "" });
+    setForm({ name: d.name || "", phoneNumber: d.phoneNumber || "", address: d.address || "", gstinNumber: d.gstinNumber || "", email: d.email || "" });
     setDialogOpen(true);
+  };
+
+  const validatePhoneNumber = (phone) => {
+    if (!phone) return true; // Allow empty phone numbers
+    const digits = phone.replace(/\D/g, '');
+    return digits.length === 10 && !digits.startsWith('0');
+  };
+
+  const validateEmail = (email) => {
+    if (!email) return true; // Allow empty emails
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return emailRegex.test(email);
   };
 
   const save = async () => {
@@ -84,6 +96,19 @@ const DistributorsPage = () => {
       toast.error("Name is required");
       return;
     }
+    
+    // Validate phone number
+    if (form.phoneNumber && !validatePhoneNumber(form.phoneNumber)) {
+      toast.error("Phone number must be exactly 10 digits and cannot start with 0");
+      return;
+    }
+    
+    // Validate email
+    if (form.email && !validateEmail(form.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
     setSaving(true);
     try {
       if (editing) {
@@ -176,7 +201,7 @@ const DistributorsPage = () => {
               <Input 
                 value={search} 
                 onChange={(e) => setSearch(e.target.value)} 
-                placeholder="Search by name, phone, GSTIN, address"
+                placeholder="Search by name, phone, GSTIN, address, email"
                 className="w-full"
               />
               <Button variant="outline" onClick={loadDistributors} className="w-full sm:w-auto">
@@ -197,8 +222,9 @@ const DistributorsPage = () => {
                     <TableRow>
                       <TableHead className="min-w-[100px]">Name</TableHead>
                       <TableHead className="hidden sm:table-cell min-w-[100px]">Phone</TableHead>
-                      <TableHead className="hidden md:table-cell min-w-[100px]">GSTIN</TableHead>
-                      <TableHead className="hidden lg:table-cell min-w-[150px]">Address</TableHead>
+                      <TableHead className="hidden md:table-cell min-w-[150px]">Email</TableHead>
+                      <TableHead className="hidden lg:table-cell min-w-[100px]">GSTIN</TableHead>
+                      <TableHead className="hidden xl:table-cell min-w-[150px]">Address</TableHead>
                       <TableHead className="text-right min-w-[80px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -212,16 +238,20 @@ const DistributorsPage = () => {
                               {d.phoneNumber && `Phone: ${d.phoneNumber}`}
                             </div>
                             <div className="text-xs text-gray-500 md:hidden">
+                              {d.email && `Email: ${d.email}`}
+                            </div>
+                            <div className="text-xs text-gray-500 lg:hidden">
                               {d.gstinNumber && `GSTIN: ${d.gstinNumber}`}
                             </div>
-                            <div className="text-xs text-gray-500 lg:hidden truncate max-w-[150px]">
+                            <div className="text-xs text-gray-500 xl:hidden truncate max-w-[150px]">
                               {d.address && `Address: ${d.address}`}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell">{d.phoneNumber || "-"}</TableCell>
-                        <TableCell className="hidden md:table-cell">{d.gstinNumber || "-"}</TableCell>
-                        <TableCell className="hidden lg:table-cell max-w-[150px] truncate">{d.address || "-"}</TableCell>
+                        <TableCell className="hidden md:table-cell max-w-[150px] truncate">{d.email || "-"}</TableCell>
+                        <TableCell className="hidden lg:table-cell">{d.gstinNumber || "-"}</TableCell>
+                        <TableCell className="hidden xl:table-cell max-w-[150px] truncate">{d.address || "-"}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">
                             <Button size="sm" variant="ghost" onClick={() => openEdit(d)}>
@@ -263,6 +293,16 @@ const DistributorsPage = () => {
                 value={form.phoneNumber} 
                 onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} 
                 placeholder="Phone number"
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Email</label>
+              <Input 
+                value={form.email} 
+                onChange={(e) => setForm({ ...form, email: e.target.value })} 
+                placeholder="Email address"
+                type="email"
                 className="w-full"
               />
             </div>

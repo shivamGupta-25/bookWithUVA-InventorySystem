@@ -10,6 +10,7 @@ export const get_distributors = async (req: Request, res: Response) => {
                 { name: { $regex: search, $options: "i" } },
                 { gstinNumber: { $regex: search, $options: "i" } },
                 { phoneNumber: { $regex: search, $options: "i" } },
+                { email: { $regex: search, $options: "i" } },
             ];
         }
 
@@ -33,11 +34,11 @@ export const get_distributors = async (req: Request, res: Response) => {
 
 export const post_distributor = async (req: Request, res: Response) => {
     try {
-        const { name, phoneNumber, address, gstinNumber } = req.body;
+        const { name, phoneNumber, address, gstinNumber, email } = req.body;
         if (!name) {
             return res.status(400).json({ success: false, error: "Name is required" });
         }
-        const distributor = await distributor_model.create({ name, phoneNumber, address, gstinNumber });
+        const distributor = await distributor_model.create({ name, phoneNumber, address, gstinNumber, email });
         const obj = distributor.toObject();
         res.status(201).json({ success: true, data: { ...obj, id: obj._id.toString(), _id: obj._id.toString() } });
     } catch (error) {
