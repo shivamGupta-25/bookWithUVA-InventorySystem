@@ -73,6 +73,45 @@ export const api = {
 	stats: {
 		get: () => fetch(`${API_BASE_URL}/products/stats`),
 	},
+
+	// Orders endpoints
+	orders: {
+		getAll: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/orders${queryString ? `?${queryString}` : ""}`
+			);
+		},
+		getById: (id) => fetch(`${API_BASE_URL}/order/${id}`),
+		create: (data) =>
+			fetch(`${API_BASE_URL}/orders`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data),
+			}),
+		update: (id, data) =>
+			fetch(`${API_BASE_URL}/order/${id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(data),
+			}),
+		delete: (id) =>
+			fetch(`${API_BASE_URL}/order/${id}`, {
+				method: "DELETE",
+			}),
+		getStats: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/orders/stats${queryString ? `?${queryString}` : ""}`
+			);
+		},
+		deleteAll: () =>
+			fetch(`${API_BASE_URL}/orders`, {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ confirmDeleteAll: true }),
+			}),
+	},
 };
 
 export default api;

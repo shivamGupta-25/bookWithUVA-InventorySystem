@@ -17,6 +17,15 @@ import {
     delete_distributor,
     delete_all_distributors,
 } from "./controllers/distributors_controller";
+import {
+	get_orders,
+	get_order,
+	post_orders,
+	put_order,
+	delete_order,
+	delete_all_orders,
+	get_order_stats,
+} from "./controllers/orders_controller";
 
 export const api_routes = express.Router();
 export default api_routes;
@@ -37,3 +46,12 @@ api_routes.post("/distributors", post_distributor);
 api_routes.put("/distributor/:id", put_distributor);
 api_routes.delete("/distributor/:id", delete_distributor);
 api_routes.delete("/distributors", delete_all_distributors);
+
+// Orders
+api_routes.get("/orders", get_orders);
+api_routes.get("/order/:id", get_order);
+api_routes.post("/orders", post_orders);
+api_routes.put("/order/:id", put_order);
+api_routes.delete("/order/:id", delete_order);
+api_routes.delete("/orders", delete_all_orders);
+api_routes.get("/orders/stats", get_order_stats);

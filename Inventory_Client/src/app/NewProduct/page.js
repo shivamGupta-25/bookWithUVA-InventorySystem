@@ -173,9 +173,9 @@ const NewProduct = () => {
           description: ''
         });
         // Redirect to inventory after 2 seconds
-        // setTimeout(() => {
-        //   router.push('/inventory');
-        // }, 2000);
+        setTimeout(() => {
+          router.push('/inventory');
+        }, 2000);
       } else {
         toast.error(data.error || 'Failed to create product');
       }

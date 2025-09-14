@@ -160,9 +160,9 @@ const Inventory = () => {
       const matchesPrice = !priceRange || (book.price >= priceRange.min && book.price < priceRange.max);
 
       let matchesStock = true;
-      if (selectedStockStatus === 'in-stock') matchesStock = book.stock > 10;
+      if (selectedStockStatus === 'out-of-stock') matchesStock = book.stock <= 0;
       else if (selectedStockStatus === 'low-stock') matchesStock = book.stock > 0 && book.stock <= 10;
-      else if (selectedStockStatus === 'out-of-stock') matchesStock = book.stock === 0;
+      else if (selectedStockStatus === 'in-stock') matchesStock = book.stock > 10;
 
       return matchesSearch && matchesCategory && matchesSubCategory && matchesDistributor && matchesPrice && matchesStock;
     });
@@ -195,7 +195,7 @@ const Inventory = () => {
   }, [products, searchTerm, selectedCategory, selectedSubCategory, selectedDistributor, selectedPriceRange, selectedStockStatus, sortBy]);
 
   const getStockStatus = (stock) => {
-    if (stock === 0) return { label: 'Out of Stock', variant: 'destructive' };
+    if (stock <= 0) return { label: 'Out of Stock', variant: 'destructive' };
     if (stock <= 10) return { label: 'Low Stock', variant: 'secondary' };
     return { label: 'In Stock', variant: 'default' };
   };

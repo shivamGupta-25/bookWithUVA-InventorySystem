@@ -4,7 +4,7 @@ import React from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowRight, Package, Plus, Search, BarChart, Settings, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Package, Plus, Search, BarChart, Settings, TrendingUp, Users, ShoppingCart } from "lucide-react";
 
 export default function Dashboard() {
   // Management cards configuration
@@ -17,6 +17,15 @@ export default function Dashboard() {
       buttonColor: "bg-blue-600 hover:bg-blue-700",
       details: "Browse, search, and manage all your inventory items. Track stock levels, categories, and product details.",
       link: "/inventory",
+    },
+    {
+      title: "Order Management",
+      description: "Create and track customer orders",
+      icon: <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 text-orange-600" />,
+      iconBg: "bg-orange-100",
+      buttonColor: "bg-orange-600 hover:bg-orange-700",
+      details: "Create new orders, track order status, manage customer information, and process payments.",
+      link: "/orders",
     },
     {
       title: "Distributors",
@@ -37,24 +46,6 @@ export default function Dashboard() {
       link: "/NewProduct",
     },
     {
-      title: "Search Products",
-      description: "Find specific products quickly",
-      icon: <Search className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600" />,
-      iconBg: "bg-purple-100",
-      buttonColor: "bg-purple-600 hover:bg-purple-700",
-      details: "Search through your inventory using various filters like name, category, price range, and availability.",
-      link: "/search",
-    },
-    {
-      title: "Analytics & Reports",
-      description: "View inventory insights and statistics",
-      icon: <BarChart className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-600" />,
-      iconBg: "bg-indigo-100",
-      buttonColor: "bg-indigo-600 hover:bg-indigo-700",
-      details: "Access detailed analytics about your inventory performance, stock levels, and sales trends.",
-      link: "/analytics",
-    },
-    {
       title: "Settings",
       description: "Configure system settings and preferences",
       icon: <Settings className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />,
@@ -62,7 +53,16 @@ export default function Dashboard() {
       buttonColor: "bg-gray-600 hover:bg-gray-700",
       details: "Manage system settings, user preferences, categories, and other configuration options.",
       link: "/settings",
-    }
+    },
+    {
+      title: "Order Analytics",
+      description: "Analyze order trends and top-selling products",
+      icon: <BarChart className="h-3 w-3 sm:h-4 sm:w-4 text-purple-600" />,
+      iconBg: "bg-purple-100",
+      buttonColor: "bg-purple-600 hover:bg-purple-700",
+      details: "View analytics on orders, revenue, and product performance. Identify trends and make data-driven decisions.",
+      link: "/order-analytics",
+    },
   ];
 
   return (

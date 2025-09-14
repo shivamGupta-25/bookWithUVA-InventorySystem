@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, FileText, Users, LogOut, DollarSign, QrCode, BarChart, Package, Plus, Search, Settings } from "lucide-react";
+import { Menu, X, Home, FileText, Users, LogOut, DollarSign, QrCode, BarChart, Package, Plus, Search, Settings, ShoppingCart } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -58,10 +58,9 @@ export default function Nav({ children }) {
     { name: "Dashboard", href: "/", icon: Home },
     { name: "Inventory", href: "/inventory", icon: Package },
     { name: "Add Product", href: "/NewProduct", icon: Plus },
+    { name: "Orders", href: "/orders", icon: ShoppingCart },
+    { name: "Order Analytics", href: "/order-analytics", icon: BarChart },
     { name: "Distributors", href: "/distributors", icon: Users },
-    { name: "Search", href: "/search", icon: Search },
-    { name: "Analytics", href: "/analytics", icon: BarChart },
-    { name: "Settings", href: "/settings", icon: Settings },
   ];
 
   const handleLogout = async () => {
@@ -101,7 +100,7 @@ export default function Nav({ children }) {
       {/* Sidebar */}
       <div className={cn(
         "fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-background transition-all duration-300",
-        isCollapsed && !isMobile ? "w-16" : "w-64",
+        isCollapsed && !isMobile ? "w-16" : "w-54",
         isMobile ? (sidebarOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0"
       )}>
         <div className="flex h-14 items-center border-b px-4">
@@ -148,7 +147,7 @@ export default function Nav({ children }) {
           </nav>
         </ScrollArea>
 
-        <div className="border-t p-2">
+        <div className="border-t p-2 space-y-1">
           <Button
             variant="ghost"
             className={cn(
@@ -162,6 +161,18 @@ export default function Nav({ children }) {
               <span className="ml-2">Logout</span>
             )}
           </Button>
+          <Link
+            href="/settings"
+            className={cn(
+              "flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+              isCollapsed && !isMobile && "justify-center"
+            )}
+          >
+            <Settings className="h-5 w-5 flex-shrink-0" />
+            {(!isCollapsed || (isMobile && sidebarOpen)) && (
+              <span className="ml-2">Settings</span>
+            )}
+          </Link>
         </div>
       </div>
 
@@ -183,7 +194,7 @@ export default function Nav({ children }) {
       {/* Main content */}
       <div className={cn(
         "flex-1 transition-all duration-300",
-        isMobile ? "mt-14 ml-0" : (isCollapsed ? "ml-16" : "ml-64")
+        isMobile ? "mt-14 ml-0" : (isCollapsed ? "ml-16" : "ml-54")
       )}>
         <main className="flex-1 p-4 md:p-6">{children}</main>
       </div>
