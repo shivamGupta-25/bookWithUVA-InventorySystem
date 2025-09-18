@@ -14,6 +14,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import api from '@/lib/api';
 
 const NewProduct = () => {
@@ -188,7 +189,8 @@ const NewProduct = () => {
   };
 
   return (
-    <div className="min-h-screen p-4">
+    <ProtectedRoute>
+      <div className="min-h-screen p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -375,7 +377,8 @@ const NewProduct = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 };
 

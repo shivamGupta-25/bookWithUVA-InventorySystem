@@ -1,191 +1,184 @@
-# Inventory Management System
+# Book with UVA - Inventory Management System
 
-A full-stack inventory management system with a React/Next.js frontend and Express.js backend.
+A full‑stack inventory management system with a Next.js client and an Express/MongoDB server. This README consolidates setup, scripts, environment, and feature docs for both apps.
 
-## Project Structure
+## Monorepo Structure
 
 ```
-inventory_management_system/
-├── Backend/                    # Express.js API Server
-│   ├── lib/                   # Database connection utilities
-│   ├── models/                # MongoDB models
-│   ├── routes/                # API route handlers
-│   ├── scripts/               # Database seeding scripts
-│   ├── package.json           # Backend dependencies
-│   ├── server.js              # Express server entry point
-│   └── README.md              # Backend documentation
-├── src/                       # Next.js Frontend
-│   ├── app/                   # Next.js app directory
-│   ├── components/            # Reusable UI components
-│   ├── lib/                   # Frontend utilities and API client
-│   └── data/                  # Static data files
-├── public/                    # Static assets
-├── package.json               # Frontend dependencies
-└── README.md                  # This file
+bookWithUVA-InventorySystem/
+├─ Inventory_Client/      # Next.js 15 app (React 19, Tailwind CSS)
+└─ Inventory_Server/      # Express + Mongoose API (TypeScript runtime via tsx)
 ```
 
-## Getting Started
+## Quick Start
 
-### Prerequisites
+- Server: port 4000 (configurable via `PORT`) → `http://localhost:4000`
+- Client: port 3000 (Next default) → `http://localhost:3000`
 
-- Node.js (v16 or higher)
-- MongoDB (local or cloud instance)
-- npm or yarn
+### 1) Server (API)
 
-### Backend Setup
+- Directory: `Inventory_Server`
+- Tech: Express 5, Mongoose 8, JWT auth, Helmet, CORS, Nodemailer
+- Entry: `index.ts`
+- Routes mounted at `/api` in `api_routes.ts`
 
-1. Navigate to the Backend directory:
-   ```bash
-   cd Backend
-   ```
+#### Install & Run
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+```bash
+cd Inventory_Server
+npm install
+npm run dev
+```
 
-3. Create a `.env` file in the Backend directory:
-   ```env
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/inventory_management
-   NODE_ENV=development
-   FRONTEND_URL=http://localhost:3000
-   ```
+#### Environment (.env in Inventory_Server)
 
-4. Start the backend server:
-   ```bash
-   npm run dev
-   ```
+```env
+# Core
+DATABASE_URI=mongodb://localhost:27017/bookwithuva-inventory
+PORT=4000
+ALLOWED_HOSTS=["http://localhost:3000"]
 
-5. Seed the database (optional):
-   ```bash
-   npm run seed
-   ```
+# Auth
+JWT_SECRET=change-me-in-prod
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_EXPIRES_IN=30d
 
-### Frontend Setup
+# Email (forgot password)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+EMAIL_FROM=your-email@gmail.com
+```
 
-1. Navigate to the root directory:
-   ```bash
-   cd ..
-   ```
+Scripts:
+- `npm run dev` — start API with tsx watch
+- `npm run seed` — seed sample data (`script/seedData.js`)
+- `npm run create-admin` — create default admin (`script/createAdmin.js`)
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+Base endpoints:
+- Health: `GET /` → "Live"
+- API: under `/api` (see Auth, Users, Products, Distributors, Orders, Activity Logs below)
 
-3. Create a `.env.local` file in the root directory:
-   ```env
-   NEXT_PUBLIC_API_URL=http://localhost:5000/api
-   ```
+### 2) Client (Web)
 
-4. Start the frontend development server:
-   ```bash
-   npm run dev
-   ```
+- Directory: `Inventory_Client`
+- Tech: Next.js 15, React 19, Tailwind CSS 4, shadcn/ui, Radix UI, Recharts
+- Auth context: `src/contexts/AuthContext.jsx`
+- API helper: `src/lib/api.js` (base `http://localhost:4000/api`)
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+#### Install & Run
 
-## Features
+```bash
+cd Inventory_Client
+npm install
+npm run dev
+```
 
-### Frontend
-- Modern React/Next.js interface
-- Responsive design with Tailwind CSS
-- Product inventory management
-- Advanced filtering and search
-- Real-time statistics dashboard
-- Product creation and editing
-- Bulk operations
+Optional `.env.local` (if you want to override):
 
-### Backend
-- RESTful API with Express.js
-- MongoDB integration with Mongoose
-- Product CRUD operations
-- Advanced filtering and pagination
-- Inventory statistics
-- CORS enabled for frontend integration
-- Error handling and validation
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
 
-## API Endpoints
+Scripts:
+- `npm run dev` — Next dev server
+- `npm run build` — Next production build
+- `npm start` — Next start
 
-### Products
-- `GET /api/products` - Get all products with filtering and pagination
-- `POST /api/products` - Create a new product
-- `DELETE /api/products` - Delete all products (requires confirmation)
-- `GET /api/products/:id` - Get a single product
-- `PUT /api/products/:id` - Update a product
-- `DELETE /api/products/:id` - Soft delete a product
+## Authentication & Authorization
 
-### Statistics
-- `GET /api/products/stats` - Get inventory statistics
+- JWT access/refresh tokens (stored in cookies on client)
+- Roles: `admin`, `manager`, `viewer`
+- Client verifies/refreshes tokens via:
+  - `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout`
+  - `GET/PUT /api/auth/profile`, `PUT /api/auth/change-password`, `GET /api/auth/verify`
+- Protected server routes use middleware in `utils/authUtils.ts` with role checks
+- Client‑side protection via `ProtectedRoute` and `AuthProvider`
 
-### Health Check
-- `GET /health` - Server health status
+## API Overview (mounted at /api)
 
-## Development
+Auth
+- POST `/auth/login`
+- POST `/auth/logout` (requires auth)
+- POST `/auth/refresh`
+- GET `/auth/profile` (requires auth)
+- PUT `/auth/profile` (requires auth)
+- PUT `/auth/change-password` (requires auth)
+- GET `/auth/verify` (requires auth)
+- POST `/auth/forgot-password`
+- POST `/auth/reset-password`
 
-### Running Both Services
+Users (Admin only)
+- POST `/users`
+- GET `/users`
+- GET `/users/stats`
+- GET `/users/:id`
+- PUT `/users/:id`
+- DELETE `/users/:id`
+- PUT `/users/:id/toggle-status`
 
-To run both frontend and backend simultaneously:
+Activity Logs (Admin only)
+- GET `/activity-logs`
+- GET `/activity-logs/stats`
+- GET `/activity-logs/:id`
+- GET `/users/:userId/activity-logs`
+- DELETE `/activity-logs/cleanup`
 
-1. Start the backend (in Backend directory):
-   ```bash
-   npm run dev
-   ```
+Products
+- GET `/products`
+- POST `/products` (Admin/Manager)
+- DELETE `/products` (Admin)
+- GET `/product/:id`
+- PUT `/product/:id` (Admin/Manager)
+- DELETE `/product/:id` (Admin/Manager)
+- GET `/products/stats`
 
-2. Start the frontend (in root directory):
-   ```bash
-   npm run dev
-   ```
+Distributors
+- GET `/distributors`
+- POST `/distributors` (Admin/Manager)
+- PUT `/distributor/:id` (Admin/Manager)
+- DELETE `/distributor/:id` (Admin/Manager)
+- DELETE `/distributors` (Admin)
 
-### Environment Variables
+Orders
+- GET `/orders`
+- GET `/order/:id`
+- POST `/orders` (Admin/Manager)
+- PUT `/order/:id` (Admin/Manager)
+- DELETE `/order/:id` (Admin/Manager)
+- DELETE `/orders` (Admin)
+- GET `/orders/stats`
 
-#### Backend (.env)
-- `PORT` - Server port (default: 5000)
-- `MONGODB_URI` - MongoDB connection string
-- `NODE_ENV` - Environment (development, production)
-- `FRONTEND_URL` - Frontend URL for CORS
+## Forgot Password (OTP Email)
 
-#### Frontend (.env.local)
-- `NEXT_PUBLIC_API_URL` - Backend API URL
+- Configure email env vars (see server env above)
+- Client pages: `/forgot-password`, `/reset-password`
+- Server adds OTP fields to `user` model and validates expiry/usage
 
-## Deployment
+## Notable Client Paths
 
-### Backend Deployment
-1. Set up MongoDB database
-2. Configure environment variables
-3. Deploy to your preferred platform (Heroku, Railway, etc.)
+- `src/app/_components/Dashboard.jsx` — main dashboard
+- `src/components/ProtectedRoute.jsx` — gate UI by auth/role
+- `src/contexts/AuthContext.jsx` — login, refresh, profile, role helpers
+- `src/lib/api.js` — typed-ish fetch wrappers
 
-### Frontend Deployment
-1. Set `NEXT_PUBLIC_API_URL` to your deployed backend URL
-2. Deploy to Vercel, Netlify, or your preferred platform
+## Notable Server Paths
 
-## Technologies Used
+- `index.ts` — server boot, CORS/Helmet, Mongo connect
+- `api_routes.ts` — route wiring and RBAC + activity logging
+- `controllers/*` — business logic per module
+- `models/*` — Mongoose schemas
+- `utils/authUtils.ts` — auth middlewares, `logActivity`
+- `utils/emailService.ts` — nodemailer integration
+- `script/*` — seeding and admin creation
 
-### Frontend
-- Next.js 15
-- React 19
-- Tailwind CSS
-- Radix UI
-- Lucide React
-- Sonner (toast notifications)
+## Development Tips
 
-### Backend
-- Express.js
-- MongoDB
-- Mongoose
-- CORS
-- Helmet
-- Morgan
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+- Ensure MongoDB is running and `DATABASE_URI` points to it
+- Keep `ALLOWED_HOSTS` aligned with client origin(s)
+- Default admin is created via `npm run create-admin`; change the password immediately in production
 
 ## License
 
-MIT License
+MIT

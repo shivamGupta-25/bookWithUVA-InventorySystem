@@ -71,6 +71,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import api from '@/lib/api';
 import { calculateItemTotals, calculateOrderTotals, formatCurrency } from '@/lib/monetaryUtils';
 
@@ -382,7 +383,8 @@ const NewOrderPage = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <ProtectedRoute>
+      <div className="min-h-screen">
       {/* Responsive Header */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 border-b">
         <div className="flex items-center justify-between h-14 sm:h-16">
@@ -890,7 +892,8 @@ const NewOrderPage = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 };
 

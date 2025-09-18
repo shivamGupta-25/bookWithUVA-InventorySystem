@@ -2,6 +2,8 @@ import { Jost } from "next/font/google";
 import "./globals.css";
 import Nav from "./_components/Nav";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ConditionalNav from "./_components/ConditionalNav";
 
 const jost = Jost({ subsets: ["latin"] });
 
@@ -17,10 +19,12 @@ export default function RootLayout({ children }) {
         className={jost.className}
         suppressHydrationWarning={true}
       >
-        <Nav>
-          {children}
-        </Nav>
-        <Toaster />
+        <AuthProvider>
+          <ConditionalNav>
+            {children}
+          </ConditionalNav>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   );

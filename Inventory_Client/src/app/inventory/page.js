@@ -47,6 +47,7 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import EditProductDialog from "@/app/_components/EditProductDialog";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import api from '@/lib/api';
 
 const Inventory = () => {
@@ -321,7 +322,8 @@ const Inventory = () => {
   };
 
   return (
-    <div className="min-h-screen p-2 sm:p-3 md:p-4 lg:p-2 overflow-x-hidden">
+    <ProtectedRoute>
+      <div className="min-h-screen p-2 sm:p-3 md:p-4 lg:p-2 overflow-x-hidden">
       {/* Header */}
       <div className="mb-4 sm:mb-6">
         <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
@@ -915,7 +917,8 @@ const Inventory = () => {
         distributors={distributors}
         onProductUpdated={handleProductUpdated}
       />
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 };
 

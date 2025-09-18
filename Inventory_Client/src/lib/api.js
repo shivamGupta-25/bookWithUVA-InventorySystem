@@ -1,6 +1,33 @@
 // API configuration
 const API_BASE_URL = "http://localhost:4000/api";
-// const API_BASE_URL = "http://192.168.1.4:4000/api";
+// const API_BASE_URL = "http://192.168.1.7:4000/api";
+
+// Get auth token from cookies
+const getAuthToken = () => {
+  if (typeof window !== 'undefined') {
+    return document.cookie
+      .split('; ')
+      .find(row => row.startsWith('accessToken='))
+      ?.split('=')[1];
+  }
+  return null;
+};
+
+// Get headers with auth token
+const getHeaders = (includeAuth = true) => {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (includeAuth) {
+    const token = getAuthToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  
+  return headers;
+};
 
 // API helper functions
 export const api = {
@@ -9,30 +36,32 @@ export const api = {
 		getAll: (params = {}) => {
 			const queryString = new URLSearchParams(params).toString();
 			return fetch(
-				`${API_BASE_URL}/products${queryString ? `?${queryString}` : ""}`
+				`${API_BASE_URL}/products${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
 			);
 		},
-		getById: (id) => fetch(`${API_BASE_URL}/product/${id}`),
+		getById: (id) => fetch(`${API_BASE_URL}/product/${id}`, { headers: getHeaders() }),
 		create: (data) =>
 			fetch(`${API_BASE_URL}/products`, {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify(data),
 			}),
 		update: (id, data) =>
 			fetch(`${API_BASE_URL}/product/${id}`, {
 				method: "PUT",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify(data),
 			}),
 		delete: (id) =>
 			fetch(`${API_BASE_URL}/product/${id}`, {
 				method: "DELETE",
+				headers: getHeaders(),
 			}),
 		deleteAll: () =>
 			fetch(`${API_BASE_URL}/products`, {
 				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify({ confirmDeleteAll: true }),
 			}),
 	},
@@ -42,36 +71,63 @@ export const api = {
 		getAll: (params = {}) => {
 			const queryString = new URLSearchParams(params).toString();
 			return fetch(
-				`${API_BASE_URL}/distributors${queryString ? `?${queryString}` : ""}`
+				`${API_BASE_URL}/distributors${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
 			);
 		},
 		create: (data) =>
 			fetch(`${API_BASE_URL}/distributors`, {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify(data),
 			}),
 		update: (id, data) =>
 			fetch(`${API_BASE_URL}/distributor/${id}`, {
 				method: "PUT",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify(data),
 			}),
 		delete: (id) =>
 			fetch(`${API_BASE_URL}/distributor/${id}`, {
 				method: "DELETE",
+				headers: getHeaders(),
 			}),
 		deleteAll: () =>
 			fetch(`${API_BASE_URL}/distributors`, {
 				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify({ confirmDeleteAll: true }),
 			}),
 	},
 
 	// Stats endpoint
 	stats: {
-		get: () => fetch(`${API_BASE_URL}/products/stats`),
+		get: () => fetch(`${API_BASE_URL}/products/stats`, { headers: getHeaders() }),
+	},
+
+	// Activity logs endpoints
+	activityLogs: {
+		getAll: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/activity-logs${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
+			);
+		},
+		getById: (id) => fetch(`${API_BASE_URL}/activity-logs/${id}`, { headers: getHeaders() }),
+		getStats: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/activity-logs/stats${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
+			);
+		},
+		deleteAll: (days = 0) =>
+			fetch(`${API_BASE_URL}/activity-logs/cleanup`, {
+				method: "DELETE",
+				headers: getHeaders(),
+				body: JSON.stringify({ days })
+			}),
 	},
 
 	// Orders endpoints
@@ -79,36 +135,39 @@ export const api = {
 		getAll: (params = {}) => {
 			const queryString = new URLSearchParams(params).toString();
 			return fetch(
-				`${API_BASE_URL}/orders${queryString ? `?${queryString}` : ""}`
+				`${API_BASE_URL}/orders${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
 			);
 		},
-		getById: (id) => fetch(`${API_BASE_URL}/order/${id}`),
+		getById: (id) => fetch(`${API_BASE_URL}/order/${id}`, { headers: getHeaders() }),
 		create: (data) =>
 			fetch(`${API_BASE_URL}/orders`, {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify(data),
 			}),
 		update: (id, data) =>
 			fetch(`${API_BASE_URL}/order/${id}`, {
 				method: "PUT",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify(data),
 			}),
 		delete: (id) =>
 			fetch(`${API_BASE_URL}/order/${id}`, {
 				method: "DELETE",
+				headers: getHeaders(),
 			}),
 		getStats: (params = {}) => {
 			const queryString = new URLSearchParams(params).toString();
 			return fetch(
-				`${API_BASE_URL}/orders/stats${queryString ? `?${queryString}` : ""}`
+				`${API_BASE_URL}/orders/stats${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
 			);
 		},
 		deleteAll: () =>
 			fetch(`${API_BASE_URL}/orders`, {
 				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
+				headers: getHeaders(),
 				body: JSON.stringify({ confirmDeleteAll: true }),
 			}),
 	},

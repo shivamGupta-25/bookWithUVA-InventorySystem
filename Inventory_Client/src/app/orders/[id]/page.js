@@ -1367,7 +1367,7 @@ const OrderDetailPage = ({ params }) => {
           </div>
 
           {/* Right Column - Order Summary */}
-          <div className="space-y-3 sm:space-y-4 lg:sticky lg:top-4 lg:self-start">
+          <div className="space-y-3 sm:space-y-4 lg:sticky lg:top-24 lg:self-start">
             {/* Action Buttons */}
             <Card className="hidden lg:block border border-slate-200 hover:border-slate-300 transition-colors">
               <CardContent className="p-3">

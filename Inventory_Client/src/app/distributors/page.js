@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/table";
 import { Loader2, Plus, Save, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import api from "@/lib/api";
 
 const DistributorsPage = () => {
@@ -146,7 +147,8 @@ const DistributorsPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden">
+    <ProtectedRoute>
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden">
       {/* Header */}
       <div className="mb-4 sm:mb-6">
         <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
@@ -443,7 +445,8 @@ const DistributorsPage = () => {
           </div>
         </Button>
       </div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 };
 

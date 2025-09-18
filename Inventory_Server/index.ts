@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import api_routes from "./api_routes";
@@ -12,14 +13,21 @@ const ALLOWED_HOSTS: any = process.env.ALLOWED_HOSTS
 	: "*";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Security middleware
+app.use(helmet());
+
+// CORS configuration
 app.use(
 	cors({
 		origin: ALLOWED_HOSTS,
 		credentials: true,
 	})
 );
+
+// Body parsing middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 app.listen(PORT, async () => {
 	await mongoose

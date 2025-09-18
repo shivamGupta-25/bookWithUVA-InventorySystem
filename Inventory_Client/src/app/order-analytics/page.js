@@ -35,6 +35,7 @@ import {
   Minus
 } from "lucide-react";
 import { toast } from "sonner";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import api from '@/lib/api';
 import { formatCurrency } from '@/lib/monetaryUtils';
 
@@ -132,7 +133,8 @@ const OrderAnalyticsPage = () => {
   }
 
   return (
-    <div className="min-h-screen p-2 sm:p-3 md:p-4 lg:p-2 overflow-x-hidden">
+    <ProtectedRoute>
+      <div className="min-h-screen p-2 sm:p-3 md:p-4 lg:p-2 overflow-x-hidden">
       {/* Header */}
       <div className="mb-4 sm:mb-6">
         <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
@@ -427,7 +429,8 @@ const OrderAnalyticsPage = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 };
 
