@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
+import { API_BASE_URL } from "@/lib/api";
 
 const AuthContext = createContext();
 
@@ -55,7 +56,7 @@ export const AuthProvider = ({ children }) => {
           setToken(storedToken);
           
           // Verify token with server
-          const response = await fetch("http://localhost:4000/api/auth/verify", {
+          const response = await fetch(`${API_BASE_URL}/auth/verify`, {
             headers: {
               Authorization: `Bearer ${storedToken}`,
             },
@@ -98,7 +99,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error("No refresh token available");
       }
 
-      const response = await fetch("http://localhost:4000/api/auth/refresh", {
+      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +118,7 @@ export const AuthProvider = ({ children }) => {
         setToken(accessToken);
         
         // Get user profile
-        const profileResponse = await fetch("http://localhost:4000/api/auth/profile", {
+        const profileResponse = await fetch(`${API_BASE_URL}/auth/profile`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -148,7 +149,7 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       
-      const response = await fetch("http://localhost:4000/api/auth/login", {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -188,7 +189,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Call logout endpoint if token exists
       if (token) {
-        await fetch("http://localhost:4000/api/auth/logout", {
+        await fetch(`${API_BASE_URL}/auth/logout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -211,7 +212,7 @@ export const AuthProvider = ({ children }) => {
   // Update user profile
   const updateProfile = async (profileData) => {
     try {
-      const response = await fetch("http://localhost:4000/api/auth/profile", {
+      const response = await fetch(`${API_BASE_URL}/auth/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -240,7 +241,7 @@ export const AuthProvider = ({ children }) => {
   // Change password
   const changePassword = async (currentPassword, newPassword) => {
     try {
-      const response = await fetch("http://localhost:4000/api/auth/change-password", {
+      const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

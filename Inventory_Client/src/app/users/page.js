@@ -16,6 +16,7 @@ import { Loader2, Plus, Search, Edit, Trash2, UserCheck, UserX, Eye, User, Alert
 import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { API_BASE_URL } from "@/lib/api";
 
 const getDefaultAvatarByRole = (role) => {
   switch (role) {
@@ -69,7 +70,7 @@ export default function UsersPage() {
       if (roleFilter && roleFilter !== "all") params.append("role", roleFilter);
       if (statusFilter && statusFilter !== "all") params.append("isActive", statusFilter);
 
-      const response = await fetch(`http://localhost:4000/api/users?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/users?${params}`, {
       // const response = await fetch(`http://192.168.1.7:4000/api/users?${params}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -101,7 +102,7 @@ export default function UsersPage() {
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:4000/api/users", {
+      const response = await fetch(`${API_BASE_URL}/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,7 +131,7 @@ export default function UsersPage() {
     e.preventDefault();
     try {
       setUpdatingUser(true);
-      const response = await fetch(`http://localhost:4000/api/users/${selectedUser._id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${selectedUser._id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +176,7 @@ export default function UsersPage() {
 
     try {
       setDeletingUser(userToDelete._id);
-      const response = await fetch(`http://localhost:4000/api/users/${userToDelete._id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${userToDelete._id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -212,7 +213,7 @@ export default function UsersPage() {
 
     try {
       setTogglingStatus(userToToggle._id);
-      const response = await fetch(`http://localhost:4000/api/users/${userToToggle._id}/toggle-status`, {
+      const response = await fetch(`${API_BASE_URL}/users/${userToToggle._id}/toggle-status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

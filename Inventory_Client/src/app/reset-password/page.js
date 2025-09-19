@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, ArrowLeft, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { API_BASE_URL } from "@/lib/api";
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState("");
@@ -74,7 +75,7 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
     
     try {
-      const response = await fetch("http://localhost:4000/api/auth/reset-password", {
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

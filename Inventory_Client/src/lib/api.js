@@ -1,6 +1,5 @@
 // API configuration
-const API_BASE_URL = "http://localhost:4000/api";
-// const API_BASE_URL = "http://192.168.1.7:4000/api";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // Get auth token from cookies
 const getAuthToken = () => {

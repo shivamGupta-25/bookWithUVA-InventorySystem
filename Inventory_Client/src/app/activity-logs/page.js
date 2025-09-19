@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Loader2, Search, Filter, Calendar, User, Activity, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { api } from "@/lib/api";
+import { api, API_BASE_URL } from "@/lib/api";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -129,7 +129,7 @@ export default function ActivityLogsPage() {
   const handleDeleteAllLogs = async () => {
     setIsDeleting(true);
     try {
-      const response = await fetch(`http://localhost:4000/api/activity-logs/cleanup`, {
+      const response = await fetch(`${API_BASE_URL}/activity-logs/cleanup`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
