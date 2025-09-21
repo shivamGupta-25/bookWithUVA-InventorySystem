@@ -170,6 +170,39 @@ export const api = {
 				body: JSON.stringify({ confirmDeleteAll: true }),
 			}),
 	},
+
+	// Settings endpoints
+	settings: {
+		get: () => fetch(`${API_BASE_URL}/settings`, { headers: getHeaders() }),
+		update: (data) =>
+			fetch(`${API_BASE_URL}/settings`, {
+				method: "PUT",
+				headers: getHeaders(),
+				body: JSON.stringify(data),
+			}),
+	},
+
+	// Stock alerts endpoints
+	stockAlerts: {
+		getAll: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/settings/alerts${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
+			);
+		},
+		getStats: () => fetch(`${API_BASE_URL}/settings/alerts/stats`, { headers: getHeaders() }),
+		acknowledge: (id) =>
+			fetch(`${API_BASE_URL}/settings/alerts/${id}/acknowledge`, {
+				method: "PUT",
+				headers: getHeaders(),
+			}),
+		resolve: (id) =>
+			fetch(`${API_BASE_URL}/settings/alerts/${id}/resolve`, {
+				method: "PUT",
+				headers: getHeaders(),
+			}),
+	},
 };
 
 export default api;

@@ -3,6 +3,7 @@ import "./globals.css";
 import Nav from "./_components/Nav";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import ConditionalNav from "./_components/ConditionalNav";
 
 const jost = Jost({ subsets: ["latin"] });
@@ -20,10 +21,12 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning={true}
       >
         <AuthProvider>
-          <ConditionalNav>
-            {children}
-          </ConditionalNav>
-          <Toaster />
+          <NotificationProvider>
+            <ConditionalNav>
+              {children}
+            </ConditionalNav>
+            <Toaster />
+          </NotificationProvider>
         </AuthProvider>
       </body>
     </html>

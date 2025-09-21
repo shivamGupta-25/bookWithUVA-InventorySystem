@@ -1,10 +1,15 @@
 import { Request, Response } from "express";
 import { FilterQuery } from "mongoose";
 import { product_model } from "../models/products";
+import { settings_model } from "../models/settings";
 
 // GET /api/products/stats - Get inventory statistics
 export const statistcs = async (req, res) => {
 	try {
+		// Get current settings to use dynamic thresholds
+		const settings = await (settings_model as any).getSettings();
+		const { lowStockThreshold, outOfStockThreshold } = settings.stockAlertThresholds;
+
 		const [
 			totalProducts,
 			inStockProducts,
@@ -13,12 +18,12 @@ export const statistcs = async (req, res) => {
 			totalValue,
 		] = await Promise.all([
 			product_model.countDocuments({ isActive: true }),
-			product_model.countDocuments({ isActive: true, stock: { $gt: 10 } }),
+			product_model.countDocuments({ isActive: true, stock: { $gt: lowStockThreshold } }),
 			product_model.countDocuments({
 				isActive: true,
-				stock: { $gt: 0, $lte: 10 },
+				stock: { $gt: outOfStockThreshold, $lte: lowStockThreshold },
 			}),
-			product_model.countDocuments({ isActive: true, stock: 0 }),
+			product_model.countDocuments({ isActive: true, stock: { $lte: outOfStockThreshold } }),
 			product_model.aggregate([
 				{ $match: { isActive: true } },
 				{

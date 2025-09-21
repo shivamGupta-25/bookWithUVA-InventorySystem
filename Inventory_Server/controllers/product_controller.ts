@@ -3,6 +3,7 @@ import { FilterQuery } from "mongoose";
 import { product_model } from "../models/products";
 import distributor_model from "../models/distributor";
 import mongoose from "mongoose";
+import { checkStockLevels } from "../utils/stockAlertUtils";
 
 // GET /api/product/:id - Fetch a single product
 export const get_product = async (req, res) => {
@@ -78,6 +79,11 @@ export const put_product = async (req, res) => {
 				success: false,
 				error: "Product not found",
 			});
+		}
+
+		// Check stock levels for alerts if stock was updated
+		if (updateBody.stock !== undefined) {
+			await checkStockLevels(product._id.toString(), product.stock);
 		}
 
 		// Convert _id to string for consistency

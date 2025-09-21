@@ -3,16 +3,31 @@ import cors from "cors";
 import helmet from "helmet";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { createServer } from "http";
+import { Server as SocketIOServer } from "socket.io";
 import api_routes from "./api_routes";
 
 dotenv.config({ debug: false, quiet: true });
-const PORT: number = JSON.parse(process.env.PORT || "8080") as number;
+const PORT: number = JSON.parse(process.env.PORT || "4000") as number;
 const DATABASE_URI: string = process.env.DATABASE_URI as string;
 const ALLOWED_HOSTS: any = process.env.ALLOWED_HOSTS
 	? JSON.parse(process.env.ALLOWED_HOSTS)
 	: "*";
 
 const app = express();
+const server = createServer(app);
+
+// Initialize Socket.IO
+const io = new SocketIOServer(server, {
+	cors: {
+		origin: ALLOWED_HOSTS,
+		methods: ["GET", "POST"],
+		credentials: true,
+	},
+});
+
+// Make io globally available for stock alerts
+(global as any).io = io;
 
 // Security middleware
 app.use(helmet());
@@ -29,7 +44,16 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-app.listen(PORT, async () => {
+// Socket.IO connection handling
+io.on("connection", (socket) => {
+	console.log(`Client connected: ${socket.id}`);
+	
+	socket.on("disconnect", () => {
+		console.log(`Client disconnected: ${socket.id}`);
+	});
+});
+
+server.listen(PORT, async () => {
 	await mongoose
 		.connect(DATABASE_URI)
 		.then(() => {
@@ -41,6 +65,7 @@ app.listen(PORT, async () => {
 		});
 
 	console.log(`Server running on port \nhttp://localhost:${PORT}`);
+	console.log(`WebSocket server running on ws://localhost:${PORT}`);
 
 	console.log(ALLOWED_HOSTS);
 });

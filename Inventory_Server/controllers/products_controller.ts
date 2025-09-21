@@ -3,6 +3,7 @@ import { FilterQuery } from "mongoose";
 import { product_model } from "../models/products";
 import distributor_model from "../models/distributor";
 import mongoose from "mongoose";
+import { checkStockLevels } from "../utils/stockAlertUtils";
 
 // GET /api/products - Fetch all products with optional filtering
 export const get_products = async (req: Request, res: Response) => {
@@ -180,6 +181,9 @@ export const post_products = async (
 		// Create product
 		const product = new product_model(payload);
 		await product.save();
+
+		// Check stock levels for alerts
+		await checkStockLevels(product._id.toString(), product.stock);
 
 		// Normalize _id
 		const productWithId = {

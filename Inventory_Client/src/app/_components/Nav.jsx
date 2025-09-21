@@ -5,12 +5,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, FileText, Users, LogOut, DollarSign, QrCode, BarChart, Package, Plus, Search, Settings, ShoppingCart, User, Activity, Shield, Loader2 } from "lucide-react";
+import { Menu, X, Home, FileText, Users, LogOut, DollarSign, QrCode, BarChart, Package, Plus, Search, Settings, ShoppingCart, User, Activity, Shield, Loader2, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import NotificationBell from "@/components/NotificationBell";
 
 const getDefaultAvatarByRole = (role) => {
   switch (role) {
@@ -262,16 +263,28 @@ export default function Nav({ children }) {
 
       {/* Mobile header */}
       {isMobile && (
-        <div className="fixed top-0 left-0 right-0 z-30 flex h-14 items-center border-b bg-background px-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleSidebar}
-            className="mr-4"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-          <span className="font-semibold">Book with UVA</span>
+        <div className="fixed top-0 left-0 right-0 z-30 flex h-14 items-center justify-between border-b bg-background px-4">
+          <div className="flex items-center">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSidebar}
+              className="mr-4"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <span className="font-semibold">Book with UVA</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+          </div>
+        </div>
+      )}
+
+      {/* Floating notification bell for desktop */}
+      {!isMobile && (
+        <div className="fixed top-4 right-4 z-50">
+          <NotificationBell />
         </div>
       )}
 

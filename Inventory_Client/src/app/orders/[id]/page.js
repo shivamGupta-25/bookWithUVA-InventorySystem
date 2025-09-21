@@ -213,6 +213,26 @@ const OrderDetailPage = ({ params }) => {
   const updateItemQuantity = (index, newQuantity) => {
     if (newQuantity < 1) return;
 
+    // Get the current item to check stock
+    const currentItem = editData.items[index];
+    if (!currentItem || !currentItem.product) return;
+
+    // Check if we have product stock information
+    const product = currentItem.product;
+    if (product && typeof product === 'object' && product.stock !== undefined) {
+      // Calculate available stock considering current order's impact
+      // For pending orders, stock is already reserved, so we need to add current quantity back
+      const currentOrderQuantity = currentItem.quantity || 0;
+      const availableStock = order.status === 'pending' 
+        ? product.stock + currentOrderQuantity 
+        : product.stock;
+
+      if (newQuantity > availableStock) {
+        toast.error(`Insufficient stock! Available: ${availableStock}, Requested: ${newQuantity}`);
+        return;
+      }
+    }
+
     setEditData(prev => ({
       ...prev,
       items: prev.items.map((item, i) =>
@@ -1101,7 +1121,7 @@ const OrderDetailPage = ({ params }) => {
               <CardContent>
                 {/* Desktop Table View */}
                 <div className="hidden lg:block">
-                  <div className="overflow-x-auto">
+                  <div className="overflow-hidden">
                     <Table>
                       <TableHeader>
                         <TableRow className="border-b-2">
@@ -1132,25 +1152,34 @@ const OrderDetailPage = ({ params }) => {
                             </TableCell>
                             <TableCell className="text-center">
                               {editing && editingItems ? (
-                                <div className="flex items-center justify-center gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => updateItemQuantity(index, item.quantity - 1)}
-                                    disabled={item.quantity <= 1}
-                                    className="h-6 w-6 p-0 rounded-lg hover:bg-red-50 hover:border-red-200 transition-all duration-200 text-xs"
-                                  >
-                                    -
-                                  </Button>
-                                  <span className="w-10 text-center font-medium bg-gray-100 rounded-lg py-1 text-sm">{item.quantity}</span>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => updateItemQuantity(index, item.quantity + 1)}
-                                    className="h-6 w-6 p-0 rounded-lg hover:bg-green-50 hover:border-green-200 transition-all duration-200 text-xs"
-                                  >
-                                    +
-                                  </Button>
+                                <div className="flex flex-col items-center gap-1">
+                                  <div className="flex items-center justify-center gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => updateItemQuantity(index, item.quantity - 1)}
+                                      disabled={item.quantity <= 1}
+                                      className="h-6 w-6 p-0 rounded-lg hover:bg-red-50 hover:border-red-200 transition-all duration-200 text-xs"
+                                    >
+                                      -
+                                    </Button>
+                                    <span className="w-10 text-center font-medium bg-gray-100 rounded-lg py-1 text-sm">{item.quantity}</span>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => updateItemQuantity(index, item.quantity + 1)}
+                                      className="h-6 w-6 p-0 rounded-lg hover:bg-green-50 hover:border-green-200 transition-all duration-200 text-xs"
+                                    >
+                                      +
+                                    </Button>
+                                  </div>
+                                  {item.product && typeof item.product === 'object' && item.product.stock !== undefined && (
+                                    <span className="text-xs text-muted-foreground">
+                                      Stock: {order.status === 'pending' 
+                                        ? item.product.stock + item.quantity 
+                                        : item.product.stock}
+                                    </span>
+                                  )}
                                 </div>
                               ) : (
                                 <Badge variant="secondary" className="font-medium">
@@ -1231,25 +1260,34 @@ const OrderDetailPage = ({ params }) => {
                           <div className="flex items-center gap-2">
                             <span className="text-sm text-muted-foreground">Quantity:</span>
                             {editing && editingItems ? (
-                              <div className="flex items-center gap-1.5">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateItemQuantity(index, item.quantity - 1)}
-                                  disabled={item.quantity <= 1}
-                                  className="h-6 w-6 p-0 rounded-lg hover:bg-red-50 hover:border-red-200 text-xs"
-                                >
-                                  -
-                                </Button>
-                                <span className="w-8 text-center font-semibold bg-slate-100 rounded-lg py-1 text-xs">{item.quantity}</span>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => updateItemQuantity(index, item.quantity + 1)}
-                                  className="h-6 w-6 p-0 rounded-lg hover:bg-green-50 hover:border-green-200 text-xs"
-                                >
-                                  +
-                                </Button>
+                              <div className="flex flex-col items-center gap-1">
+                                <div className="flex items-center gap-1.5">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => updateItemQuantity(index, item.quantity - 1)}
+                                    disabled={item.quantity <= 1}
+                                    className="h-6 w-6 p-0 rounded-lg hover:bg-red-50 hover:border-red-200 text-xs"
+                                  >
+                                    -
+                                  </Button>
+                                  <span className="w-8 text-center font-semibold bg-slate-100 rounded-lg py-1 text-xs">{item.quantity}</span>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => updateItemQuantity(index, item.quantity + 1)}
+                                    className="h-6 w-6 p-0 rounded-lg hover:bg-green-50 hover:border-green-200 text-xs"
+                                  >
+                                    +
+                                  </Button>
+                                </div>
+                                {item.product && typeof item.product === 'object' && item.product.stock !== undefined && (
+                                  <span className="text-xs text-muted-foreground">
+                                    Stock: {order.status === 'pending' 
+                                      ? item.product.stock + item.quantity 
+                                      : item.product.stock}
+                                  </span>
+                                )}
                               </div>
                             ) : (
                               <Badge variant="secondary" className="font-semibold text-sm px-2 py-1">

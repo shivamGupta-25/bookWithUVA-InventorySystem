@@ -68,6 +68,12 @@ const Inventory = () => {
     lowStockProducts: 0,
     outOfStockProducts: 0
   });
+  const [settings, setSettings] = useState({
+    stockAlertThresholds: {
+      lowStockThreshold: 10,
+      outOfStockThreshold: 0,
+    }
+  });
   const [categories, setCategories] = useState(['All Categories']);
   const [subCategories, setSubCategories] = useState(['All Sub Categories']);
   const [distributors, setDistributors] = useState([]);
@@ -107,15 +113,17 @@ const Inventory = () => {
         setLoading(true);
         setError('');
 
-        // Load products and stats in parallel
-        const [productsResponse, statsResponse] = await Promise.all([
+        // Load products, stats, and settings in parallel
+        const [productsResponse, statsResponse, settingsResponse] = await Promise.all([
           api.products.getAll({ limit: 1000 }),
-          api.stats.get()
+          api.stats.get(),
+          api.settings.get()
         ]);
 
-        const [productsData, statsData] = await Promise.all([
+        const [productsData, statsData, settingsData] = await Promise.all([
           productsResponse.json(),
-          statsResponse.json()
+          statsResponse.json(),
+          settingsResponse.json()
         ]);
 
         if (productsData.success) {
@@ -136,6 +144,10 @@ const Inventory = () => {
 
         if (statsData.success) {
           setStats(statsData.data);
+        }
+
+        if (settingsData.success && settingsData.data.settings) {
+          setSettings(settingsData.data.settings);
         }
       } catch (error) {
         console.error('Error loading data:', error);
@@ -161,9 +173,10 @@ const Inventory = () => {
       const matchesPrice = !priceRange || (book.price >= priceRange.min && book.price < priceRange.max);
 
       let matchesStock = true;
-      if (selectedStockStatus === 'out-of-stock') matchesStock = book.stock <= 0;
-      else if (selectedStockStatus === 'low-stock') matchesStock = book.stock > 0 && book.stock <= 10;
-      else if (selectedStockStatus === 'in-stock') matchesStock = book.stock > 10;
+      const { lowStockThreshold, outOfStockThreshold } = settings.stockAlertThresholds;
+      if (selectedStockStatus === 'out-of-stock') matchesStock = book.stock <= outOfStockThreshold;
+      else if (selectedStockStatus === 'low-stock') matchesStock = book.stock > outOfStockThreshold && book.stock <= lowStockThreshold;
+      else if (selectedStockStatus === 'in-stock') matchesStock = book.stock > lowStockThreshold;
 
       return matchesSearch && matchesCategory && matchesSubCategory && matchesDistributor && matchesPrice && matchesStock;
     });
@@ -193,11 +206,12 @@ const Inventory = () => {
     });
 
     return filtered;
-  }, [products, searchTerm, selectedCategory, selectedSubCategory, selectedDistributor, selectedPriceRange, selectedStockStatus, sortBy]);
+  }, [products, searchTerm, selectedCategory, selectedSubCategory, selectedDistributor, selectedPriceRange, selectedStockStatus, sortBy, settings]);
 
   const getStockStatus = (stock) => {
-    if (stock <= 0) return { label: 'Out of Stock', variant: 'destructive' };
-    if (stock <= 10) return { label: 'Low Stock', variant: 'secondary' };
+    const { lowStockThreshold, outOfStockThreshold } = settings.stockAlertThresholds;
+    if (stock <= outOfStockThreshold) return { label: 'Out of Stock', variant: 'destructive' };
+    if (stock <= lowStockThreshold) return { label: 'Low Stock', variant: 'secondary' };
     return { label: 'In Stock', variant: 'default' };
   };
 
@@ -230,14 +244,16 @@ const Inventory = () => {
 
   const refreshInventoryData = async () => {
     try {
-      const [productsResponse, statsResponse] = await Promise.all([
+      const [productsResponse, statsResponse, settingsResponse] = await Promise.all([
         api.products.getAll({ limit: 1000 }),
-        api.stats.get()
+        api.stats.get(),
+        api.settings.get()
       ]);
 
-      const [productsData, statsData] = await Promise.all([
+      const [productsData, statsData, settingsData] = await Promise.all([
         productsResponse.json(),
-        statsResponse.json()
+        statsResponse.json(),
+        settingsResponse.json()
       ]);
 
       if (productsData.success) {
@@ -256,6 +272,10 @@ const Inventory = () => {
 
       if (statsData.success) {
         setStats(statsData.data);
+      }
+
+      if (settingsData.success && settingsData.data.settings) {
+        setSettings(settingsData.data.settings);
       }
     } catch (error) {
       console.error('Error refreshing data:', error);

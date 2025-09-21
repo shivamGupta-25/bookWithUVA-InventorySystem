@@ -68,10 +68,10 @@ ProductSchema.index({ category: 1, subCategory: 1 });
 ProductSchema.index({ price: 1 });
 ProductSchema.index({ stock: 1 });
 
-// Virtual for stock status
+// Virtual for stock status (will be updated dynamically based on settings)
 ProductSchema.virtual("stockStatus").get(function () {
 	if (this.stock === 0) return "out-of-stock";
-	if (this.stock <= 10) return "low-stock";
+	if (this.stock <= 10) return "low-stock"; // Default threshold, will be overridden by settings
 	return "in-stock";
 });
 

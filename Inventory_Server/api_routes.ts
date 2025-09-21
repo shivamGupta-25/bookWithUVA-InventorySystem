@@ -53,6 +53,14 @@ import {
 	getActivityStats,
 	deleteOldActivityLogs,
 } from "./controllers/activityLog_controller";
+import {
+	getSettings,
+	updateSettings,
+	getStockAlerts,
+	acknowledgeAlert,
+	resolveAlert,
+	getAlertStats,
+} from "./controllers/settings_controller";
 import { authenticate, authorize, logActivity } from "./utils/authUtils";
 import { UserRole } from "./models/user";
 import { ActivityType } from "./models/activityLog";
@@ -118,3 +126,13 @@ api_routes.put("/order/:id", authorize(UserRole.ADMIN, UserRole.MANAGER), logAct
 api_routes.delete("/order/:id", authorize(UserRole.ADMIN, UserRole.MANAGER), logActivity(ActivityType.DELETE, "Deleted order", "Order"), delete_order);
 api_routes.delete("/orders", authorize(UserRole.ADMIN), logActivity(ActivityType.DELETE, "Deleted all orders", "Orders"), delete_all_orders);
 api_routes.get("/orders/stats", get_order_stats);
+
+// Settings routes (Admin only)
+api_routes.get("/settings", authorize(UserRole.ADMIN), getSettings);
+api_routes.put("/settings", authorize(UserRole.ADMIN), logActivity(ActivityType.UPDATE, "Updated system settings", "Settings"), updateSettings);
+
+// Stock alerts routes
+api_routes.get("/settings/alerts", getStockAlerts); // All authenticated users can view alerts
+api_routes.get("/settings/alerts/stats", authorize(UserRole.ADMIN, UserRole.MANAGER), getAlertStats);
+api_routes.put("/settings/alerts/:id/acknowledge", authorize(UserRole.ADMIN, UserRole.MANAGER), acknowledgeAlert);
+api_routes.put("/settings/alerts/:id/resolve", authorize(UserRole.ADMIN, UserRole.MANAGER), resolveAlert);

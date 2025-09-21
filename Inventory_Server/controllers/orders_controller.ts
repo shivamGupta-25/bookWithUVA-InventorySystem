@@ -4,6 +4,7 @@ import { order_model, OrderStatus } from "../models/order";
 import { product_model } from "../models/products";
 import mongoose from "mongoose";
 import { calculateItemTotals, calculateOrderTotals } from "../utils/monetaryUtils";
+import { checkStockLevels } from "../utils/stockAlertUtils";
 
 // GET /api/orders - Fetch all orders with optional filtering
 export const get_orders = async (req: Request, res: Response) => {
@@ -349,6 +350,12 @@ export const post_orders = async (req: Request, res: Response): Promise<void> =>
 					if (result && result.stock - update.quantity < 0) {
 						throw new Error(`Insufficient stock for product ${update.productId}. Stock would go negative.`);
 					}
+
+					// Check stock levels for alerts after stock update
+					if (result) {
+						const newStock = result.stock - update.quantity;
+						await checkStockLevels(update.productId, newStock);
+					}
 				}
 			});
 		} catch (error) {
@@ -644,6 +651,17 @@ export const put_order = async (req: Request, res: Response): Promise<void> => {
 							return;
 						}
 					}
+
+					// Additional safety check: Ensure the final stock won't go negative
+					// This is a double-check to prevent any edge cases
+					const finalStockAfterUpdate = product.stock - netStockChange;
+					if (finalStockAfterUpdate < 0) {
+						res.status(400).json({
+							success: false,
+							error: `Stock validation failed for product "${product.title}". Final stock would be negative: ${finalStockAfterUpdate}`,
+						});
+						return;
+					}
 				}
 			}
 		}
@@ -711,6 +729,12 @@ export const put_order = async (req: Request, res: Response): Promise<void> => {
 							if (existingItem) {
 								const quantityDifference = item.quantity - existingItem.quantity;
 							if (quantityDifference !== 0) {
+								// Additional safety check before updating stock
+								const updatedProduct = await product_model.findById(itemProductId, null, { session });
+								if (updatedProduct && updatedProduct.stock - quantityDifference < 0) {
+									throw new Error(`Stock update would result in negative stock for product ${itemProductId}`);
+								}
+								
 								await product_model.findByIdAndUpdate(
 										itemProductId,
 										{ $inc: { stock: -quantityDifference } },
@@ -718,7 +742,12 @@ export const put_order = async (req: Request, res: Response): Promise<void> => {
 									);
 								}
 							} else {
-								// New item
+								// New item - add safety check
+								const updatedProduct = await product_model.findById(itemProductId, null, { session });
+								if (updatedProduct && updatedProduct.stock - item.quantity < 0) {
+									throw new Error(`Stock update would result in negative stock for product ${itemProductId}`);
+								}
+								
 								await product_model.findByIdAndUpdate(
 									itemProductId,
 									{ $inc: { stock: -item.quantity } },
@@ -733,6 +762,12 @@ export const put_order = async (req: Request, res: Response): Promise<void> => {
 							const itemProductId = typeof item.product === 'string' 
 								? item.product 
 								: item.product._id || item.product.id;
+								
+							// Safety check before updating stock
+							const updatedProduct = await product_model.findById(itemProductId, null, { session });
+							if (updatedProduct && updatedProduct.stock - item.quantity < 0) {
+								throw new Error(`Stock update would result in negative stock for product ${itemProductId}`);
+							}
 								
 							await product_model.findByIdAndUpdate(
 								itemProductId,
