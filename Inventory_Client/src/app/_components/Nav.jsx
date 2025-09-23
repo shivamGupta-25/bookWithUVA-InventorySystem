@@ -1,15 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Menu, X, Home, FileText, Users, LogOut, DollarSign, QrCode, BarChart, Package, Plus, Search, Settings, ShoppingCart, User, Activity, Shield, Loader2, AlertTriangle } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Menu, X, Home, Users, LogOut, Package, Plus, Settings, ShoppingCart, User, Activity, Shield } from "lucide-react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import NotificationBell from "@/components/NotificationBell";
 
@@ -27,7 +26,6 @@ const getDefaultAvatarByRole = (role) => {
 
 export default function Nav({ children }) {
   const pathname = usePathname();
-  const router = useRouter();
   const { user, logout, hasPermission } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -74,7 +72,7 @@ export default function Nav({ children }) {
   }, [isMobile, sidebarOpen]);
 
   // Navigation items based on user role
-  const getNavigationItems = () => {
+  const navigation = useMemo(() => {
     const baseItems = [
       { name: "Dashboard", href: "/", icon: Home, permission: null },
       { name: "Inventory", href: "/inventory", icon: Package, permission: null },
@@ -96,20 +94,18 @@ export default function Nav({ children }) {
       ...managerItems,
       ...adminItems,
     ].filter(item => !item.permission || hasPermission(item.permission));
-  };
+  }, [hasPermission]);
 
-  const navigation = getNavigationItems();
-
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     try {
       await logout();
     } catch (error) {
       toast.error("Failed to logout");
     }
-  };
+  }, [logout]);
 
   // Toggle sidebar
-  const toggleSidebar = () => {
+  const toggleSidebar = useCallback(() => {
     if (isMobile) {
       setSidebarOpen(!sidebarOpen);
     } else {
@@ -119,7 +115,7 @@ export default function Nav({ children }) {
         setSidebarOpen(true);
       }
     }
-  };
+  }, [isMobile, sidebarOpen, isCollapsed]);
 
   // Note: Loading state is now handled by ConditionalNav component
 
@@ -134,29 +130,32 @@ export default function Nav({ children }) {
       )}
 
       {/* Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-background transition-all duration-300",
+      <aside className={cn(
+        "fixed inset-y-0 left-0 z-50 flex flex-col border-r bg-background",
+        // Only animate transform on mobile for the slide-in/out behavior
+        isMobile ? "transition-transform duration-300 will-change-transform" : "transition-none",
         isCollapsed && !isMobile ? "w-16" : "w-64",
         isMobile ? (sidebarOpen ? "translate-x-0" : "-translate-x-full") : "translate-x-0"
-      )}>
+      )} aria-label="Sidebar navigation">
         <div className="flex h-14 items-center border-b px-4">
           <Button
             variant="ghost"
             size="icon"
             className="mr-2"
             onClick={toggleSidebar}
+            aria-label={isMobile && sidebarOpen ? "Close menu" : "Open menu"}
           >
             {isMobile && sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
           {(!isCollapsed || (isMobile && sidebarOpen)) && (
-            <Link href="/" className="font-semibold">
+            <Link href="/" className="font-semibold" aria-label="Home">
               Book with UVA
             </Link>
           )}
         </div>
 
         <ScrollArea className="flex-1">
-          <nav className="space-y-1 p-2">
+          <nav className="space-y-1 p-2" aria-label="Primary">
             {navigation.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -172,6 +171,7 @@ export default function Nav({ children }) {
                       : "hover:bg-accent hover:text-accent-foreground",
                     isCollapsed && !isMobile && "justify-center"
                   )}
+                  onClick={() => { if (isMobile) setSidebarOpen(false); }}
                 >
                   <Icon className="h-5 w-5 flex-shrink-0" />
                   {(!isCollapsed || (isMobile && sidebarOpen)) && (
@@ -258,7 +258,7 @@ export default function Nav({ children }) {
             )}
           </Button>
         </div>
-      </div>
+      </aside>
 
       {/* Mobile header */}
       {isMobile && (
@@ -269,6 +269,7 @@ export default function Nav({ children }) {
               size="icon"
               onClick={toggleSidebar}
               className="mr-4"
+              aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
             </Button>
@@ -289,7 +290,7 @@ export default function Nav({ children }) {
 
       {/* Main content */}
       <div className={cn(
-        "flex-1 transition-all duration-300",
+        "flex-1",
         isMobile ? "mt-14 ml-0" : (isCollapsed ? "ml-16" : "ml-64")
       )}>
         <main className="flex-1 p-4 md:p-6">{children}</main>
