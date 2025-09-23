@@ -78,7 +78,7 @@ export const NotificationProvider = ({ children }) => {
     if (typeof window !== "undefined") {
       // Dynamic import to avoid SSR issues
       import("socket.io-client").then(({ io }) => {
-        const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+        const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
         const socketUrl = API_BASE_URL.replace("/api", "");
         
         const newSocket = io(socketUrl, {
