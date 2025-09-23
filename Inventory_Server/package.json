@@ -7,7 +7,9 @@
 		"dev": "tsx --watch .",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"seed": "tsx script/seedData.js",
-		"create-admin": "tsx script/createAdmin.js"
+		"create-admin": "tsx script/createAdmin.js",
+		"build": "tsc -p tsconfig.json",
+		"start": "node dist/index.js"
 	},
 	"keywords": [],
 	"author": "",
@@ -18,9 +20,11 @@
 		"@types/dotenv": "^6.1.1",
 		"@types/express": "^5.0.3",
 		"@types/helmet": "^0.0.48",
+		"@types/jsonwebtoken": "^9.0.10",
 		"@types/mongoose": "^5.11.96",
 		"@types/node": "^24.3.1",
-		"tsx": "^4.20.5"
+		"tsx": "^4.20.5",
+		"typescript": "^5.6.3"
 	},
 	"dependencies": {
 		"@types/nodemailer": "^7.0.1",

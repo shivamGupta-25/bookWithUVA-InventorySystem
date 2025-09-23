@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions, Secret } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { user_model, UserRole } from "../models/user";
 import { activityLog_model, ActivityType } from "../models/activityLog";
@@ -6,9 +6,13 @@ import dotenv from "dotenv";
 dotenv.config();
 
 // JWT Secret (should be in environment variables)
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
-const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN;
+const JWT_SECRET: Secret = (process.env.JWT_SECRET as unknown as string) || "";
+const JWT_EXPIRES_IN: string | number | undefined = process.env.JWT_EXPIRES_IN as
+	| string
+	| number
+	| undefined;
+const JWT_REFRESH_EXPIRES_IN: string | number | undefined =
+	process.env.JWT_REFRESH_EXPIRES_IN as string | number | undefined;
 
 // JWT Payload Interface
 export interface JWTPayload {
@@ -22,16 +26,18 @@ export interface JWTPayload {
 
 // Generate JWT Token
 export const generateToken = (payload: Omit<JWTPayload, "iat" | "exp">): string => {
-	return jwt.sign(payload, JWT_SECRET, {
-		expiresIn: JWT_EXPIRES_IN,
-	});
+	const options: SignOptions = {};
+	if (JWT_EXPIRES_IN !== undefined) options.expiresIn = JWT_EXPIRES_IN as any;
+	return jwt.sign(payload as any, JWT_SECRET, options);
 };
 
 // Generate Refresh Token
-export const generateRefreshToken = (payload: Omit<JWTPayload, "iat" | "exp">): string => {
-	return jwt.sign(payload, JWT_SECRET, {
-		expiresIn: JWT_REFRESH_EXPIRES_IN,
-	});
+export const generateRefreshToken = (
+	payload: Omit<JWTPayload, "iat" | "exp">
+): string => {
+	const options: SignOptions = {};
+	if (JWT_REFRESH_EXPIRES_IN !== undefined) options.expiresIn = JWT_REFRESH_EXPIRES_IN as any;
+	return jwt.sign(payload as any, JWT_SECRET, options);
 };
 
 // Verify JWT Token
@@ -199,10 +205,12 @@ export const validatePassword = (password: string): { isValid: boolean; errors: 
 		errors.push("Password must contain at least one number");
 	}
 	
-	return {
-		isValid: errors.length === 0,
-		errors,
-	};
+	return (
+		{
+			isValid: errors.length === 0,
+			errors,
+		}
+	);
 };
 
 // Email validation
@@ -219,8 +227,10 @@ export const hasPermission = (userRole: string, requiredRole: string): boolean =
 		[UserRole.ADMIN]: 3,
 	};
 	
-	return roleHierarchy[userRole as keyof typeof roleHierarchy] >= 
-		   roleHierarchy[requiredRole as keyof typeof roleHierarchy];
+	return (
+		roleHierarchy[userRole as keyof typeof roleHierarchy] >=
+		roleHierarchy[requiredRole as keyof typeof roleHierarchy]
+	);
 };
 
 export default {
