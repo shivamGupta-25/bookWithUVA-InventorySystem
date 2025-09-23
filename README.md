@@ -55,9 +55,10 @@ npm run dev
 cd Inventory_Client
 npm install
 
-# Create environment file (optional)
-cp .env.local.example .env.local
-# Edit .env.local if needed
+# Create environment file
+echo "NEXT_PUBLIC_API_BASE_URL=http://localhost:4000/api" > .env.local
+# Optional: if you need explicit WebSocket origin (rare), set:
+# echo "NEXT_PUBLIC_API_URL=http://localhost:4000" >> .env.local
 
 # Start development server
 npm run dev
@@ -72,6 +73,9 @@ npm run create-admin
 # Seed sample data (optional)
 npm run seed
 ```
+Notes:
+- The admin script creates an initial user with role `admin`. Change the password after first login.
+- Ensure `DATABASE_URI` is set before running these scripts.
 
 ## 🔧 Configuration
 
@@ -99,7 +103,12 @@ EMAIL_FROM=your-email@gmail.com
 
 ### Frontend Environment Variables (.env.local)
 ```env
+# REST API base for the server
 NEXT_PUBLIC_API_BASE_URL=http://localhost:4000/api
+
+# Optional: base URL used by Notification socket client
+# If unset, code falls back to http://localhost:4000 (derived from API base)
+NEXT_PUBLIC_API_URL=http://localhost:4000
 ```
 
 ## 🎯 Core Features
@@ -393,7 +402,7 @@ PUT    /api/settings/alerts/:id/resolve     # Resolve alert
 - **Components**: shadcn/ui with Radix UI primitives
 - **Charts**: Recharts for data visualization
 - **State Management**: React Context API
-- **Authentication**: JWT with HTTP-only cookies
+- **Authentication**: JWT access/refresh tokens stored in cookies
 - **Real-time**: Socket.IO client
 - **Notifications**: Sonner toast notifications
 
@@ -489,16 +498,20 @@ PUT    /api/settings/alerts/:id/resolve     # Resolve alert
 ### Environment Variables for Production
 ```env
 # Backend Production
-DATABASE_URI=mongodb+srv://username:password@cluster.mongodb.net/dbname
+DATABASE_URI= DB_URI
 PORT=4000
 ALLOWED_HOSTS=["https://yourdomain.com"]
 JWT_SECRET=your-super-secure-jwt-secret
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_EXPIRES_IN=30d
 EMAIL_HOST=your-smtp-host
 EMAIL_USER=your-email
 EMAIL_PASS=your-email-password
+EMAIL_FROM=your-email
 
 # Frontend Production
 NEXT_PUBLIC_API_BASE_URL=https://api.yourdomain.com/api
+NEXT_PUBLIC_API_URL=https://api.yourdomain.com
 ```
 
 ## 📱 Features by User Role
@@ -531,6 +544,7 @@ NEXT_PUBLIC_API_BASE_URL=https://api.yourdomain.com/api
 
 ### Socket.IO Integration
 - Real-time stock alerts
+- WebSocket URL is derived from `NEXT_PUBLIC_API_URL` (or `NEXT_PUBLIC_API_BASE_URL` without `/api`). Example: `ws://localhost:4000`.
 - Live order updates
 - User activity notifications
 - System status updates
@@ -567,9 +581,11 @@ NEXT_PUBLIC_API_BASE_URL=https://api.yourdomain.com/api
 
 ### Backend Scripts
 ```bash
-npm run dev          # Start development server with hot reload
-npm run create-admin # Create default admin user
-npm run seed         # Seed database with sample data
+npm run dev           # Start development server with hot reload
+npm run build         # Compile TypeScript to dist/
+npm run start         # Start compiled server from dist/
+npm run create-admin  # Create default admin user
+npm run seed          # Seed database with sample data
 ```
 
 ### Frontend Scripts
