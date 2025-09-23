@@ -163,7 +163,7 @@ export default function ResetPasswordPage() {
         
         <Card>
           <CardHeader>
-            <CardTitle>Enter OTP & New Password</CardTitle>
+            <CardTitle>Enter OTP &amp; New Password</CardTitle>
             <CardDescription>
               Enter the OTP code sent to your email and create a new password
             </CardDescription>
@@ -292,7 +292,7 @@ export default function ResetPasswordPage() {
             href="/forgot-password" 
             className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 hover:underline"
           >
-            Didn't receive OTP? Resend
+            Didn&apos;t receive OTP? Resend
           </Link>
           <div>
             <Link 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
@@ -58,7 +58,7 @@ export default function UsersPage() {
   const [userToToggle, setUserToToggle] = useState(null);
 
   // Fetch users
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -90,13 +90,13 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, currentPage, searchTerm, roleFilter, statusFilter]);
 
   useEffect(() => {
     if (hasPermission("admin")) {
       fetchUsers();
     }
-  }, [currentPage, searchTerm, roleFilter, statusFilter, hasPermission]);
+  }, [hasPermission, fetchUsers]);
 
   // Create user
   const handleCreateUser = async (e) => {

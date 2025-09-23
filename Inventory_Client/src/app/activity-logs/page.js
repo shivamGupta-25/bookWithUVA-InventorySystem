@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,7 @@ export default function ActivityLogsPage() {
 
 
   // Fetch activity logs
-  const fetchActivityLogs = async () => {
+  const fetchActivityLogs = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -67,10 +67,10 @@ export default function ActivityLogsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, searchTerm, activityTypeFilter, userFilter, resourceFilter]);
 
   // Fetch activity stats
-  const fetchActivityStats = async () => {
+  const fetchActivityStats = useCallback(async () => {
     try {
       const response = await api.activityLogs.getStats();
 
@@ -81,14 +81,14 @@ export default function ActivityLogsPage() {
     } catch (error) {
       console.error("Error fetching activity stats:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (hasPermission("admin")) {
       fetchActivityLogs();
       fetchActivityStats();
     }
-  }, [currentPage, searchTerm, activityTypeFilter, userFilter, resourceFilter, hasPermission]);
+  }, [hasPermission, fetchActivityLogs, fetchActivityStats]);
 
   const getActivityTypeColor = (type) => {
     switch (type) {

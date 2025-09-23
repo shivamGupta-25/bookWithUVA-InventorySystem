@@ -50,10 +50,10 @@ export default function NotFound() {
             </div>
             
             <CardTitle className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 mb-2 leading-tight">
-              This page doesn't exist in our system!
+              This page doesn&apos;t exist in our system!
             </CardTitle>
             <CardDescription className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
-              The page you're looking for may have been moved, deleted, or you may not have permission to access it.
+              The page you&apos;re looking for may have been moved, deleted, or you may not have permission to access it.
               <br />
               Please check the URL or contact your system administrator for assistance.
             </CardDescription>

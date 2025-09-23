@@ -135,7 +135,7 @@ const OrderDetailPage = ({ params }) => {
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
-    
+
     // Cleanup function to restore default behavior
     return () => {
       if ('scrollRestoration' in history) {
@@ -151,7 +151,7 @@ const OrderDetailPage = ({ params }) => {
         setLoading(true);
         // Store current scroll position
         const scrollY = window.scrollY;
-        
+
         const response = await api.orders.getById(resolvedParams.id);
         const data = await response.json();
 
@@ -188,7 +188,7 @@ const OrderDetailPage = ({ params }) => {
             })() : '',
             items: data.data.items || []
           });
-          
+
           // Restore scroll position after a brief delay to ensure DOM is updated
           setTimeout(() => {
             window.scrollTo(0, scrollY);
@@ -223,8 +223,8 @@ const OrderDetailPage = ({ params }) => {
       // Calculate available stock considering current order's impact
       // For pending orders, stock is already reserved, so we need to add current quantity back
       const currentOrderQuantity = currentItem.quantity || 0;
-      const availableStock = order.status === 'pending' 
-        ? product.stock + currentOrderQuantity 
+      const availableStock = order.status === 'pending'
+        ? product.stock + currentOrderQuantity
         : product.stock;
 
       if (newQuantity > availableStock) {
@@ -346,34 +346,34 @@ const OrderDetailPage = ({ params }) => {
     try {
       // Only send the fields that have actually changed to optimize the request
       const updatePayload = {};
-      
+
       // Check which fields have changed from the original order
       if (editData.status !== order.status) {
         updatePayload.status = editData.status;
       }
-      
+
       if (editData.paymentStatus !== order.paymentStatus) {
         updatePayload.paymentStatus = editData.paymentStatus;
       }
-      
+
       if (editData.notes !== (order.notes || '')) {
         updatePayload.notes = editData.notes;
       }
-      
+
       if (editData.cancellationReason !== (order.cancellationReason || '')) {
         updatePayload.cancellationReason = editData.cancellationReason;
       }
-      
+
       if (editData.refundAmount !== (order.refundAmount || 0)) {
         updatePayload.refundAmount = editData.refundAmount;
       }
-      
+
       if (editData.refundReason !== (order.refundReason || '')) {
         updatePayload.refundReason = editData.refundReason;
       }
-      
+
       // Check customer changes
-      const customerChanged = 
+      const customerChanged =
         editData.customer.name !== order.customer.name ||
         editData.customer.email !== (order.customer.email || '') ||
         editData.customer.phone !== (order.customer.phone || '') ||
@@ -382,23 +382,23 @@ const OrderDetailPage = ({ params }) => {
         editData.customer.address.state !== (order.customer.address?.state || '') ||
         editData.customer.address.pincode !== (order.customer.address?.pincode || '') ||
         editData.customer.address.country !== (order.customer.address?.country || '');
-      
+
       if (customerChanged) {
         updatePayload.customer = editData.customer;
       }
-      
+
       if (editData.paymentMethod !== order.paymentMethod) {
         updatePayload.paymentMethod = editData.paymentMethod;
       }
-      
+
       if (editData.shippingCharges !== (order.shippingCharges || 0)) {
         updatePayload.shippingCharges = editData.shippingCharges;
       }
-      
+
       if (editData.discount !== (order.discount || 0)) {
         updatePayload.discount = editData.discount;
       }
-      
+
       const originalExpectedDeliveryDate = order.expectedDeliveryDate ? (() => {
         const date = new Date(order.expectedDeliveryDate);
         const year = date.getFullYear();
@@ -406,11 +406,11 @@ const OrderDetailPage = ({ params }) => {
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
       })() : '';
-      
+
       if (editData.expectedDeliveryDate !== originalExpectedDeliveryDate) {
         updatePayload.expectedDeliveryDate = editData.expectedDeliveryDate;
       }
-      
+
       // Check if items have changed
       const itemsChanged = JSON.stringify(editData.items) !== JSON.stringify(order.items);
       if (itemsChanged) {
@@ -515,7 +515,7 @@ const OrderDetailPage = ({ params }) => {
             </div>
           </div>
         </div>
-        
+
         {/* Loading content with consistent spacing */}
         <div className="w-full px-2 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-4 pb-16 lg:pb-4">
           <div className="flex items-center justify-center min-h-[60vh]">
@@ -552,13 +552,13 @@ const OrderDetailPage = ({ params }) => {
                   Order Not Found
                 </h1>
                 <p className="text-sm sm:text-base text-slate-500 hidden sm:block">
-                  The order doesn't exist
+                  The order doesn&apos;t exist
                 </p>
               </div>
             </div>
           </div>
         </div>
-        
+
         {/* Error content with consistent spacing */}
         <div className="w-full px-2 sm:px-4 lg:px-6 xl:px-8 py-3 sm:py-4 pb-16 lg:pb-4">
           <div className="flex items-center justify-center min-h-[60vh]">
@@ -566,7 +566,7 @@ const OrderDetailPage = ({ params }) => {
               <CardContent className="p-8 text-center">
                 <AlertTriangle className="h-8 w-8 text-destructive mx-auto mb-4" />
                 <h3 className="text-lg font-medium mb-2">Order not found</h3>
-                <p className="text-sm text-muted-foreground mb-4">The order you're looking for doesn't exist.</p>
+                <p className="text-sm text-muted-foreground mb-4">The order you&apos;re looking for doesn&apos;t exist.</p>
                 <Button onClick={() => router.push('/orders')} className="w-full">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Orders
@@ -1050,7 +1050,7 @@ const OrderDetailPage = ({ params }) => {
                               const month = String(date.getMonth() + 1).padStart(2, '0');
                               const day = String(date.getDate()).padStart(2, '0');
                               const dateString = `${year}-${month}-${day}`;
-                              
+
                               setEditData(prev => ({
                                 ...prev,
                                 expectedDeliveryDate: dateString
@@ -1175,8 +1175,8 @@ const OrderDetailPage = ({ params }) => {
                                   </div>
                                   {item.product && typeof item.product === 'object' && item.product.stock !== undefined && (
                                     <span className="text-xs text-muted-foreground">
-                                      Stock: {order.status === 'pending' 
-                                        ? item.product.stock + item.quantity 
+                                      Stock: {order.status === 'pending'
+                                        ? item.product.stock + item.quantity
                                         : item.product.stock}
                                     </span>
                                   )}
@@ -1283,8 +1283,8 @@ const OrderDetailPage = ({ params }) => {
                                 </div>
                                 {item.product && typeof item.product === 'object' && item.product.stock !== undefined && (
                                   <span className="text-xs text-muted-foreground">
-                                    Stock: {order.status === 'pending' 
-                                      ? item.product.stock + item.quantity 
+                                    Stock: {order.status === 'pending'
+                                      ? item.product.stock + item.quantity
                                       : item.product.stock}
                                   </span>
                                 )}
@@ -1314,12 +1314,12 @@ const OrderDetailPage = ({ params }) => {
                   </div>
                 )}
                 {editing && editingItems && order.status === 'pending' && (
-                  <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                    <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
                     <div className="flex items-start gap-3 text-sm text-blue-700">
                       <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                       <div>
                         <span className="font-semibold">Editing Mode:</span>
-                        <p className="mt-1">You can modify quantities or remove items. Changes will be saved when you click "Save".</p>
+                          <p className="mt-1">You can modify quantities or remove items. Changes will be saved when you click &quot;Save&quot;.</p>
                       </div>
                     </div>
                   </div>

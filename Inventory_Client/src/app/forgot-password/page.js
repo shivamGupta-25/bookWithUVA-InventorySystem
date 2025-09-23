@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
               Check Your Email
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              We've sent a 6-digit OTP to your email address
+              We&apos;ve sent a 6-digit OTP to your email address
             </p>
           </div>
           
@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
           <CardHeader>
             <CardTitle>Forgot Password?</CardTitle>
             <CardDescription>
-              Enter your email address and we'll send you a verification code to reset your password
+              Enter your email address and we&apos;ll send you a verification code to reset your password
             </CardDescription>
           </CardHeader>
           <CardContent>

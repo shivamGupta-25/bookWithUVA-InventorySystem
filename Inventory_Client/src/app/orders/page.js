@@ -690,8 +690,8 @@ const OrdersPage = () => {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-xs font-medium text-blue-700">Active Filters:</span>
                       {searchTerm && (
-                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
-                          Search: "{searchTerm}"
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                          Search: &quot;{searchTerm}&quot;
                         </span>
                       )}
                       {selectedStatus !== 'all' && (
