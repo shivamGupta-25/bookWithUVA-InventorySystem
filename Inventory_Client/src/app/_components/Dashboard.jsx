@@ -44,6 +44,11 @@ import api from '@/lib/api';
 import { formatCurrency } from '@/lib/monetaryUtils';
 import { toast } from "sonner";
 
+const blockChartInteraction = (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+};
+
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -579,7 +584,9 @@ function OverviewCharts({ stats }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-64 sm:h-80">
+          <div className="h-64 sm:h-80"
+            onMouseDownCapture={blockChartInteraction}
+            onClickCapture={blockChartInteraction}>
             <ResponsiveContainer width="100%" height="100%">
               <PieChart margin={{ top: 10 }}>
                 <Pie
@@ -648,7 +655,9 @@ function OverviewCharts({ stats }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="h-64 sm:h-80">
+          <div className="h-64 sm:h-80"
+            onMouseDownCapture={blockChartInteraction}
+            onClickCapture={blockChartInteraction}>
             <ResponsiveContainer width="100%" height="100%">
               <RechartsBarChart data={topProductsData} margin={{ top: 20, right: 30, left: 0, bottom: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -771,7 +780,9 @@ function OrderAnalytics({ stats }) {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-1 sm:p-2">
-          <div className="h-64 sm:h-80">
+          <div className="h-64 sm:h-80"
+            onMouseDownCapture={blockChartInteraction}
+            onClickCapture={blockChartInteraction}>
             <ResponsiveContainer width="100%" height="100%">
               <RechartsBarChart data={orderTrendsData} margin={{ top: 0, right: 0, left: 0, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -971,7 +982,9 @@ function InventoryAnalytics({ stats }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64 sm:h-80">
+            <div className="h-64 sm:h-80"
+              onMouseDownCapture={blockChartInteraction}
+              onClickCapture={blockChartInteraction}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -1087,7 +1100,9 @@ function InventoryAnalytics({ stats }) {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="h-64 sm:h-80">
+            <div className="h-64 sm:h-80"
+              onMouseDownCapture={blockChartInteraction}
+              onClickCapture={blockChartInteraction}>
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart data={categoryData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -1151,7 +1166,9 @@ function InventoryAnalytics({ stats }) {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="h-64 sm:h-80">
+            <div className="h-64 sm:h-80"
+              onMouseDownCapture={blockChartInteraction}
+              onClickCapture={blockChartInteraction}>
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart data={distributorData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -1237,7 +1254,9 @@ function InventoryAging({ stats }) {
               <div className="text-xl sm:text-2xl font-bold text-indigo-700">{stats.aging.averageDaysSinceLastSale}</div>
             </div>
           </div>
-          <div className="h-64 sm:h-80">
+          <div className="h-64 sm:h-80"
+            onMouseDownCapture={blockChartInteraction}
+            onClickCapture={blockChartInteraction}>
             <ResponsiveContainer width="100%" height="100%">
               <RechartsBarChart
                 data={bucketChartData}
@@ -1446,7 +1465,9 @@ function DeliveryAnalytics({ stats }) {
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="h-48 sm:h-64 md:h-72 lg:h-80">
+            <div className="h-48 sm:h-64 md:h-72 lg:h-80"
+              onMouseDownCapture={blockChartInteraction}
+              onClickCapture={blockChartInteraction}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                   <Pie
@@ -1518,7 +1539,9 @@ function DeliveryAnalytics({ stats }) {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-1">
-            <div className="h-48 sm:h-64 md:h-72 lg:h-80">
+            <div className="h-48 sm:h-64 md:h-72 lg:h-80"
+              onMouseDownCapture={blockChartInteraction}
+              onClickCapture={blockChartInteraction}>
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart
                   data={deliveryTrendsData}
@@ -1726,7 +1749,9 @@ function DeliveryAnalytics({ stats }) {
             </CardDescription>
           </CardHeader>
           <CardContent className="p-2">
-            <div className="h-48 sm:h-64 md:h-72 lg:h-80">
+            <div className="h-48 sm:h-64 md:h-72 lg:h-80"
+              onMouseDownCapture={blockChartInteraction}
+              onClickCapture={blockChartInteraction}>
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart
                   data={deliveryByDayData}
