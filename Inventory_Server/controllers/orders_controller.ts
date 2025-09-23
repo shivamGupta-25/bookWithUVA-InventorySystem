@@ -1007,6 +1007,8 @@ export const get_order_stats = async (req: Request, res: Response) => {
 			totalRevenue,
 			recentOrders,
 			topProducts,
+			orderTrends,
+			revenueTrends,
 		] = await Promise.all([
 			order_model.countDocuments({ isActive: true }),
 			order_model.countDocuments({ isActive: true, status: OrderStatus.PENDING }),
@@ -1037,9 +1039,76 @@ export const get_order_stats = async (req: Request, res: Response) => {
 				{ $sort: { totalQuantity: -1 } },
 				{ $limit: 10 },
 			]),
+			// Order trends over time (last 7 days)
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						orderDate: {
+							$gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+						}
+					}
+				},
+				{
+					$group: {
+						_id: {
+							$dateToString: { format: "%Y-%m-%d", date: "$orderDate" }
+						},
+						orders: { $sum: 1 },
+						revenue: { $sum: "$totalAmount" }
+					}
+				},
+				{ $sort: { _id: 1 } }
+			]),
+			// Revenue trends over time (last 7 days)
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						status: OrderStatus.DELIVERED,
+						paymentStatus: "paid",
+						orderDate: {
+							$gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+						}
+					}
+				},
+				{
+					$group: {
+						_id: {
+							$dateToString: { format: "%Y-%m-%d", date: "$orderDate" }
+						},
+						revenue: { $sum: "$totalAmount" }
+					}
+				},
+				{ $sort: { _id: 1 } }
+			])
 		]);
 
 		const revenue = totalRevenue.length > 0 ? totalRevenue[0].total : 0;
+
+		// Process trends data to fill missing days
+		const trendsData: any[] = [];
+		const revenueData: any[] = [];
+		
+		for (let i = 6; i >= 0; i--) {
+			const date = new Date();
+			date.setDate(date.getDate() - i);
+			const dateStr = date.toISOString().split('T')[0];
+			
+			const trendDay = orderTrends.find(t => t._id === dateStr);
+			const revenueDay = revenueTrends.find(r => r._id === dateStr);
+			
+			trendsData.push({
+				date: dateStr,
+				orders: trendDay ? trendDay.orders : 0,
+				revenue: trendDay ? trendDay.revenue : 0
+			});
+			
+			revenueData.push({
+				date: dateStr,
+				revenue: revenueDay ? revenueDay.revenue : 0
+			});
+		}
 
 		res.json({
 			success: true,
@@ -1062,6 +1131,10 @@ export const get_order_stats = async (req: Request, res: Response) => {
 					id: product._id.toString(),
 					_id: product._id.toString(),
 				})),
+				trends: {
+					orderTrends: trendsData,
+					revenueTrends: revenueData
+				}
 			},
 		});
 	} catch (error) {
@@ -1069,6 +1142,457 @@ export const get_order_stats = async (req: Request, res: Response) => {
 		res.status(500).json({
 			success: false,
 			error: "Failed to fetch order statistics",
+		});
+	}
+};
+
+// GET /api/orders/delivery-stats - Get delivery analytics
+export const get_delivery_stats = async (req: Request, res: Response) => {
+	try {
+		const { period = "30" } = req.query as Record<string, string>;
+		const days = Number(period);
+		const startDate = new Date();
+		startDate.setDate(startDate.getDate() - days);
+
+		const [
+			// Total delivered count (all time, no date filter)
+			totalDeliveredCount,
+			
+			// Delivery performance metrics (with date filter for performance analysis)
+			deliveryPerformance,
+			onTimeDeliveries,
+			lateDeliveries,
+			earlyDeliveries,
+			avgDeliveryTime,
+			
+			// Delivery trends over time
+			deliveryTrends,
+			
+			// Upcoming deliveries
+			upcomingDeliveries,
+			overdueDeliveries,
+			
+			// Delivery status distribution
+			deliveryStatusDistribution,
+			
+			// Average delivery time by status
+			avgDeliveryTimeByStatus,
+			
+			// Delivery performance by day of week
+			deliveryByDayOfWeek,
+			
+			// Top performing delivery periods
+			deliveryPerformanceByPeriod
+		] = await Promise.all([
+			// Get total delivered count (all time, no date restrictions)
+			order_model.countDocuments({
+				isActive: true,
+				status: OrderStatus.DELIVERED,
+				deliveredDate: { $exists: true }
+			}),
+			
+			// Calculate delivery performance metrics (with date filter for performance analysis)
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						status: OrderStatus.DELIVERED,
+						deliveredDate: { $exists: true, $gte: startDate },
+						expectedDeliveryDate: { $exists: true }
+					}
+				},
+				{
+					$project: {
+						deliveryTime: {
+							$divide: [
+								{ $subtract: ["$deliveredDate", "$orderDate"] },
+								1000 * 60 * 60 * 24 // Convert to days
+							]
+						},
+						expectedDeliveryTime: {
+							$divide: [
+								{ $subtract: ["$expectedDeliveryDate", "$orderDate"] },
+								1000 * 60 * 60 * 24 // Convert to days
+							]
+						},
+						deliveryDelay: {
+							$divide: [
+								{ $subtract: ["$deliveredDate", "$expectedDeliveryDate"] },
+								1000 * 60 * 60 * 24 // Convert to days
+							]
+						}
+					}
+				},
+				{
+					$group: {
+						_id: null,
+						totalDelivered: { $sum: 1 },
+						avgDeliveryTime: { $avg: "$deliveryTime" },
+						avgExpectedDeliveryTime: { $avg: "$expectedDeliveryTime" },
+						avgDeliveryDelay: { $avg: "$deliveryDelay" },
+						onTimeCount: {
+							$sum: {
+								$cond: [
+									{ $lte: ["$deliveryDelay", 0] },
+									1,
+									0
+								]
+							}
+						},
+						lateCount: {
+							$sum: {
+								$cond: [
+									{ $gt: ["$deliveryDelay", 0] },
+									1,
+									0
+								]
+							}
+						},
+						earlyCount: {
+							$sum: {
+								$cond: [
+									{ $lt: ["$deliveryDelay", -1] },
+									1,
+									0
+								]
+							}
+						}
+					}
+				}
+			]),
+
+			// Count on-time deliveries
+			order_model.countDocuments({
+				isActive: true,
+				status: OrderStatus.DELIVERED,
+				deliveredDate: { $exists: true, $gte: startDate },
+				expectedDeliveryDate: { $exists: true },
+				$expr: {
+					$lte: [
+						{ $divide: [{ $subtract: ["$deliveredDate", "$expectedDeliveryDate"] }, 1000 * 60 * 60 * 24] },
+						0
+					]
+				}
+			}),
+
+			// Count late deliveries
+			order_model.countDocuments({
+				isActive: true,
+				status: OrderStatus.DELIVERED,
+				deliveredDate: { $exists: true, $gte: startDate },
+				expectedDeliveryDate: { $exists: true },
+				$expr: {
+					$gt: [
+						{ $divide: [{ $subtract: ["$deliveredDate", "$expectedDeliveryDate"] }, 1000 * 60 * 60 * 24] },
+						0
+					]
+				}
+			}),
+
+			// Count early deliveries (more than 1 day early)
+			order_model.countDocuments({
+				isActive: true,
+				status: OrderStatus.DELIVERED,
+				deliveredDate: { $exists: true, $gte: startDate },
+				expectedDeliveryDate: { $exists: true },
+				$expr: {
+					$lt: [
+						{ $divide: [{ $subtract: ["$deliveredDate", "$expectedDeliveryDate"] }, 1000 * 60 * 60 * 24] },
+						-1
+					]
+				}
+			}),
+
+			// Average delivery time
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						status: OrderStatus.DELIVERED,
+						deliveredDate: { $exists: true, $gte: startDate }
+					}
+				},
+				{
+					$group: {
+						_id: null,
+						avgDeliveryTime: {
+							$avg: {
+								$divide: [
+									{ $subtract: ["$deliveredDate", "$orderDate"] },
+									1000 * 60 * 60 * 24
+								]
+							}
+						}
+					}
+				}
+			]),
+
+			// Delivery trends over time (last 7 days)
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						status: OrderStatus.DELIVERED,
+						deliveredDate: {
+							$gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+						}
+					}
+				},
+				{
+					$group: {
+						_id: {
+							$dateToString: { format: "%Y-%m-%d", date: "$deliveredDate" }
+						},
+						deliveries: { $sum: 1 },
+						avgDeliveryTime: {
+							$avg: {
+								$divide: [
+									{ $subtract: ["$deliveredDate", "$orderDate"] },
+									1000 * 60 * 60 * 24
+								]
+							}
+						}
+					}
+				},
+				{ $sort: { _id: 1 } }
+			]),
+
+			// Upcoming deliveries (next 7 days)
+			order_model.find({
+				isActive: true,
+				status: { $in: [OrderStatus.PENDING, OrderStatus.PROCESSING, OrderStatus.SHIPPED] },
+				expectedDeliveryDate: {
+					$gte: new Date(),
+					$lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+				}
+			})
+			.sort({ expectedDeliveryDate: 1 })
+			.limit(20)
+			.select("orderNumber customer.name totalAmount status expectedDeliveryDate orderDate")
+			.lean(),
+
+			// Overdue deliveries
+			order_model.find({
+				isActive: true,
+				status: { $in: [OrderStatus.PENDING, OrderStatus.PROCESSING, OrderStatus.SHIPPED] },
+				expectedDeliveryDate: { $lt: new Date() }
+			})
+			.sort({ expectedDeliveryDate: 1 })
+			.limit(20)
+			.select("orderNumber customer.name totalAmount status expectedDeliveryDate orderDate")
+			.lean(),
+
+			// Delivery status distribution
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						expectedDeliveryDate: { $exists: true }
+					}
+				},
+				{
+					$group: {
+						_id: "$status",
+						count: { $sum: 1 },
+						avgExpectedDeliveryTime: {
+							$avg: {
+								$divide: [
+									{ $subtract: ["$expectedDeliveryDate", "$orderDate"] },
+									1000 * 60 * 60 * 24
+								]
+							}
+						}
+					}
+				}
+			]),
+
+			// Average delivery time by status
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						status: OrderStatus.DELIVERED,
+						deliveredDate: { $exists: true, $gte: startDate }
+					}
+				},
+				{
+					$group: {
+						_id: {
+							$dateToString: { format: "%Y-%m-%d", date: "$deliveredDate" }
+						},
+						avgDeliveryTime: {
+							$avg: {
+								$divide: [
+									{ $subtract: ["$deliveredDate", "$orderDate"] },
+									1000 * 60 * 60 * 24
+								]
+							}
+						},
+						deliveryCount: { $sum: 1 }
+					}
+				},
+				{ $sort: { _id: 1 } }
+			]),
+
+			// Delivery performance by day of week
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						status: OrderStatus.DELIVERED,
+						deliveredDate: { $exists: true, $gte: startDate }
+					}
+				},
+				{
+					$group: {
+						_id: { $dayOfWeek: "$deliveredDate" },
+						deliveryCount: { $sum: 1 },
+						avgDeliveryTime: {
+							$avg: {
+								$divide: [
+									{ $subtract: ["$deliveredDate", "$orderDate"] },
+									1000 * 60 * 60 * 24
+								]
+							}
+						}
+					}
+				},
+				{ $sort: { _id: 1 } }
+			]),
+
+			// Delivery performance by time period
+			order_model.aggregate([
+				{
+					$match: {
+						isActive: true,
+						status: OrderStatus.DELIVERED,
+						deliveredDate: { $exists: true, $gte: startDate }
+					}
+				},
+				{
+					$group: {
+						_id: {
+							$dateToString: { format: "%Y-%m", date: "$deliveredDate" }
+						},
+						deliveryCount: { $sum: 1 },
+						avgDeliveryTime: {
+							$avg: {
+								$divide: [
+									{ $subtract: ["$deliveredDate", "$orderDate"] },
+									1000 * 60 * 60 * 24
+								]
+							}
+						},
+						onTimeRate: {
+							$avg: {
+								$cond: [
+									{
+										$lte: [
+											{ $divide: [{ $subtract: ["$deliveredDate", "$expectedDeliveryDate"] }, 1000 * 60 * 60 * 24] },
+											0
+										]
+									},
+									1,
+									0
+								]
+							}
+						}
+					}
+				},
+				{ $sort: { _id: 1 } }
+			])
+		]);
+
+		// Process delivery performance data
+		// Note: performance.totalDelivered is filtered by date period for performance analysis
+		// but totalDeliveredCount shows all-time total for accurate reporting
+		const performance = deliveryPerformance[0] || {
+			totalDelivered: 0,
+			avgDeliveryTime: 0,
+			avgExpectedDeliveryTime: 0,
+			avgDeliveryDelay: 0,
+			onTimeCount: 0,
+			lateCount: 0,
+			earlyCount: 0
+		};
+
+		const avgDeliveryTimeResult = avgDeliveryTime[0] || { avgDeliveryTime: 0 };
+
+		// Process delivery trends data to fill missing days
+		const deliveryTrendsData: any[] = [];
+		for (let i = 6; i >= 0; i--) {
+			const date = new Date();
+			date.setDate(date.getDate() - i);
+			const dateStr = date.toISOString().split('T')[0];
+			
+			const trendDay = deliveryTrends.find(t => t._id === dateStr);
+			
+			deliveryTrendsData.push({
+				date: dateStr,
+				deliveries: trendDay ? trendDay.deliveries : 0,
+				avgDeliveryTime: trendDay ? Math.round(trendDay.avgDeliveryTime * 10) / 10 : 0
+			});
+		}
+
+		// Process day of week data
+		const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		const deliveryByDayData = deliveryByDayOfWeek.map(day => ({
+			day: dayNames[day._id - 1] || `Day ${day._id}`,
+			deliveryCount: day.deliveryCount,
+			avgDeliveryTime: Math.round(day.avgDeliveryTime * 10) / 10
+		}));
+
+		// Calculate on-time delivery rate
+		const onTimeRate = performance.totalDelivered > 0 
+			? Math.round((performance.onTimeCount / performance.totalDelivered) * 100 * 10) / 10 
+			: 0;
+
+		res.json({
+			success: true,
+			data: {
+				overview: {
+					totalDelivered: totalDeliveredCount, // Use all-time total delivered count
+					onTimeDeliveries: performance.onTimeCount,
+					lateDeliveries: performance.lateCount,
+					earlyDeliveries: performance.earlyCount,
+					onTimeRate: onTimeRate,
+					avgDeliveryTime: Math.round(avgDeliveryTimeResult.avgDeliveryTime * 10) / 10,
+					avgExpectedDeliveryTime: Math.round(performance.avgExpectedDeliveryTime * 10) / 10,
+					avgDeliveryDelay: Math.round(performance.avgDeliveryDelay * 10) / 10
+				},
+				upcomingDeliveries: upcomingDeliveries.map((order) => ({
+					...order,
+					id: order._id.toString(),
+					_id: order._id.toString(),
+				})),
+				overdueDeliveries: overdueDeliveries.map((order) => ({
+					...order,
+					id: order._id.toString(),
+					_id: order._id.toString(),
+				})),
+				deliveryStatusDistribution: deliveryStatusDistribution.map((status) => ({
+					...status,
+					id: status._id,
+					_id: status._id,
+					avgExpectedDeliveryTime: Math.round(status.avgExpectedDeliveryTime * 10) / 10
+				})),
+				trends: {
+					deliveryTrends: deliveryTrendsData,
+					deliveryByDayOfWeek: deliveryByDayData,
+					deliveryPerformanceByPeriod: deliveryPerformanceByPeriod.map(period => ({
+						...period,
+						_id: period._id,
+						avgDeliveryTime: Math.round(period.avgDeliveryTime * 10) / 10,
+						onTimeRate: Math.round(period.onTimeRate * 100 * 10) / 10
+					}))
+				}
+			},
+		});
+	} catch (error) {
+		console.error("Error fetching delivery stats:", error);
+		res.status(500).json({
+			success: false,
+			error: "Failed to fetch delivery statistics",
 		});
 	}
 };

@@ -9,7 +9,7 @@ import {
 	get_product,
 	put_product,
 } from "./controllers/product_controller";
-import { statistcs } from "./controllers/statistic";
+import { statistcs, get_inventory_aging_stats } from "./controllers/statistic";
 import {
     get_distributors,
     post_distributor,
@@ -25,6 +25,7 @@ import {
 	delete_order,
 	delete_all_orders,
 	get_order_stats,
+	get_delivery_stats,
 } from "./controllers/orders_controller";
 import {
 	register,
@@ -110,6 +111,7 @@ api_routes.put("/product/:id", authorize(UserRole.ADMIN, UserRole.MANAGER), logA
 api_routes.delete("/product/:id", authorize(UserRole.ADMIN, UserRole.MANAGER), logActivity(ActivityType.DELETE, "Deleted product", "Product"), delete_product);
 
 api_routes.get("/products/stats", statistcs);
+api_routes.get("/products/aging-stats", get_inventory_aging_stats);
 
 // Distributors routes (protected with role-based access)
 api_routes.get("/distributors", get_distributors);
@@ -126,6 +128,7 @@ api_routes.put("/order/:id", authorize(UserRole.ADMIN, UserRole.MANAGER), logAct
 api_routes.delete("/order/:id", authorize(UserRole.ADMIN, UserRole.MANAGER), logActivity(ActivityType.DELETE, "Deleted order", "Order"), delete_order);
 api_routes.delete("/orders", authorize(UserRole.ADMIN), logActivity(ActivityType.DELETE, "Deleted all orders", "Orders"), delete_all_orders);
 api_routes.get("/orders/stats", get_order_stats);
+api_routes.get("/orders/delivery-stats", get_delivery_stats);
 
 // Settings routes (Admin only)
 api_routes.get("/settings", authorize(UserRole.ADMIN), getSettings);

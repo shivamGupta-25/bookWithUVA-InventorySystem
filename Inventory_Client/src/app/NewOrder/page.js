@@ -751,7 +751,11 @@ const NewOrderPage = () => {
                       >
                         <CalendarIcon className="mr-2 h-4 w-4" />
                         {orderDetails.expectedDeliveryDate ? (
-                          format(new Date(orderDetails.expectedDeliveryDate), "PPP")
+                          (() => {
+                            const [y, m, d] = orderDetails.expectedDeliveryDate.split('-').map(Number);
+                            const localDate = new Date(y, (m || 1) - 1, d || 1);
+                            return format(localDate, "PPP");
+                          })()
                         ) : (
                           <span className="text-slate-500">Pick a delivery date</span>
                         )}
@@ -760,12 +764,19 @@ const NewOrderPage = () => {
                     <PopoverContent className="w-auto p-0" align="start">
                       <CalendarComponent
                         mode="single"
-                        selected={orderDetails.expectedDeliveryDate ? new Date(orderDetails.expectedDeliveryDate) : undefined}
+                        selected={orderDetails.expectedDeliveryDate ? (() => {
+                          const [y, m, d] = orderDetails.expectedDeliveryDate.split('-').map(Number);
+                          return new Date(y, (m || 1) - 1, d || 1);
+                        })() : undefined}
                         onSelect={(date) => {
                           if (date) {
+                            const year = date.getFullYear();
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const day = String(date.getDate()).padStart(2, '0');
+                            const dateString = `${year}-${month}-${day}`;
                             setOrderDetails(prev => ({
                               ...prev,
-                              expectedDeliveryDate: date.toISOString().split('T')[0]
+                              expectedDeliveryDate: dateString
                             }));
                             setCalendarOpen(false);
                           }

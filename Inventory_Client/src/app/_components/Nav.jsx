@@ -79,7 +79,6 @@ export default function Nav({ children }) {
       { name: "Dashboard", href: "/", icon: Home, permission: null },
       { name: "Inventory", href: "/inventory", icon: Package, permission: null },
       { name: "Orders", href: "/orders", icon: ShoppingCart, permission: null },
-      { name: "Order Analytics", href: "/order-analytics", icon: BarChart, permission: null },
       { name: "Distributors", href: "/distributors", icon: Users, permission: null },
     ];
 

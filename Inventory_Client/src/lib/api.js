@@ -102,6 +102,13 @@ export const api = {
 	// Stats endpoint
 	stats: {
 		get: () => fetch(`${API_BASE_URL}/products/stats`, { headers: getHeaders() }),
+		getAging: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/products/aging-stats${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
+			);
+		},
 	},
 
 	// Activity logs endpoints
@@ -160,6 +167,13 @@ export const api = {
 			const queryString = new URLSearchParams(params).toString();
 			return fetch(
 				`${API_BASE_URL}/orders/stats${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
+			);
+		},
+		getDeliveryStats: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/orders/delivery-stats${queryString ? `?${queryString}` : ""}`,
 				{ headers: getHeaders() }
 			);
 		},
