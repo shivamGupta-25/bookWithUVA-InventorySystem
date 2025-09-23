@@ -192,7 +192,7 @@ export default function Nav({ children }) {
             )}>
               {(!isCollapsed || (isMobile && sidebarOpen)) ? (
                 <div className="flex items-center space-x-3">
-                  <Avatar className="w-8 h-8">
+                  <Avatar className="w-10 h-10 ring-2">
                     <AvatarImage src={user.avatar || getDefaultAvatarByRole(user.role)} alt={user.name} />
                     <AvatarFallback>
                       <User className="h-4 w-4" />
@@ -205,7 +205,7 @@ export default function Nav({ children }) {
                   </div>
                 </div>
               ) : (
-                <Avatar className="w-8 h-8 mx-auto">
+                <Avatar className="w-8 h-8 mx-auto ring-1">
                   <AvatarImage src={user.avatar || getDefaultAvatarByRole(user.role)} alt={user.name} />
                   <AvatarFallback>
                     <User className="h-4 w-4" />

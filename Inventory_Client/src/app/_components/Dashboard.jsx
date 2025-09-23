@@ -310,30 +310,24 @@ function WelcomeBanner() {
   const roleLabel = user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "Guest";
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 border border-white/10 p-3 sm:p-4 md:p-5 lg:p-6 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)] mb-3 sm:mb-4 lg:mb-6">
-      <div className="pointer-events-none absolute -top-24 -right-28 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -left-28 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl" />
-      <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+    <div className="overflow-hidden rounded-xl bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950 border border-white/10 p-3 sm:p-4 md:p-5 lg:p-6 mb-3 sm:mb-4 lg:mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
         {/* Left: Greeting */}
-        <div>
-          <div className="flex items-center gap-3">
-            <Avatar className="w-8 h-8 sm:w-10 sm:h-10 ring-2 ring-amber-300/70 shadow-[0_0_0_3px_rgba(255,255,255,0.06)]">
-              <AvatarImage src={user?.avatar || getDefaultAvatarByRole(user?.role)} alt={displayName} />
-              <AvatarFallback>
-                <UserIcon className="h-4 w-4 text-white" />
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-amber-100 to-white bg-clip-text text-transparent truncate">
-                Welcome, {displayName}
-              </h1>
-              <div className="mt-1">
-                <span className="inline-flex items-center gap-1 rounded-full bg-amber-300/10 text-amber-100 border border-amber-200/20 px-2 py-0.5 text-[10px] sm:text-xs">
-                  <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
-                  <span className="capitalize">{roleLabel}</span>
-                </span>
-              </div>
-            </div>
+        <div className="flex items-center gap-3">
+          <Avatar className="w-12 h-12 sm:w-18 sm:h-18 ring-2 ring-white/10 shadow-lg shadow-white/10">
+            <AvatarImage src={user?.avatar || getDefaultAvatarByRole(user?.role)} alt={displayName} />
+            <AvatarFallback>
+              <UserIcon className="h-4 w-4 text-white" />
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-amber-100 to-white bg-clip-text text-transparent truncate">
+              Welcome, {displayName}
+            </h1>
+            <p className="inline-flex items-center gap-1 rounded-full bg-amber-300/10 text-amber-100 border border-amber-200/20 px-2 py-0.5 text-[10px] sm:text-xs mt-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-300" />
+              <span className="capitalize font-medium text-sm">{roleLabel}</span>
+            </p>
           </div>
         </div>
 
@@ -352,6 +346,7 @@ function WelcomeBanner() {
           </div>
         </div>
       </div>
+
       <div className="mt-4 text-[10px] sm:text-sm text-white/90 max-w-full sm:max-w-lg">
         <span className="inline-flex items-center gap-1.5 rounded-md bg-white/10 px-2 py-1 text-[10px] sm:text-xs border border-white/15 backdrop-blur-sm ring-1 ring-white/10">
           <LogIn className="h-3 w-3" />
@@ -579,8 +574,8 @@ function OverviewCharts({ stats }) {
             <BarChart className="h-5 w-5" />
             Order Status Distribution
           </CardTitle>
-          <CardDescription>
-            Breakdown of orders by current status
+          <CardDescription className="text-sm text-gray-600 bg-blue-50/50 border-l-2 border-blue-200 pl-3 py-2 rounded-r-md">
+            <span className="font-medium text-gray-700">Analysis:</span> Breakdown of orders by current status. Shows the distribution of pending, processing, delivered, and cancelled orders to understand order pipeline health.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -629,10 +624,10 @@ function OverviewCharts({ stats }) {
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
             {orderStatusData.map((item, index) => (
-              <div key={index} className="flex items-center gap-2 text-sm">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+              <div key={index} className="flex items-center gap-1 text-sm">
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
                 <span className="text-gray-600 text-xs">{item.name}</span>
                 <span className="text-xs font-medium">{item.value}</span>
               </div>
@@ -648,8 +643,8 @@ function OverviewCharts({ stats }) {
             <TrendingUp className="h-5 w-5" />
             Top Selling Products
           </CardTitle>
-          <CardDescription>
-            Products ranked by total revenue generated
+          <CardDescription className="text-sm text-gray-600 bg-green-50/50 border-l-2 border-green-200 pl-3 py-2 rounded-r-md">
+            <span className="font-medium text-gray-700">Revenue Focus:</span> Products ranked by total revenue generated. Calculated by summing final prices of all delivered orders for each product to identify top revenue drivers.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -771,14 +766,14 @@ function OrderAnalytics({ stats }) {
             <TrendingUp className="h-5 w-5" />
             Order Trends (Last 7 Days)
           </CardTitle>
-          <CardDescription>
-            Daily order count and revenue trends over the past week
+          <CardDescription className="text-sm text-gray-600 bg-purple-50/50 border-l-2 border-purple-200 pl-3 py-2 rounded-r-md">
+            <span className="font-medium text-gray-700">Trend Analysis:</span> Daily order count and revenue trends over the past week. Bar chart shows order volume while line chart displays revenue trends to identify business growth patterns.
           </CardDescription>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-1 sm:p-2">
           <div className="h-64 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <RechartsBarChart data={orderTrendsData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+              <RechartsBarChart data={orderTrendsData} margin={{ top: 0, right: 0, left: 0, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis
                   dataKey="name"
@@ -971,8 +966,8 @@ function InventoryAnalytics({ stats }) {
               <Package className="h-5 w-5" />
               Stock Levels Distribution
             </CardTitle>
-            <CardDescription>
-              Current inventory status across all products
+            <CardDescription className="text-sm text-gray-600 bg-orange-50/50 border-l-2 border-orange-200 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-gray-700">Inventory Health:</span> Current inventory status across all products. Categorizes products as in-stock (above low threshold), low stock (between out-of-stock and low thresholds), or out-of-stock to monitor inventory health.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1014,14 +1009,14 @@ function InventoryAnalytics({ stats }) {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="grid grid-cols-3 gap-2 mt-4">
+            <div className="grid grid-cols-3 gap-1 sm:gap-2 mt-4">
               {stockLevelsData.map((item, index) => (
                 <div key={index} className="text-center">
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                  <div className="flex items-center justify-center gap-1.5 mb-1">
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
                     <span className="text-sm font-medium">{item.name}</span>
                   </div>
-                  <div className="text-lg font-bold">{item.value}</div>
+                  <div className="text-sm sm:text-base font-bold">{item.value}</div>
                 </div>
               ))}
             </div>
@@ -1087,8 +1082,8 @@ function InventoryAnalytics({ stats }) {
               <BarChart className="h-5 w-5" />
               Products by Category
             </CardTitle>
-            <CardDescription>
-              Distribution of products across different categories
+            <CardDescription className="text-sm text-gray-600 bg-indigo-50/50 border-l-2 border-indigo-200 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-gray-700">Category Analysis:</span> Distribution of products across different categories. Shows product count per category to understand inventory composition and identify category performance.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -1151,8 +1146,8 @@ function InventoryAnalytics({ stats }) {
               <Users className="h-5 w-5" />
               Products by Distributor
             </CardTitle>
-            <CardDescription>
-              Distribution of products across different distributors
+            <CardDescription className="text-sm text-gray-600 bg-teal-50/50 border-l-2 border-teal-200 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-gray-700">Supplier Relations:</span> Distribution of products across different distributors. Shows product count per distributor to understand supplier relationships and identify key distribution partners.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -1227,8 +1222,8 @@ function InventoryAging({ stats }) {
             <BarChart className="h-5 w-5" />
             Inventory Aging & Dead Stock
           </CardTitle>
-          <CardDescription>
-            Time since last sale and products likely to be dead stock
+          <CardDescription className="text-sm text-gray-600 bg-red-50/50 border-l-2 border-red-200 pl-3 py-2 rounded-r-md">
+            <span className="font-medium text-gray-700">Dead Stock Alert:</span> Time since last sale and products likely to be dead stock. Analyzes products by days since last sale to identify slow-moving inventory and potential dead stock requiring attention.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-8">
@@ -1319,8 +1314,8 @@ function StockAlerts({ stats }) {
             <AlertTriangle className="h-5 w-5" />
             Active Stock Alerts
           </CardTitle>
-          <CardDescription>
-            Products that need immediate attention
+          <CardDescription className="text-sm text-gray-600 bg-amber-50/50 border-l-2 border-amber-200 pl-3 py-2 rounded-r-md">
+            <span className="font-medium text-gray-700">Stock Alerts:</span> Products that need immediate attention. Shows products with low stock or out-of-stock status based on configured thresholds to prevent stockouts and maintain inventory levels.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -1446,14 +1441,14 @@ function DeliveryAnalytics({ stats }) {
               <BarChart className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Performance
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Breakdown of deliveries by performance
+            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-emerald-50/50 border-l-2 border-emerald-200 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-gray-700">Performance Metrics:</span> Breakdown of deliveries by performance. Categorizes deliveries as on-time (delivered on or before expected date), late (after expected date), or early (more than 1 day before expected date) to measure delivery efficiency.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="h-48 sm:h-64 md:h-72 lg:h-80">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                <PieChart margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                   <Pie
                     data={deliveryPerformanceData}
                     cx="50%"
@@ -1518,8 +1513,8 @@ function DeliveryAnalytics({ stats }) {
               <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Trends (Last 7 Days)
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Daily delivery count and average delivery time
+            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-cyan-50/50 border-l-2 border-cyan-200 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-gray-700">Delivery Trends:</span> Daily delivery count and average delivery time. Bar chart shows delivery volume while line chart displays average delivery time in days to track delivery performance trends.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-1">
@@ -1636,8 +1631,8 @@ function DeliveryAnalytics({ stats }) {
               <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
               Upcoming Deliveries (Next 7 Days)
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Orders scheduled for delivery in the next week
+            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-yellow-50/50 border-l-2 border-yellow-200 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-gray-700">Upcoming Schedule:</span> Orders scheduled for delivery in the next week. Shows upcoming deliveries to help plan logistics and ensure timely order fulfillment.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
@@ -1679,8 +1674,8 @@ function DeliveryAnalytics({ stats }) {
               <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
               Overdue Deliveries
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Orders past their expected delivery date
+            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-rose-50/50 border-l-2 border-rose-200 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-gray-700">Urgent Attention:</span> Orders past their expected delivery date. Identifies overdue orders requiring immediate attention to maintain customer satisfaction and delivery performance.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
@@ -1726,8 +1721,8 @@ function DeliveryAnalytics({ stats }) {
               <BarChart className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Performance by Day of Week
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm">
-              Average delivery time and count by day of the week
+            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-violet-50/50 border-l-2 border-violet-200 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-gray-700">Weekly Patterns:</span> This chart analyzes delivery performance patterns across days of the week. <strong className="underline">Blue bars</strong> show the number of deliveries completed each day (Sunday=1, Monday=2, etc.). <strong className="underline">Green line</strong> shows average <span className="underline font-medium">delivery time in days from order date to delivery date</span>. <span className="underline font-medium">Use this to identify which days have the most deliveries and which days have faster/slower delivery times.</span> <span className="underline font-medium">Lower line values indicate faster deliveries, while higher bars show busier delivery days.</span> This helps optimize delivery scheduling and resource allocation.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-2">
