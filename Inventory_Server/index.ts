@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { createServer } from "http";
 import { Server as SocketIOServer } from "socket.io";
-import api_routes from "./api_routes";
+import api_routes from "./api_routes.js";
 
 dotenv.config({ debug: false, quiet: true });
 const PORT: number = JSON.parse(process.env.PORT || "4000") as number;

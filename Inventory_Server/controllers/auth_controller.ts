@@ -1,14 +1,14 @@
 import { Request, Response } from "express";
-import { user_model, UserRole } from "../models/user";
-import { activityLog_model, ActivityType } from "../models/activityLog";
+import { user_model, UserRole } from "../models/user.js";
+import { activityLog_model, ActivityType } from "../models/activityLog.js";
 import { 
 	generateToken, 
 	generateRefreshToken, 
 	verifyToken, 
 	validatePassword, 
 	validateEmail
-} from "../utils/authUtils";
-import { sendOTPEmail, sendPasswordResetSuccessEmail } from "../utils/emailService";
+} from "../utils/authUtils.js";
+import { sendOTPEmail, sendPasswordResetSuccessEmail } from "../utils/emailService.js";
 
 // Register new user (Admin only)
 export const register = async (req: Request, res: Response) => {

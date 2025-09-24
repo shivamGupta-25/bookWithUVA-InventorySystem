@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import distributor_model from "../models/distributor";
+import distributor_model from "../models/distributor.js";
 
 export const get_distributors = async (req: Request, res: Response) => {
     try {

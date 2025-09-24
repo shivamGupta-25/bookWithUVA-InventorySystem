@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { settings_model } from "../models/settings";
-import { stockAlert_model } from "../models/stockAlert";
-import { activityLog_model, ActivityType } from "../models/activityLog";
+import { settings_model } from "../models/settings.js";
+import { stockAlert_model } from "../models/stockAlert.js";
+import { activityLog_model, ActivityType } from "../models/activityLog.js";
 
 // GET /api/settings - Get current settings
 export const getSettings = async (req: Request, res: Response): Promise<void> => {

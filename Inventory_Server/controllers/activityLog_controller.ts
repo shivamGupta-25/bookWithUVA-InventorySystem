@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { activityLog_model, ActivityType } from "../models/activityLog";
+import { activityLog_model, ActivityType } from "../models/activityLog.js";
 
 // Get activity logs (Admin only)
 export const getActivityLogs = async (req: Request, res: Response) => {

@@ -1,6 +1,6 @@
-import { product_model } from "../models/products";
-import { settings_model } from "../models/settings";
-import { stockAlert_model } from "../models/stockAlert";
+import { product_model } from "../models/products.js";
+import { settings_model } from "../models/settings.js";
+import { stockAlert_model } from "../models/stockAlert.js";
 
 // Type declaration for global io
 declare const global: any;

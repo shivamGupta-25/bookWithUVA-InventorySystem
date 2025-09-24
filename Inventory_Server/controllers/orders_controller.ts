@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
 import { FilterQuery } from "mongoose";
-import { order_model, OrderStatus } from "../models/order";
-import { product_model } from "../models/products";
+import { order_model, OrderStatus } from "../models/order.js";
+import { product_model } from "../models/products.js";
 import mongoose from "mongoose";
-import { calculateItemTotals, calculateOrderTotals } from "../utils/monetaryUtils";
-import { checkStockLevels } from "../utils/stockAlertUtils";
+import { calculateItemTotals, calculateOrderTotals } from "../utils/monetaryUtils.js";
+import { checkStockLevels } from "../utils/stockAlertUtils.js";
 
 // GET /api/orders - Fetch all orders with optional filtering
 export const get_orders = async (req: Request, res: Response) => {

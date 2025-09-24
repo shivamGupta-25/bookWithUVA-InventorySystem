@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { calculateItemTotals, calculateOrderTotals } from "../utils/monetaryUtils";
+import { calculateItemTotals, calculateOrderTotals } from "../utils/monetaryUtils.js";
 
 // Order Item Schema (embedded in Order)
 const OrderItemSchema = new mongoose.Schema({

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { FilterQuery } from "mongoose";
-import { product_model } from "../models/products";
-import { settings_model } from "../models/settings";
-import { order_model, OrderStatus } from "../models/order";
+import { product_model } from "../models/products.js";
+import { settings_model } from "../models/settings.js";
+import { order_model, OrderStatus } from "../models/order.js";
 
 // GET /api/products/stats - Get inventory statistics
 export const statistcs = async (req, res) => {

@@ -3,20 +3,20 @@ import {
 	delete_products,
 	get_products,
 	post_products,
-} from "./controllers/products_controller";
+} from "./controllers/products_controller.js";
 import {
 	delete_product,
 	get_product,
 	put_product,
-} from "./controllers/product_controller";
-import { statistcs, get_inventory_aging_stats } from "./controllers/statistic";
+} from "./controllers/product_controller.js";
+import { statistcs, get_inventory_aging_stats } from "./controllers/statistic.js";
 import {
     get_distributors,
     post_distributor,
     put_distributor,
     delete_distributor,
     delete_all_distributors,
-} from "./controllers/distributors_controller";
+} from "./controllers/distributors_controller.js";
 import {
 	get_orders,
 	get_order,
@@ -26,7 +26,7 @@ import {
 	delete_all_orders,
 	get_order_stats,
 	get_delivery_stats,
-} from "./controllers/orders_controller";
+} from "./controllers/orders_controller.js";
 import {
 	register,
 	login,
@@ -38,7 +38,7 @@ import {
 	verifyTokenEndpoint,
 	forgotPassword,
 	resetPasswordWithOTP,
-} from "./controllers/auth_controller";
+} from "./controllers/auth_controller.js";
 import {
 	getAllUsers,
 	getUserById,
@@ -46,14 +46,14 @@ import {
 	deleteUser,
 	toggleUserStatus,
 	getUserStats,
-} from "./controllers/user_controller";
+} from "./controllers/user_controller.js";
 import {
 	getActivityLogs,
 	getActivityLogById,
 	getUserActivityLogs,
 	getActivityStats,
 	deleteOldActivityLogs,
-} from "./controllers/activityLog_controller";
+} from "./controllers/activityLog_controller.js";
 import {
 	getSettings,
 	updateSettings,
@@ -61,10 +61,10 @@ import {
 	acknowledgeAlert,
 	resolveAlert,
 	getAlertStats,
-} from "./controllers/settings_controller";
-import { authenticate, authorize, logActivity } from "./utils/authUtils";
-import { UserRole } from "./models/user";
-import { ActivityType } from "./models/activityLog";
+} from "./controllers/settings_controller.js";
+import { authenticate, authorize, logActivity } from "./utils/authUtils.js";
+import { UserRole } from "./models/user.js";
+import { ActivityType } from "./models/activityLog.js";
 
 export const api_routes = express.Router();
 export default api_routes;

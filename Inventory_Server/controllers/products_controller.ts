@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { FilterQuery } from "mongoose";
-import { product_model } from "../models/products";
-import distributor_model from "../models/distributor";
+import { product_model } from "../models/products.js";
+import distributor_model from "../models/distributor.js";
 import mongoose from "mongoose";
-import { checkStockLevels } from "../utils/stockAlertUtils";
+import { checkStockLevels } from "../utils/stockAlertUtils.js";
 
 // GET /api/products - Fetch all products with optional filtering
 export const get_products = async (req: Request, res: Response) => {

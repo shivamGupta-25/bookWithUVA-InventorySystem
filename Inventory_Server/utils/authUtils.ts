@@ -1,7 +1,7 @@
 import jwt, { SignOptions, Secret } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { user_model, UserRole } from "../models/user";
-import { activityLog_model, ActivityType } from "../models/activityLog";
+import { user_model, UserRole } from "../models/user.js";
+import { activityLog_model, ActivityType } from "../models/activityLog.js";
 import dotenv from "dotenv";
 dotenv.config();
 

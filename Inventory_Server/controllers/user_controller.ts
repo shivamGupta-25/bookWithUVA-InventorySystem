@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { user_model, UserRole } from "../models/user";
-import { activityLog_model, ActivityType } from "../models/activityLog";
+import { user_model, UserRole } from "../models/user.js";
+import { activityLog_model, ActivityType } from "../models/activityLog.js";
 
 // Get all users (Admin only)
 export const getAllUsers = async (req: Request, res: Response) => {
