@@ -216,6 +216,12 @@ export const api = {
 				method: "PUT",
 				headers: getHeaders(),
 			}),
+		deleteAll: () =>
+			fetch(`${API_BASE_URL}/settings/alerts`, {
+				method: "DELETE",
+				headers: getHeaders(),
+				body: JSON.stringify({ confirmDeleteAll: true })
+			}),
 	},
 };
 

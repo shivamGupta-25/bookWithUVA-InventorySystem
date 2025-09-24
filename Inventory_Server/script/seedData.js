@@ -118,15 +118,7 @@ function buildProducts(distributorsByName) {
 function buildUsers() {
   return [
     { name: "Shivam Gupta", email: "guptashivam25oct@gmail.com", role: UserRole.ADMIN, avatar: "/avatars/Male_Avatar.png", isActive: true, lastLogin: daysAgo(2) },
-    { name: "Tanya", email: "japanishweeb@gmail.com", role: UserRole.ADMIN, avatar: "/avatars/Female_Avatar.png", isActive: true, lastLogin: daysAgo(1) },
-    { name: "Aarti Manager", email: "aarti.manager@example.com", role: UserRole.MANAGER, avatar: null, isActive: true, lastLogin: daysAgo(3) },
-    { name: "Rahul Manager", email: "rahul.manager@example.com", role: UserRole.MANAGER, avatar: null, isActive: true, lastLogin: daysAgo(7) },
-    { name: "Vivek Viewer", email: "vivek.viewer@example.com", role: UserRole.VIEWER, avatar: null, isActive: true, lastLogin: hoursAgo(6) },
-    { name: "Priya Viewer", email: "priya.viewer@example.com", role: UserRole.VIEWER, avatar: null, isActive: true, lastLogin: hoursAgo(12) },
-    { name: "Sana Viewer", email: "sana.viewer@example.com", role: UserRole.VIEWER, avatar: null, isActive: true, lastLogin: daysAgo(2) },
-    // Edge cases: inactive, never logged in
-    { name: "Deactivated User", email: "inactive.user@example.com", role: UserRole.VIEWER, avatar: null, isActive: false, lastLogin: null },
-    { name: "New Hire", email: "new.hire@example.com", role: UserRole.MANAGER, avatar: null, isActive: true, lastLogin: null },
+    { name: "Tanya", email: "japanishweeb@gmail.com", role: UserRole.MANAGER, avatar: "/avatars/Female_Avatar.png", isActive: true, lastLogin: daysAgo(1) },
   ];
 }
 

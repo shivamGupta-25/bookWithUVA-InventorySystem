@@ -58,6 +58,7 @@ import {
 	getSettings,
 	updateSettings,
 	getStockAlerts,
+	deleteAllStockAlerts,
 	acknowledgeAlert,
 	resolveAlert,
 	getAlertStats,
@@ -139,3 +140,4 @@ api_routes.get("/settings/alerts", getStockAlerts); // All authenticated users c
 api_routes.get("/settings/alerts/stats", authorize(UserRole.ADMIN, UserRole.MANAGER), getAlertStats);
 api_routes.put("/settings/alerts/:id/acknowledge", authorize(UserRole.ADMIN, UserRole.MANAGER), acknowledgeAlert);
 api_routes.put("/settings/alerts/:id/resolve", authorize(UserRole.ADMIN, UserRole.MANAGER), resolveAlert);
+api_routes.delete("/settings/alerts", authorize(UserRole.ADMIN), logActivity(ActivityType.DELETE, "Deleted all stock alerts", "StockAlerts"), deleteAllStockAlerts);

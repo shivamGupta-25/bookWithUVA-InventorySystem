@@ -617,6 +617,43 @@ const SettingsPage = () => {
                   </AlertDialog>
                 </CardContent>
               </Card>
+
+              {/* Stock Alerts */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Stock Alerts</CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center justify-between">
+                  <p className="text-sm text-gray-600">Delete all stock alerts (low/out-of-stock notifications).</p>
+                  <AlertDialog open={open.stockalerts} onOpenChange={(v) => setOpen((o) => ({ ...o, stockalerts: v }))}>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                        <Trash2 className="h-4 w-4 mr-2" /> Delete All
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2 text-red-600"><ShieldAlert className="h-5 w-5" /> Delete ALL Stock Alerts?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action is irreversible and will remove every stock alert record.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel disabled={busy.stockalerts}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-red-600 hover:bg-red-700"
+                          disabled={busy.stockalerts}
+                          onClick={() =>
+                            run("stockalerts", () => api.stockAlerts.deleteAll(), (d) => `Deleted ${d.deletedCount || d.data?.deletedCount || 0} stock alerts`)
+                          }
+                        >
+                          {busy.stockalerts ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Deleting...</> : "Delete All"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>

@@ -298,3 +298,46 @@ export const getAlertStats = async (req: Request, res: Response): Promise<void> 
 		});
 	}
 };
+
+// DELETE /api/settings/alerts - Delete all stock alerts
+export const deleteAllStockAlerts = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { confirmDeleteAll } = req.body || {};
+
+        if (!confirmDeleteAll) {
+            res.status(400).json({
+                success: false,
+                error: "Confirmation required to delete all stock alerts",
+            });
+            return;
+        }
+
+        const result = await stockAlert_model.deleteMany({});
+
+        // Log activity
+        const currentUser = (req as any).user;
+        if (currentUser) {
+            await (activityLog_model as any).logActivity({
+                user: currentUser._id,
+                userName: currentUser.name,
+                userEmail: currentUser.email,
+                activityType: ActivityType.DELETE,
+                description: `Deleted ${result.deletedCount || 0} stock alerts`,
+                resource: "StockAlerts",
+                userAgent: req.get("User-Agent") || "unknown",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Successfully deleted ${result.deletedCount || 0} stock alerts`,
+            deletedCount: result.deletedCount || 0,
+        });
+    } catch (error) {
+        console.error("Error deleting all stock alerts:", error);
+        res.status(500).json({
+            success: false,
+            error: "Failed to delete all stock alerts",
+        });
+    }
+};
