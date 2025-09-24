@@ -7,6 +7,7 @@
 		"dev": "tsx --watch .",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"seed": "tsx script/seedData.js",
+		"create-admin": "tsx script/createAdmin.js",
 		"build": "tsc -p tsconfig.json",
 		"start": "node dist/index.js"
 	},

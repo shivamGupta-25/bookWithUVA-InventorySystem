@@ -12,7 +12,7 @@ const PORT: number = JSON.parse(process.env.PORT || "4000") as number;
 const DATABASE_URI: string = process.env.DATABASE_URI as string;
 const ALLOWED_HOSTS: any = process.env.ALLOWED_HOSTS
 	? JSON.parse(process.env.ALLOWED_HOSTS)
-	: "*";
+	: [];
 
 const app = express();
 const server = createServer(app);
