@@ -35,6 +35,7 @@ import {
 import {
   Search,
   Edit,
+  Eye,
   Trash2,
   Plus,
   BookOpen,
@@ -48,16 +49,20 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import EditProductDialog from "@/app/_components/EditProductDialog";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/contexts/AuthContext";
 import api from '@/lib/api';
+import { Switch } from "@/components/ui/switch";
 
 const Inventory = () => {
   const router = useRouter();
+  const { canPerformAction, user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedSubCategory, setSelectedSubCategory] = useState('All Sub Categories');
   const [selectedDistributor, setSelectedDistributor] = useState('All Distributors');
   const [selectedPriceRange, setSelectedPriceRange] = useState('All Prices');
   const [selectedStockStatus, setSelectedStockStatus] = useState('all');
+  const [selectedProductStatus, setSelectedProductStatus] = useState('all');
   const [sortBy, setSortBy] = useState('title');
 
   // API data states
@@ -79,11 +84,19 @@ const Inventory = () => {
   const [distributors, setDistributors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize] = useState(20);
+  const [totalItems, setTotalItems] = useState(0);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteAllDialogOpen, setDeleteAllDialogOpen] = useState(false);
   const [deletingAll, setDeletingAll] = useState(false);
+  const canDeleteProducts = canPerformAction("delete", "products");
+  const canCreateProducts = canPerformAction("create", "products");
+  const canUpdateProducts = canPerformAction("update", "products");
+  const isViewer = user?.role === 'viewer';
 
   // Edit dialog states
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -106,6 +119,11 @@ const Inventory = () => {
     { label: "Out of Stock", value: "out-of-stock" }
   ];
 
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory, selectedSubCategory, selectedDistributor, selectedPriceRange, selectedStockStatus, selectedProductStatus, sortBy]);
+
   // Load data from API
   useEffect(() => {
     const loadData = async () => {
@@ -114,8 +132,43 @@ const Inventory = () => {
         setError('');
 
         // Load products, stats, and settings in parallel
+        // Map UI filters to API params
+        const priceRange = priceRanges.find((r) => r.label === selectedPriceRange);
+        const queryParams = {
+          page: String(currentPage),
+          limit: String(pageSize),
+          ...(searchTerm && { search: searchTerm }),
+          ...(selectedCategory && selectedCategory !== 'All Categories' && { category: selectedCategory }),
+          ...(selectedSubCategory && selectedSubCategory !== 'All Sub Categories' && { subCategory: selectedSubCategory }),
+          ...(priceRange && priceRange.label !== 'All Prices' && {
+            ...(Number.isFinite(priceRange.min) ? { priceMin: String(priceRange.min) } : {}),
+            ...(Number.isFinite(priceRange.max) && priceRange.max !== Infinity ? { priceMax: String(priceRange.max) } : {}),
+          }),
+          ...(selectedStockStatus && selectedStockStatus !== 'all' && { stockStatus: selectedStockStatus }),
+          // Sort mapping
+          ...(() => {
+            switch (sortBy) {
+              case 'price-low':
+                return { sortBy: 'price', sortOrder: 'asc' };
+              case 'price-high':
+                return { sortBy: 'price', sortOrder: 'desc' };
+              case 'stock-low':
+                return { sortBy: 'stock', sortOrder: 'asc' };
+              case 'stock-high':
+                return { sortBy: 'stock', sortOrder: 'desc' };
+              case 'gst-low':
+                return { sortBy: 'gst', sortOrder: 'asc' };
+              case 'gst-high':
+                return { sortBy: 'gst', sortOrder: 'desc' };
+              case 'title':
+              default:
+                return { sortBy: 'title', sortOrder: 'asc' };
+            }
+          })(),
+        };
+
         const [productsResponse, statsResponse, settingsResponse] = await Promise.all([
-          api.products.getAll({ limit: 1000 }),
+          api.products.getAll(queryParams),
           api.stats.get(),
           api.settings.get()
         ]);
@@ -128,6 +181,8 @@ const Inventory = () => {
 
         if (productsData.success) {
           setProducts(productsData.data.products);
+          setTotalPages(productsData.data.pagination.pages || 1);
+          setTotalItems(productsData.data.pagination?.total || productsData.data.products.length || 0);
           // Filter out any existing "All" entries to prevent duplicates
           const filteredCategories = productsData.data.filters.categories.filter(cat =>
             cat !== 'All' && cat !== 'All Categories'
@@ -158,7 +213,7 @@ const Inventory = () => {
     };
 
     loadData();
-  }, []);
+  }, [currentPage, pageSize, searchTerm, selectedCategory, selectedSubCategory, selectedPriceRange, selectedStockStatus, sortBy, priceRanges]);
 
   // Filter and search products
   const filteredBooks = useMemo(() => {
@@ -178,7 +233,11 @@ const Inventory = () => {
       else if (selectedStockStatus === 'low-stock') matchesStock = book.stock > outOfStockThreshold && book.stock <= lowStockThreshold;
       else if (selectedStockStatus === 'in-stock') matchesStock = book.stock > lowStockThreshold;
 
-      return matchesSearch && matchesCategory && matchesSubCategory && matchesDistributor && matchesPrice && matchesStock;
+      let matchesProductStatus = true;
+      if (selectedProductStatus === 'active') matchesProductStatus = !!book.isActive;
+      else if (selectedProductStatus === 'inactive') matchesProductStatus = !book.isActive;
+
+      return matchesSearch && matchesCategory && matchesSubCategory && matchesDistributor && matchesPrice && matchesStock && matchesProductStatus;
     });
 
     // Sort products
@@ -206,7 +265,7 @@ const Inventory = () => {
     });
 
     return filtered;
-  }, [products, searchTerm, selectedCategory, selectedSubCategory, selectedDistributor, selectedPriceRange, selectedStockStatus, sortBy, settings, priceRanges]);
+  }, [products, searchTerm, selectedCategory, selectedSubCategory, selectedDistributor, selectedPriceRange, selectedStockStatus, selectedProductStatus, sortBy, settings, priceRanges]);
 
   const getStockStatus = (stock) => {
     const { lowStockThreshold, outOfStockThreshold } = settings.stockAlertThresholds;
@@ -222,6 +281,7 @@ const Inventory = () => {
     setSelectedDistributor('All Distributors');
     setSelectedPriceRange('All Prices');
     setSelectedStockStatus('all');
+    setSelectedProductStatus('all');
     setSortBy('title');
   };
 
@@ -242,10 +302,59 @@ const Inventory = () => {
     setDeleteDialogOpen(true);
   };
 
+  const handleToggleActive = async (id, currentIsActive) => {
+    try {
+      const response = await api.products.update(id, { isActive: !currentIsActive });
+      const data = await response.json();
+      if (data.success) {
+        toast.success(!currentIsActive ? 'Product activated' : 'Product deactivated');
+        await refreshInventoryData();
+      } else {
+        toast.error('Failed to update status: ' + (data.error || 'Unknown error'));
+      }
+    } catch (err) {
+      console.error('Error toggling active status', err);
+      toast.error('Status update failed. Please try again.');
+    }
+  };
+
   const refreshInventoryData = async () => {
     try {
+      const priceRange = priceRanges.find((r) => r.label === selectedPriceRange);
+      const queryParams = {
+        page: String(currentPage),
+        limit: String(pageSize),
+        ...(searchTerm && { search: searchTerm }),
+        ...(selectedCategory && selectedCategory !== 'All Categories' && { category: selectedCategory }),
+        ...(selectedSubCategory && selectedSubCategory !== 'All Sub Categories' && { subCategory: selectedSubCategory }),
+        ...(priceRange && priceRange.label !== 'All Prices' && {
+          ...(Number.isFinite(priceRange.min) ? { priceMin: String(priceRange.min) } : {}),
+          ...(Number.isFinite(priceRange.max) && priceRange.max !== Infinity ? { priceMax: String(priceRange.max) } : {}),
+        }),
+        ...(selectedStockStatus && selectedStockStatus !== 'all' && { stockStatus: selectedStockStatus }),
+        ...(() => {
+          switch (sortBy) {
+            case 'price-low':
+              return { sortBy: 'price', sortOrder: 'asc' };
+            case 'price-high':
+              return { sortBy: 'price', sortOrder: 'desc' };
+            case 'stock-low':
+              return { sortBy: 'stock', sortOrder: 'asc' };
+            case 'stock-high':
+              return { sortBy: 'stock', sortOrder: 'desc' };
+            case 'gst-low':
+              return { sortBy: 'gst', sortOrder: 'asc' };
+            case 'gst-high':
+              return { sortBy: 'gst', sortOrder: 'desc' };
+            case 'title':
+            default:
+              return { sortBy: 'title', sortOrder: 'asc' };
+          }
+        })(),
+      };
+
       const [productsResponse, statsResponse, settingsResponse] = await Promise.all([
-        api.products.getAll({ limit: 1000 }),
+        api.products.getAll(queryParams),
         api.stats.get(),
         api.settings.get()
       ]);
@@ -258,6 +367,8 @@ const Inventory = () => {
 
       if (productsData.success) {
         setProducts(productsData.data.products);
+        setTotalPages(productsData.data.pagination.pages || 1);
+        setTotalItems(productsData.data.pagination?.total || productsData.data.products.length || 0);
         // Filter out any existing "All" entries to prevent duplicates
         const filteredCategories = productsData.data.filters.categories.filter(cat =>
           cat !== 'All' && cat !== 'All Categories'
@@ -357,17 +468,19 @@ const Inventory = () => {
               </p>
             </div>
             <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
-              <Button
-                onClick={handleAddProduct}
-                size="lg"
-                className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border-0 rounded-lg px-6 py-3 min-w-[160px] cursor-pointer"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center justify-center gap-2">
-                  <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
-                  <span className="text-base font-medium">Add Product</span>
-                </div>
-              </Button>
+              {canCreateProducts && (
+                <Button
+                  onClick={handleAddProduct}
+                  size="lg"
+                  className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border-0 rounded-lg px-6 py-3 min-w-[160px] cursor-pointer"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative flex items-center justify-center gap-2">
+                    <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
+                    <span className="text-base font-medium">Add Product</span>
+                  </div>
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -507,15 +620,17 @@ const Inventory = () => {
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Clear All
                     </Button>
-                    <Button
-                      onClick={handleDeleteAllClick}
-                      variant="outline"
-                      size="sm"
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 px-4 py-2 font-medium"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete All
-                    </Button>
+                    {canDeleteProducts && (
+                      <Button
+                        onClick={handleDeleteAllClick}
+                        variant="outline"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 px-4 py-2 font-medium"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete All
+                      </Button>
+                    )}
                   </div>
                 </div>
 
@@ -605,6 +720,20 @@ const Inventory = () => {
                   </div>
 
                   <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-700">Product Status</label>
+                    <Select value={selectedProductStatus} onValueChange={setSelectedProductStatus}>
+                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                        <SelectValue placeholder="All Products" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                        <SelectItem value="all" className="rounded-md">All</SelectItem>
+                        <SelectItem value="active" className="rounded-md">Active</SelectItem>
+                        <SelectItem value="inactive" className="rounded-md">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Sort By</label>
                     <Select value={sortBy} onValueChange={setSortBy}>
                       <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
@@ -628,7 +757,10 @@ const Inventory = () => {
                     <div className="w-full p-3 bg-gray-50 rounded-lg border border-gray-200">
                       <p className="text-sm font-medium text-gray-700">Results</p>
                       <p className="text-lg font-semibold text-gray-900">
-                        {filteredBooks.length} of {products.length}
+                        {filteredBooks.length} of {totalItems}
+                        <span className="ml-2 text-xs text-gray-500">
+                          Page {currentPage} of {totalPages}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -683,7 +815,7 @@ const Inventory = () => {
                 <Table className="text-sm">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="min-w-[200px]">Product</TableHead>
+                      <TableHead className="min-w-[150px]">Product</TableHead>
                       <TableHead className="min-w-[120px]">Distributor</TableHead>
                       <TableHead className="min-w-[100px]">Category</TableHead>
                       <TableHead className="min-w-[120px]">Sub Category</TableHead>
@@ -698,7 +830,7 @@ const Inventory = () => {
                     {filteredBooks.map((book) => {
                       const stockStatus = getStockStatus(book.stock);
                       return (
-                        <TableRow key={book.id}>
+                        <TableRow key={book.id} className={!book.isActive ? "opacity-50" : ""}>
                           <TableCell>
                             <h3 className="font-semibold text-gray-900 text-sm leading-tight break-words">{book.title}</h3>
                           </TableCell>
@@ -736,17 +868,32 @@ const Inventory = () => {
                                 className="h-7 w-7 p-0 hover:bg-green-100 flex-shrink-0"
                                 title="Edit product"
                               >
-                                <Edit className="h-4 w-4 text-green-600" />
+                                {isViewer ? (
+                                  <Eye className="h-4 w-4 text-green-600" />
+                                ) : (
+                                  <Edit className="h-4 w-4 text-green-600" />
+                                )}
                               </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteClick(book.id)}
-                                className="h-7 w-7 p-0 hover:bg-red-100 flex-shrink-0"
-                                title="Delete product"
-                              >
-                                <Trash2 className="h-4 w-4 text-red-600" />
-                              </Button>
+                              {canUpdateProducts && (
+                                <Switch
+                                  checked={!!book.isActive}
+                                  onCheckedChange={() => handleToggleActive(book.id, book.isActive)}
+                                  disabled={!canUpdateProducts}
+                                  className="scale-75"
+                                  aria-label={book.isActive ? "Deactivate product" : "Activate product"}
+                                />
+                              )}
+                              {canDeleteProducts && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteClick(book.id)}
+                                  className="h-7 w-7 p-0 hover:bg-red-100 flex-shrink-0"
+                                  title="Delete product"
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-600" />
+                                </Button>
+                              )}
                             </div>
                           </TableCell>
                         </TableRow>
@@ -762,7 +909,7 @@ const Inventory = () => {
               {filteredBooks.map((book) => {
                 const stockStatus = getStockStatus(book.stock);
                 return (
-                  <Card key={book.id} className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
+                  <Card key={book.id} className={`bg-white border-0 shadow-sm hover:shadow-md transition-shadow ${!book.isActive ? 'opacity-50' : ''}`}>
                     <CardContent className="p-5">
                       <div className="space-y-4">
                         {/* Header with title and status */}
@@ -814,17 +961,32 @@ const Inventory = () => {
                             className="h-8 w-8 p-0 hover:bg-green-100 flex-shrink-0"
                             title="Edit product"
                           >
-                            <Edit className="h-4 w-4 text-green-600" />
+                            {isViewer ? (
+                              <Eye className="h-4 w-4 text-green-600" />
+                            ) : (
+                              <Edit className="h-4 w-4 text-green-600" />
+                            )}
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDeleteClick(book.id)}
-                            className="h-8 w-8 p-0 hover:bg-red-100 flex-shrink-0"
-                            title="Delete product"
-                          >
-                            <Trash2 className="h-4 w-4 text-red-600" />
-                          </Button>
+                          {canUpdateProducts && (
+                            <Switch
+                              checked={!!book.isActive}
+                              onCheckedChange={() => handleToggleActive(book.id, book.isActive)}
+                              disabled={!canUpdateProducts}
+                              className="scale-75"
+                              aria-label={book.isActive ? "Deactivate product" : "Activate product"}
+                            />
+                          )}
+                          {canDeleteProducts && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDeleteClick(book.id)}
+                              className="h-8 w-8 p-0 hover:bg-red-100 flex-shrink-0"
+                              title="Delete product"
+                            >
+                              <Trash2 className="h-4 w-4 text-red-600" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </CardContent>
@@ -832,6 +994,31 @@ const Inventory = () => {
                 );
               })}
             </div>
+
+            {/* Pagination - Responsive */}
+            {totalPages > 1 && (
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4 p-3 sm:p-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-10"
+                >
+                  Previous
+                </Button>
+                <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-10"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </>
         )}
 
@@ -914,18 +1101,20 @@ const Inventory = () => {
         </AlertDialog>
 
         {/* Floating Action Button for Mobile */}
-        <div className="fixed bottom-6 right-6 z-50 lg:hidden">
-          <Button
-            onClick={handleAddProduct}
-            size="lg"
-            className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 rounded-full w-14 h-14 p-0"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="relative flex items-center justify-center">
-              <Plus className="h-6 w-6 transition-transform duration-300 group-hover:rotate-90" />
-            </div>
-          </Button>
-        </div>
+        {canCreateProducts && (
+          <div className="fixed bottom-6 right-6 z-50 lg:hidden">
+            <Button
+              onClick={handleAddProduct}
+              size="lg"
+              className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 rounded-full w-14 h-14 p-0"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative flex items-center justify-center">
+                <Plus className="h-6 w-6 transition-transform duration-300 group-hover:rotate-90" />
+              </div>
+            </Button>
+          </div>
+        )}
 
         {/* Edit Product Dialog */}
         <EditProductDialog
@@ -936,6 +1125,7 @@ const Inventory = () => {
           subCategories={subCategories}
           distributors={distributors}
           onProductUpdated={handleProductUpdated}
+          readOnly={isViewer}
         />
       </div>
     </ProtectedRoute>

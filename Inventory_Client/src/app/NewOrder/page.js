@@ -141,7 +141,7 @@ const NewOrderPage = () => {
   // Filter products
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === 'All Categories' || product.category === selectedCategory;
-    return matchesCategory && product.stock > 0;
+    return matchesCategory && product.stock > 0 && product.isActive !== false;
   });
 
   // Add product to order

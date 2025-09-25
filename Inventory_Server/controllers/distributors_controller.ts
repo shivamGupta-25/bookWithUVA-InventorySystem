@@ -4,7 +4,7 @@ import distributor_model from "../models/distributor.js";
 export const get_distributors = async (req: Request, res: Response) => {
     try {
         const { search = "", limit = "100", page = "1" } = req.query as Record<string, string>;
-        const filter: any = { isActive: true };
+        const filter: any = {};
         if (search) {
             filter.$or = [
                 { name: { $regex: search, $options: "i" } },

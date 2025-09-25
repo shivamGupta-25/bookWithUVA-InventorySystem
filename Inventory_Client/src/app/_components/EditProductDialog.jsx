@@ -26,7 +26,8 @@ const EditProductDialog = ({
   categories, 
   subCategories, 
   distributors,
-  onProductUpdated 
+  onProductUpdated,
+  readOnly = false,
 }) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -159,7 +160,7 @@ const EditProductDialog = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    if (readOnly) return;
     if (!validateForm()) return;
 
     setSaving(true);
@@ -210,7 +211,7 @@ const EditProductDialog = ({
         <DialogHeader className="pb-2 flex-shrink-0">
           <DialogTitle className="flex items-center gap-2 text-lg">
             <Save className="h-4 w-4" />
-            Edit Product
+            {readOnly ? 'View Product' : 'Edit Product'}
           </DialogTitle>
         </DialogHeader>
 
@@ -236,6 +237,7 @@ const EditProductDialog = ({
                 placeholder="Enter product title"
                 className="w-full h-9"
                 disabled={saving}
+                readOnly={readOnly}
               />
             </div>
 
@@ -251,7 +253,7 @@ const EditProductDialog = ({
                 getLabel={(opt) => opt?.name || ''}
                 getValue={(opt) => opt?.id || ''}
                 placeholder="Select or enter distributor name"
-                className="w-full [&_input]:h-9"
+                className={`w-full [&_input]:h-9 ${readOnly ? 'opacity-100 pointer-events-none' : ''}`}
                 allowCustom={true}
                 disabled={saving || loadingOptions}
               />
@@ -268,7 +270,7 @@ const EditProductDialog = ({
                   onValueChange={(value) => handleInputChange('category', value)}
                   options={localCategories.filter(cat => cat !== 'All')}
                   placeholder="Select or enter category"
-                  className="w-full [&_input]:h-9"
+                  className={`w-full [&_input]:h-9 ${readOnly ? 'opacity-100 pointer-events-none' : ''}`}
                   allowCustom={true}
                   disabled={saving || loadingOptions}
                 />
@@ -283,7 +285,7 @@ const EditProductDialog = ({
                   onValueChange={(value) => handleInputChange('subCategory', value)}
                   options={localSubCategories.filter(sub => sub !== 'All')}
                   placeholder="Select or enter sub-category"
-                  className="w-full [&_input]:h-9"
+                  className={`w-full [&_input]:h-9 ${readOnly ? 'opacity-100 pointer-events-none' : ''}`}
                   allowCustom={true}
                   disabled={saving || loadingOptions}
                 />
@@ -296,7 +298,7 @@ const EditProductDialog = ({
                 <label className="text-xs font-medium text-gray-700">
                   Price (₹) *
                 </label>
-                <Input
+              <Input
                   type="number"
                   step="0.01"
                   min="0"
@@ -304,7 +306,8 @@ const EditProductDialog = ({
                   onChange={(e) => handleInputChange('price', e.target.value)}
                   placeholder="0.00"
                   className="w-full h-9"
-                  disabled={saving}
+                disabled={saving}
+                readOnly={readOnly}
                 />
               </div>
 
@@ -312,14 +315,15 @@ const EditProductDialog = ({
                 <label className="text-xs font-medium text-gray-700">
                   Stock Quantity *
                 </label>
-                <Input
+              <Input
                   type="number"
                   min="0"
                   value={formData.stock}
                   onChange={(e) => handleInputChange('stock', e.target.value)}
                   placeholder="0"
                   className="w-full h-9"
-                  disabled={saving}
+                disabled={saving}
+                readOnly={readOnly}
                 />
               </div>
 
@@ -327,7 +331,7 @@ const EditProductDialog = ({
                 <label className="text-xs font-medium text-gray-700">
                   GST (%) *
                 </label>
-                <Input
+              <Input
                   type="number"
                   step="0.01"
                   min="0"
@@ -336,7 +340,8 @@ const EditProductDialog = ({
                   onChange={(e) => handleInputChange('gst', e.target.value)}
                   placeholder="18"
                   className="w-full h-9"
-                  disabled={saving}
+                disabled={saving}
+                readOnly={readOnly}
                 />
               </div>
             </div>
@@ -353,6 +358,7 @@ const EditProductDialog = ({
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 rows={2}
                 disabled={saving}
+                readOnly={readOnly}
               />
             </div>
           </form>
@@ -369,24 +375,26 @@ const EditProductDialog = ({
             <X className="h-3 w-3 mr-1" />
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={saving}
-            onClick={handleSubmit}
-            className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto h-9"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                Updating...
-              </>
-            ) : (
-              <>
-                <Save className="h-3 w-3 mr-1" />
-                Update Product
-              </>
-            )}
-          </Button>
+          {!readOnly && (
+            <Button
+              type="submit"
+              disabled={saving}
+              onClick={handleSubmit}
+              className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto h-9"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <Save className="h-3 w-3 mr-1" />
+                  Update Product
+                </>
+              )}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

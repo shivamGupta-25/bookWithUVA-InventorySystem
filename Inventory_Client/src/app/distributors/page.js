@@ -1,8 +1,16 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
@@ -23,15 +31,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Loader2, Plus, Save, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Plus, Save, Pencil, Eye, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useAuth } from "@/contexts/AuthContext";
 import api from "@/lib/api";
 
 const DistributorsPage = () => {
+  const { canPerformAction, user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -40,14 +51,28 @@ const DistributorsPage = () => {
   const [deleteOneOpen, setDeleteOneOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize] = useState(20);
+  const canDeleteDistributors = canPerformAction("delete", "distributors");
+  const canCreateDistributors = canPerformAction("create", "distributors");
+  const canUpdateDistributors = canPerformAction("update", "distributors");
+  const isViewer = user?.role === 'viewer';
 
-  const loadDistributors = async () => {
+  const loadDistributors = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await api.distributors.getAll({ limit: 1000 });
+      const res = await api.distributors.getAll({ 
+        page: String(currentPage), 
+        limit: String(pageSize),
+        ...(search && { search }),
+      });
       const data = await res.json();
       if (data.success) {
         setItems(data.data.distributors || []);
+        const total = data.data.pagination?.total || (data.data.distributors?.length || 0);
+        const pages = data.data.pagination?.limit ? Math.ceil(total / data.data.pagination.limit) : (data.data.pagination?.pages || 1);
+        setTotalPages(pages);
       }
     } catch (err) {
       console.error(err);
@@ -55,20 +80,29 @@ const DistributorsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize, search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter]);
 
   useEffect(() => {
     loadDistributors();
-  }, []);
+  }, [loadDistributors]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return items.filter((d) =>
-      [d.name, d.phoneNumber, d.gstinNumber, d.address, d.email].some((v) => (v || "").toLowerCase().includes(q))
-    );
-  }, [items, search]);
+    return items
+      .filter((d) =>
+        [d.name, d.phoneNumber, d.gstinNumber, d.address, d.email].some((v) => (v || "").toLowerCase().includes(q))
+      )
+      .filter((d) =>
+        statusFilter === "all" ? true : statusFilter === "active" ? d.isActive : !d.isActive
+      );
+  }, [items, search, statusFilter]);
 
   const openCreate = () => {
+    if (isViewer) return;
     setEditing(null);
     setForm({ name: "", phoneNumber: "", address: "", gstinNumber: "", email: "" });
     setDialogOpen(true);
@@ -93,6 +127,7 @@ const DistributorsPage = () => {
   };
 
   const save = async () => {
+    if (isViewer) return;
     if (!form.name.trim()) {
       toast.error("Name is required");
       return;
@@ -146,6 +181,23 @@ const DistributorsPage = () => {
     setDeleteOneOpen(true);
   };
 
+  const toggleActive = async (d, nextIsActive) => {
+    if (!canUpdateDistributors) return;
+    try {
+      const res = await api.distributors.update(d.id, { isActive: nextIsActive });
+      const data = await res.json();
+      if (data.success) {
+        setItems((prev) => prev.map((it) => (it.id === d.id ? { ...it, isActive: nextIsActive } : it)));
+        toast.success(`Distributor ${nextIsActive ? "activated" : "deactivated"}`);
+      } else {
+        toast.error(data.error || "Failed to update status");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to update status");
+    }
+  };
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen w-full max-w-full overflow-x-hidden">
@@ -161,24 +213,28 @@ const DistributorsPage = () => {
             </p>
           </div>
           <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
-            <Button 
-              onClick={openCreate}
-              size="lg"
-              className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border-0 rounded-lg px-4 py-3 min-w-[140px] cursor-pointer"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative flex items-center justify-center gap-2">
-                <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
-                <span className="text-base font-medium">Add Distributor</span>
-              </div>
-            </Button>
-            <Button
-              variant="outline"
-              className="text-red-600 border-red-200 hover:bg-red-50"
-              onClick={() => setDeleteAllOpen(true)}
-            >
-              Delete All
-            </Button>
+            {canCreateDistributors && (
+              <Button 
+                onClick={openCreate}
+                size="lg"
+                className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border-0 rounded-lg px-4 py-3 min-w-[140px] cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative flex items-center justify-center gap-2">
+                  <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
+                  <span className="text-base font-medium">Add Distributor</span>
+                </div>
+              </Button>
+            )}
+            {canDeleteDistributors && (
+              <Button
+                variant="outline"
+                className="text-red-600 border-red-200 hover:bg-red-50"
+                onClick={() => setDeleteAllOpen(true)}
+              >
+                Delete All
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -186,13 +242,15 @@ const DistributorsPage = () => {
       <div className="mx-auto w-full max-w-full overflow-x-hidden">
         {/* Mobile Delete All Button */}
         <div className="flex lg:hidden items-center gap-2 mb-4">
-          <Button
-            variant="outline"
-            className="text-red-600 border-red-200 hover:bg-red-50 w-full"
-            onClick={() => setDeleteAllOpen(true)}
-          >
-            Delete All
-          </Button>
+          {canDeleteDistributors && (
+            <Button
+              variant="outline"
+              className="text-red-600 border-red-200 hover:bg-red-50 w-full"
+              onClick={() => setDeleteAllOpen(true)}
+            >
+              Delete All
+            </Button>
+          )}
         </div>
         <Card>
           <CardHeader className="pb-2">
@@ -206,6 +264,16 @@ const DistributorsPage = () => {
                 placeholder="Search by name, phone, GSTIN, address, email"
                 className="w-full"
               />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
               <Button variant="outline" onClick={loadDistributors} className="w-full sm:w-auto">
                 Refresh
               </Button>
@@ -218,6 +286,7 @@ const DistributorsPage = () => {
             ) : filtered.length === 0 ? (
               <div className="py-10 text-center text-gray-600">No distributors found.</div>
             ) : (
+              <>
               <div className="rounded-md border overflow-x-auto sm:p-2 md:p-4 lg:p-2">
                 <Table>
                   <TableHeader>
@@ -230,9 +299,9 @@ const DistributorsPage = () => {
                       <TableHead className="text-right min-w-[80px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
+                <TableBody>
                     {filtered.map((d) => (
-                      <TableRow key={d.id}>
+                      <TableRow key={d.id} className={d.isActive ? "" : "opacity-60 bg-gray-50"}>
                         <TableCell className="font-medium">
                           <div>
                             <div className="font-semibold">{d.name}</div>
@@ -255,13 +324,22 @@ const DistributorsPage = () => {
                         <TableCell className="hidden lg:table-cell">{d.gstinNumber || "-"}</TableCell>
                         <TableCell className="hidden xl:table-cell max-w-[150px] truncate">{d.address || "-"}</TableCell>
                         <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
+                          <div className="flex justify-end gap-1.5 items-center">
+                            <Switch
+                              checked={!!d.isActive}
+                              onCheckedChange={(v) => toggleActive(d, v)}
+                              disabled={!canUpdateDistributors}
+                              className="scale-75"
+                              aria-label="Toggle active"
+                            />
                             <Button size="sm" variant="ghost" onClick={() => openEdit(d)}>
-                              <Pencil className="h-4 w-4" />
+                              {isViewer ? <Eye className="h-4 w-4" /> : <Pencil className="h-4 w-4" />}
                             </Button>
-                            <Button size="sm" variant="ghost" onClick={() => softDelete(d)}>
-                              <Trash2 className="h-4 w-4 text-red-600" />
-                            </Button>
+                            {canDeleteDistributors && (
+                              <Button size="sm" variant="ghost" onClick={() => softDelete(d)}>
+                                <Trash2 className="h-4 w-4 text-red-600" />
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -269,6 +347,30 @@ const DistributorsPage = () => {
                   </TableBody>
                 </Table>
               </div>
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 mt-4 p-3 sm:p-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-10"
+                  >
+                    Previous
+                  </Button>
+                  <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-10"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+              </>
             )}
           </CardContent>
         </Card>
@@ -277,7 +379,7 @@ const DistributorsPage = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="w-[95vw] max-w-md sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl">{editing ? "Edit Distributor" : "New Distributor"}</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">{isViewer ? "View Distributor" : (editing ? "Edit Distributor" : "New Distributor")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -287,6 +389,7 @@ const DistributorsPage = () => {
                 onChange={(e) => setForm({ ...form, name: e.target.value })} 
                 placeholder="Distributor name"
                 className="w-full"
+                readOnly={isViewer}
               />
             </div>
             <div className="space-y-2">
@@ -296,6 +399,7 @@ const DistributorsPage = () => {
                 onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} 
                 placeholder="Phone number"
                 className="w-full"
+                readOnly={isViewer}
               />
             </div>
             <div className="space-y-2">
@@ -306,6 +410,7 @@ const DistributorsPage = () => {
                 placeholder="Email address"
                 type="email"
                 className="w-full"
+                readOnly={isViewer}
               />
             </div>
             <div className="space-y-2">
@@ -315,6 +420,7 @@ const DistributorsPage = () => {
                 onChange={(e) => setForm({ ...form, gstinNumber: e.target.value })} 
                 placeholder="GSTIN number"
                 className="w-full"
+                readOnly={isViewer}
               />
             </div>
             <div className="space-y-2">
@@ -324,29 +430,32 @@ const DistributorsPage = () => {
                 onChange={(e) => setForm({ ...form, address: e.target.value })} 
                 placeholder="Address"
                 className="w-full"
+                readOnly={isViewer}
               />
             </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button 
-              onClick={save} 
-              disabled={saving} 
-              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
-            >
-              {saving ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 
-                  <span className="hidden sm:inline">Saving...</span>
-                  <span className="sm:hidden">Save</span>
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4 mr-2" /> 
-                  <span className="hidden sm:inline">Save</span>
-                  <span className="sm:hidden">Save</span>
-                </>
-              )}
-            </Button>
+            {!isViewer && (
+              <Button 
+                onClick={save} 
+                disabled={saving} 
+                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+              >
+                {saving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" /> 
+                    <span className="hidden sm:inline">Saving...</span>
+                    <span className="sm:hidden">Save</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4 mr-2" /> 
+                    <span className="hidden sm:inline">Save</span>
+                    <span className="sm:hidden">Save</span>
+                  </>
+                )}
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -433,18 +542,20 @@ const DistributorsPage = () => {
       </AlertDialog>
 
       {/* Floating Action Button for Mobile */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 lg:hidden">
-        <Button
-          onClick={openCreate}
-          size="lg"
-          className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 rounded-full w-14 h-14 p-0"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="relative flex items-center justify-center">
-            <Plus className="h-6 w-6 transition-transform duration-300 group-hover:rotate-90" />
-          </div>
-        </Button>
-      </div>
+      {canCreateDistributors && (
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 lg:hidden">
+          <Button
+            onClick={openCreate}
+            size="lg"
+            className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 rounded-full w-14 h-14 p-0"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center justify-center">
+              <Plus className="h-6 w-6 transition-transform duration-300 group-hover:rotate-90" />
+            </div>
+          </Button>
+        </div>
+      )}
       </div>
     </ProtectedRoute>
   );

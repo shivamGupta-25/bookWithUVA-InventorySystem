@@ -23,7 +23,8 @@ export const get_products = async (req: Request, res: Response) => {
 		} = req.query as Record<string, string>;
 
 		// ✅ Build filter object
-		const filter: any = { isActive: true };
+		// Include both active and inactive products in the list so the client can dim inactive ones
+		const filter: any = {};
 
 		// Text search on title/description (distributor name search would require aggregation)
 		if (search) {
@@ -85,6 +86,7 @@ export const get_products = async (req: Request, res: Response) => {
 					.populate({ path: "distributor", select: "name phoneNumber address gstinNumber" })
 					.lean(),
 				product_model.countDocuments(filter),
+				// Keep filters based on active products to avoid clutter from old inactive categories
 				product_model.distinct("category", { isActive: true }),
 				product_model.distinct("subCategory", { isActive: true }),
 				distributor_model.find({ isActive: true }).select("name phoneNumber address gstinNumber").sort({ name: 1 }).lean(),

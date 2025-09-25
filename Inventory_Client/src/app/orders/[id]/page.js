@@ -59,16 +59,21 @@ import {
   AlertTriangle,
   FileText,
   Download,
-  Receipt
+  Receipt,
+  Eye
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 import api from '@/lib/api';
 import { generateInvoiceWithNotification } from '@/lib/invoiceUtils';
 
 const OrderDetailPage = ({ params }) => {
   const router = useRouter();
   const resolvedParams = use(params);
+  const { canPerformAction, user } = useAuth();
+  const canDeleteOrders = canPerformAction("delete", "orders");
+  const isViewer = user?.role === 'viewer';
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -1091,7 +1096,7 @@ const OrderDetailPage = ({ params }) => {
                     <ShoppingCart className="h-4 w-4" />
                     Order Items ({editing ? editData.items.length : order.items.length})
                   </CardTitle>
-                  {editing && order.status === 'pending' && (
+                  {editing && order.status === 'pending' && !isViewer && (
                     <Button
                       onClick={() => setEditingItems(!editingItems)}
                       variant="outline"
@@ -1314,12 +1319,12 @@ const OrderDetailPage = ({ params }) => {
                   </div>
                 )}
                 {editing && editingItems && order.status === 'pending' && (
-                    <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                  <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
                     <div className="flex items-start gap-3 text-sm text-blue-700">
                       <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                       <div>
                         <span className="font-semibold">Editing Mode:</span>
-                          <p className="mt-1">You can modify quantities or remove items. Changes will be saved when you click &quot;Save&quot;.</p>
+                        <p className="mt-1">You can modify quantities or remove items. Changes will be saved when you click &quot;Save&quot;.</p>
                       </div>
                     </div>
                   </div>
@@ -1421,16 +1426,18 @@ const OrderDetailPage = ({ params }) => {
                         <Receipt className="h-3 w-3 mr-2" />
                         Generate Invoice
                       </Button>
-                      <Button
-                        onClick={() => setEditing(true)}
-                        variant="outline"
-                        size="sm"
-                        className="w-full h-8 text-sm"
-                      >
-                        <Edit className="h-3 w-3 mr-2" />
-                        Edit Order
-                      </Button>
-                      {order.status === 'pending' && (
+                      {!isViewer && (
+                        <Button
+                          onClick={() => setEditing(true)}
+                          variant="outline"
+                          size="sm"
+                          className="w-full h-8 text-sm"
+                        >
+                          <Edit className="h-3 w-3 mr-2" />
+                          Edit Order
+                        </Button>
+                      )}
+                      {order.status === 'pending' && canDeleteOrders && (
                         <Button
                           onClick={() => setShowDeleteDialog(true)}
                           variant="outline"
@@ -1591,17 +1598,19 @@ const OrderDetailPage = ({ params }) => {
                 <span className="hidden xs:inline truncate">Invoice</span>
                 <span className="xs:hidden">Inv</span>
               </Button>
-              <Button
-                onClick={() => setEditing(true)}
-                variant="outline"
-                size="sm"
-                className="flex-1 h-9 text-sm min-w-0"
-              >
-                <Edit className="h-3 w-3 mr-2 flex-shrink-0" />
-                <span className="hidden xs:inline truncate">Edit</span>
-                <span className="xs:hidden">Edit</span>
-              </Button>
-              {order.status === 'pending' && (
+              {!isViewer && (
+                <Button
+                  onClick={() => setEditing(true)}
+                  variant="outline"
+                  size="sm"
+                  className="flex-1 h-9 text-sm min-w-0"
+                >
+                  <Edit className="h-3 w-3 mr-2 flex-shrink-0" />
+                  <span className="hidden xs:inline truncate">Edit</span>
+                  <span className="xs:hidden">Edit</span>
+                </Button>
+              )}
+              {order.status === 'pending' && canDeleteOrders && (
                 <Button
                   onClick={() => setShowDeleteDialog(true)}
                   variant="outline"

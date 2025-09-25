@@ -49,7 +49,9 @@ const NewProduct = () => {
         if (data.success) {
           setCategories(data.data.filters.categories);
           setSubCategories(data.data.filters.subCategories);
-          const distOpts = (dists?.data?.distributors || []).map(d => ({ id: d.id, name: d.name }));
+          const distOpts = (dists?.data?.distributors || [])
+            .filter(d => d.isActive)
+            .map(d => ({ id: d.id, name: d.name }));
           setDistributors(distOpts);
         }
       } catch (error) {
