@@ -10,12 +10,33 @@ const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASS = process.env.EMAIL_PASS;
 const EMAIL_FROM = process.env.EMAIL_FROM || EMAIL_USER;
 
+// Helper function to safely log email configuration without exposing credentials
+const logEmailConfig = () => {
+	return {
+		host: EMAIL_HOST,
+		port: EMAIL_PORT,
+		secure: EMAIL_PORT === 465,
+		auth: {
+			user: EMAIL_USER ? `${EMAIL_USER.substring(0, 3)}...${EMAIL_USER.substring(EMAIL_USER.indexOf('@'))}` : 'not set',
+			pass: EMAIL_PASS ? '********' : 'not set'
+		},
+		from: EMAIL_FROM ? `${EMAIL_FROM.substring(0, 3)}...${EMAIL_FROM.substring(EMAIL_FROM.indexOf('@'))}` : 'not set'
+	};
+};
+
 // Create transporter
 const createTransporter = () => {
 	if (!EMAIL_HOST || !EMAIL_PORT || !EMAIL_USER || !EMAIL_PASS) {
-		throw new Error("Email configuration missing. Please set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, and EMAIL_PASS.");
+		const missingVars = [
+			!EMAIL_HOST && 'EMAIL_HOST',
+			!EMAIL_PORT && 'EMAIL_PORT',
+			!EMAIL_USER && 'EMAIL_USER',
+			!EMAIL_PASS && 'EMAIL_PASS'
+		].filter(Boolean).join(', ');
+		throw new Error(`Email configuration missing. Please set: ${missingVars}`);
 	}
 
+	console.log('[Email Service] Creating transporter with config:', logEmailConfig());
 	const isSecure = EMAIL_PORT === 465; // true for 465, false for others
 
 	return nodemailer.createTransport({
@@ -26,6 +47,13 @@ const createTransporter = () => {
 			user: EMAIL_USER,
 			pass: EMAIL_PASS,
 		},
+		// Add additional configuration to handle timeouts
+		tls: {
+			rejectUnauthorized: true,
+		},
+		connectionTimeout: 10000, // 10 seconds
+		greetingTimeout: 5000,    // 5 seconds
+		socketTimeout: 10000,     // 10 seconds
 	});
 };
 
@@ -83,11 +111,27 @@ export const sendOTPEmail = async (email: string, otp: string, userName: string)
 			`,
 		};
 
+		console.log('[Email Service] Attempting to send OTP email to:', email);
 		const info = await transporter.sendMail(mailOptions);
-		console.log("OTP email sent successfully:", info.messageId);
+		console.log('[Email Service] OTP email sent successfully:', {
+			messageId: info.messageId,
+			recipient: email,
+			response: info.response,
+			timestamp: new Date().toISOString()
+		});
 		return true;
-	} catch (error) {
-		console.error("Failed to send OTP email:", error);
+	} catch (error: any) {
+		console.error('[Email Service] Failed to send OTP email:', {
+			error: {
+				name: error.name,
+				message: error.message,
+				code: error.code,
+				command: error.command,
+				timestamp: new Date().toISOString()
+			},
+			recipient: email,
+			config: logEmailConfig()
+		});
 		return false;
 	}
 };
@@ -137,11 +181,27 @@ export const sendPasswordResetSuccessEmail = async (email: string, userName: str
 			`,
 		};
 
+		console.log('[Email Service] Attempting to send password reset success email to:', email);
 		const info = await transporter.sendMail(mailOptions);
-		console.log("Password reset success email sent:", info.messageId);
+		console.log('[Email Service] Password reset success email sent:', {
+			messageId: info.messageId,
+			recipient: email,
+			response: info.response,
+			timestamp: new Date().toISOString()
+		});
 		return true;
-	} catch (error) {
-		console.error("Failed to send password reset success email:", error);
+	} catch (error: any) {
+		console.error('[Email Service] Failed to send password reset success email:', {
+			error: {
+				name: error.name,
+				message: error.message,
+				code: error.code,
+				command: error.command,
+				timestamp: new Date().toISOString()
+			},
+			recipient: email,
+			config: logEmailConfig()
+		});
 		return false;
 	}
 };
