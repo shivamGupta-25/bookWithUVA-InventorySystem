@@ -3,6 +3,13 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Constants for retry logic
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 2000; // 2 seconds
+
+// Helper function to delay execution
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 // Email configuration
 const EMAIL_HOST = process.env.EMAIL_HOST;
 const EMAIL_PORT = process.env.EMAIL_PORT ? Number(process.env.EMAIL_PORT) : undefined;
@@ -47,14 +54,34 @@ const createTransporter = () => {
 			user: EMAIL_USER,
 			pass: EMAIL_PASS,
 		},
-		// Add additional configuration to handle timeouts
+		// Improved SMTP configuration for Gmail
 		tls: {
 			rejectUnauthorized: true,
+			ciphers: 'SSLv3',
 		},
-		connectionTimeout: 10000, // 10 seconds
-		greetingTimeout: 5000,    // 5 seconds
-		socketTimeout: 10000,     // 10 seconds
+		requireTLS: true, // Force TLS
+		connectionTimeout: 30000,    // 30 seconds
+		greetingTimeout: 30000,     // 30 seconds
+		socketTimeout: 30000,        // 30 seconds
+		debug: true,                 // Enable debug logs
+		logger: true                 // Enable built-in logger
 	});
+};
+
+// Helper function to handle email sending with retries
+const sendMailWithRetry = async (mailOptions: any, retryCount = 0): Promise<any> => {
+	try {
+		const transporter = createTransporter();
+		return await transporter.sendMail(mailOptions);
+	} catch (error: any) {
+		if (retryCount < MAX_RETRIES && 
+			(error.code === 'ETIMEDOUT' || error.code === 'ECONNRESET' || error.code === 'ECONNREFUSED')) {
+			console.log(`[Email Service] Attempt ${retryCount + 1} failed, retrying in ${RETRY_DELAY}ms...`);
+			await sleep(RETRY_DELAY * (retryCount + 1)); // Exponential backoff
+			return sendMailWithRetry(mailOptions, retryCount + 1);
+		}
+		throw error;
+	}
 };
 
 // Send OTP email
@@ -65,6 +92,8 @@ export const sendOTPEmail = async (email: string, otp: string, userName: string)
 			return false;
 		}
 
+		// Verify email configuration
+		console.log('[Email Service] Verifying Gmail SMTP configuration...');
 		const transporter = createTransporter();
 
 		const mailOptions = {
@@ -112,7 +141,16 @@ export const sendOTPEmail = async (email: string, otp: string, userName: string)
 		};
 
 		console.log('[Email Service] Attempting to send OTP email to:', email);
-		const info = await transporter.sendMail(mailOptions);
+		// Verify SMTP connection before sending
+		try {
+			await transporter.verify();
+			console.log('[Email Service] SMTP connection verified successfully');
+		} catch (verifyError) {
+			console.error('[Email Service] SMTP connection verification failed:', verifyError);
+			throw verifyError;
+		}
+
+		const info = await sendMailWithRetry(mailOptions);
 		console.log('[Email Service] OTP email sent successfully:', {
 			messageId: info.messageId,
 			recipient: email,
