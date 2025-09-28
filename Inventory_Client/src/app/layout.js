@@ -1,6 +1,5 @@
 import { Jost } from "next/font/google";
 import "./globals.css";
-import Nav from "./_components/Nav";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";

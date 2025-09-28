@@ -698,7 +698,7 @@ export const put_order = async (req: Request, res: Response): Promise<void> => {
 					// Restore stock for removed items (only for pending orders, already handled above for others)
 					if (currentOrderForStock.status === OrderStatus.PENDING) {
 						for (const existingItem of currentOrderForStock.items) {
-							const stillExists = updateData.items.find(item => {
+							const stillExists = updateData.items.find((item: any) => {
 								const itemProductId = typeof item.product === 'string' 
 									? item.product 
 									: item.product._id || item.product.id;
@@ -826,7 +826,7 @@ export const put_order = async (req: Request, res: Response): Promise<void> => {
 			}
 
 			// Calculate order totals
-			const itemsArray = mergedOrder.items.map((item) => ({
+			const itemsArray = mergedOrder.items.map((item: any) => ({
 				totalPrice: item.totalPrice,
 				gstAmount: item.gstAmount
 			}));

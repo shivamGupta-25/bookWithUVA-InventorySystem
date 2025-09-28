@@ -5,7 +5,7 @@ import { settings_model } from "../models/settings.js";
 import { order_model, OrderStatus } from "../models/order.js";
 
 // GET /api/products/stats - Get inventory statistics
-export const statistcs = async (req, res) => {
+export const statistcs = async (req: Request, res: Response) => {
 	try {
 		// Get current settings to use dynamic thresholds
 		const settings = await (settings_model as any).getSettings();

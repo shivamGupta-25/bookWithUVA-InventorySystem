@@ -6,7 +6,7 @@ import mongoose from "mongoose";
 import { checkStockLevels } from "../utils/stockAlertUtils.js";
 
 // GET /api/product/:id - Fetch a single product
-export const get_product = async (req, res) => {
+export const get_product = async (req: Request, res: Response) => {
 	try {
 		const product = await product_model
 			.findById(req.params.id)
@@ -40,7 +40,7 @@ export const get_product = async (req, res) => {
 };
 
 // PUT /api/product/:id - Update a product
-export const put_product = async (req, res) => {
+export const put_product = async (req: Request, res: Response) => {
 	try {
 		// If updating with distributorName or non-ObjectId distributor string, resolve or create distributor
 		let updateBody = { ...req.body } as any;
@@ -98,7 +98,7 @@ export const put_product = async (req, res) => {
 			data: productWithStringId,
 			message: "Product updated successfully",
 		});
-	} catch (error) {
+	} catch (error: any) {
 		console.error("Error updating product:", error);
 
 		if (error.name === "ValidationError") {
@@ -120,7 +120,7 @@ export const put_product = async (req, res) => {
 };
 
 // DELETE /api/product/:id - Soft delete a product
-export const delete_product = async (req, res) => {
+export const delete_product = async (req: Request, res: Response) => {
 	try {
 		const product = await product_model.findByIdAndUpdate(
 			req.params.id,
