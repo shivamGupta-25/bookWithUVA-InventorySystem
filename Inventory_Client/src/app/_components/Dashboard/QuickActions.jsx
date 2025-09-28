@@ -133,14 +133,34 @@ export default function QuickActions() {
               <Link key={index} href={action.href}>
                 <Button
                   variant="outline"
-                  className="w-full h-auto p-3 sm:p-4 flex flex-col items-center gap-2 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 group"
+                  className="w-full h-auto p-3 sm:p-4 flex flex-col items-center gap-2 hover:bg-accent hover:border-border/80 transition-all duration-200 group"
                 >
-                  <div className={`p-2 rounded-lg bg-${action.color}-50 group-hover:bg-${action.color}-100 transition-colors`}>
-                    <IconComponent className={`h-5 w-5 sm:h-6 sm:w-6 text-${action.color}-600`} />
+                  <div className={`p-2 rounded-lg transition-colors ${
+                    action.color === 'red' ? 'bg-red-50 dark:bg-red-900/20 group-hover:bg-red-100 dark:group-hover:bg-red-900/30' :
+                    action.color === 'gray' ? 'bg-gray-50 dark:bg-gray-900/20 group-hover:bg-gray-100 dark:group-hover:bg-gray-900/30' :
+                    action.color === 'orange' ? 'bg-orange-50 dark:bg-orange-900/20 group-hover:bg-orange-100 dark:group-hover:bg-orange-900/30' :
+                    action.color === 'purple' ? 'bg-purple-50 dark:bg-purple-900/20 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30' :
+                    action.color === 'emerald' ? 'bg-emerald-50 dark:bg-emerald-900/20 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/30' :
+                    action.color === 'blue' ? 'bg-blue-50 dark:bg-blue-900/20 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30' :
+                    action.color === 'green' ? 'bg-green-50 dark:bg-green-900/20 group-hover:bg-green-100 dark:group-hover:bg-green-900/30' :
+                    action.color === 'indigo' ? 'bg-indigo-50 dark:bg-indigo-900/20 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/30' :
+                    'bg-gray-50 dark:bg-gray-900/20 group-hover:bg-gray-100 dark:group-hover:bg-gray-900/30'
+                  }`}>
+                    <IconComponent className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                      action.color === 'red' ? 'text-red-600 dark:text-red-400' :
+                      action.color === 'gray' ? 'text-gray-600 dark:text-gray-400' :
+                      action.color === 'orange' ? 'text-orange-600 dark:text-orange-400' :
+                      action.color === 'purple' ? 'text-purple-600 dark:text-purple-400' :
+                      action.color === 'emerald' ? 'text-emerald-600 dark:text-emerald-400' :
+                      action.color === 'blue' ? 'text-blue-600 dark:text-blue-400' :
+                      action.color === 'green' ? 'text-green-600 dark:text-green-400' :
+                      action.color === 'indigo' ? 'text-indigo-600 dark:text-indigo-400' :
+                      'text-gray-600 dark:text-gray-400'
+                    }`} />
                   </div>
                   <div className="text-center">
                     <span className="text-xs sm:text-sm font-medium block">{action.title}</span>
-                    <span className="text-[10px] sm:text-xs text-gray-500 group-hover:text-gray-400 transition-colors hidden sm:block">
+                    <span className="text-[10px] sm:text-xs text-muted-foreground group-hover:text-muted-foreground/80 transition-colors hidden sm:block">
                       {action.description}
                     </span>
                   </div>

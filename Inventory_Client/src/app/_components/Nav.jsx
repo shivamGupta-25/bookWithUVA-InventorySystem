@@ -11,6 +11,9 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import NotificationBell from "@/components/NotificationBell";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sun, Moon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 const getDefaultAvatarByRole = (role) => {
   switch (role) {
@@ -30,7 +33,7 @@ export default function Nav({ children }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
+  const { setTheme } = useTheme();
   // Note: Redirect logic removed - ConditionalNav handles when to show this component
 
   // Handle responsive behavior
@@ -243,6 +246,39 @@ export default function Nav({ children }) {
               )}
             </Link>
           )}
+          {/* Theme Toggle */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start",
+                  isCollapsed && !isMobile && "justify-center"
+                )}
+              >
+                <Sun className="h-5 w-5 flex-shrink-0 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                <Moon className="absolute h-5 w-5 flex-shrink-0 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                {(!isCollapsed || (isMobile && sidebarOpen)) && (
+                  <span className="ml-2">Theme</span>
+                )}
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                <Sun className="mr-2 h-4 w-4" />
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                <Moon className="mr-2 h-4 w-4" />
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                <Settings className="mr-2 h-4 w-4" />
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           <Button
             variant="ghost"

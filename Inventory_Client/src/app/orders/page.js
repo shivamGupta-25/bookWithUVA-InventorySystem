@@ -423,11 +423,11 @@ const OrdersPage = () => {
         <div className="mb-4 sm:mb-6">
           <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-blue-600 flex-shrink-0" />
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
+                <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary flex-shrink-0" />
                 <span className="truncate">Order Management</span>
               </h1>
-              <p className="text-xs sm:text-sm md:text-base text-gray-600 mt-1">
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">
                 Manage customer orders and track their status
               </p>
             </div>
@@ -452,17 +452,17 @@ const OrdersPage = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
           {/* Total Orders Card */}
-          <Card className="hover:shadow-md transition-shadow duration-200 border-blue-200 bg-blue-50/50 hover:bg-blue-50">
+          <Card className="hover:shadow-md transition-shadow duration-200 border-primary/20 bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/15">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-blue-700">
+                <CardTitle className="text-xs font-medium text-primary">
                   Total Orders
                 </CardTitle>
-                <ShoppingCart className="h-3.5 w-3.5 text-blue-600" />
+                <ShoppingCart className="h-3.5 w-3.5 text-primary" />
               </div>
               <div>
-                <div className="text-lg font-bold text-blue-900">{stats.totalOrders.toLocaleString()}</div>
-                <p className="text-xs text-blue-600/70">
+                <div className="text-lg font-bold text-foreground">{stats.totalOrders.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">
                   All orders
                 </p>
               </div>
@@ -470,17 +470,17 @@ const OrdersPage = () => {
           </Card>
 
           {/* Pending Orders Card */}
-          <Card className="hover:shadow-md transition-shadow duration-200 border-amber-200 bg-amber-50/50 hover:bg-amber-50">
+          <Card className="hover:shadow-md transition-shadow duration-200 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-amber-700">
+                <CardTitle className="text-xs font-medium text-amber-700 dark:text-amber-300">
                   Pending
                 </CardTitle>
-                <Clock className="h-3.5 w-3.5 text-amber-600" />
+                <Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
               </div>
               <div>
-                <div className="text-lg font-bold text-amber-900">{stats.pendingOrders.toLocaleString()}</div>
-                <p className="text-xs text-amber-600/70">
+                <div className="text-lg font-bold text-amber-900 dark:text-amber-100">{stats.pendingOrders.toLocaleString()}</div>
+                <p className="text-xs text-amber-600/70 dark:text-amber-400/70">
                   Awaiting
                 </p>
               </div>
@@ -488,17 +488,17 @@ const OrdersPage = () => {
           </Card>
 
           {/* Processing Orders Card */}
-          <Card className="hover:shadow-md transition-shadow duration-200 border-purple-200 bg-purple-50/50 hover:bg-purple-50">
+          <Card className="hover:shadow-md transition-shadow duration-200 border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20 hover:bg-purple-50 dark:hover:bg-purple-950/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-purple-700">
+                <CardTitle className="text-xs font-medium text-purple-700 dark:text-purple-300">
                   Processing
                 </CardTitle>
-                <Package className="h-3.5 w-3.5 text-purple-600" />
+                <Package className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <div className="text-lg font-bold text-purple-900">{stats.processingOrders.toLocaleString()}</div>
-                <p className="text-xs text-purple-600/70">
+                <div className="text-lg font-bold text-purple-900 dark:text-purple-100">{stats.processingOrders.toLocaleString()}</div>
+                <p className="text-xs text-purple-600/70 dark:text-purple-400/70">
                   In progress
                 </p>
               </div>
@@ -506,17 +506,17 @@ const OrdersPage = () => {
           </Card>
 
           {/* Delivered Orders Card */}
-          <Card className="hover:shadow-md transition-shadow duration-200 border-green-200 bg-green-50/50 hover:bg-green-50">
+          <Card className="hover:shadow-md transition-shadow duration-200 border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20 hover:bg-green-50 dark:hover:bg-green-950/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-green-700">
+                <CardTitle className="text-xs font-medium text-green-700 dark:text-green-300">
                   Delivered
                 </CardTitle>
-                <CheckCircle className="h-3.5 w-3.5 text-green-600" />
+                <CheckCircle className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <div className="text-lg font-bold text-green-900">{stats.deliveredOrders.toLocaleString()}</div>
-                <p className="text-xs text-green-600/70">
+                <div className="text-lg font-bold text-green-900 dark:text-green-100">{stats.deliveredOrders.toLocaleString()}</div>
+                <p className="text-xs text-green-600/70 dark:text-green-400/70">
                   Completed
                 </p>
               </div>
@@ -524,17 +524,17 @@ const OrdersPage = () => {
           </Card>
 
           {/* Cancelled Orders Card */}
-          <Card className="hover:shadow-md transition-shadow duration-200 border-red-200 bg-red-50/50 hover:bg-red-50">
+          <Card className="hover:shadow-md transition-shadow duration-200 border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20 hover:bg-red-50 dark:hover:bg-red-950/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-red-700">
+                <CardTitle className="text-xs font-medium text-red-700 dark:text-red-300">
                   Cancelled
                 </CardTitle>
-                <XCircle className="h-3.5 w-3.5 text-red-600" />
+                <XCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <div className="text-lg font-bold text-red-900">{stats.cancelledOrders.toLocaleString()}</div>
-                <p className="text-xs text-red-600/70">
+                <div className="text-lg font-bold text-red-900 dark:text-red-100">{stats.cancelledOrders.toLocaleString()}</div>
+                <p className="text-xs text-red-600/70 dark:text-red-400/70">
                   Cancelled
                 </p>
               </div>
@@ -542,17 +542,17 @@ const OrdersPage = () => {
           </Card>
 
           {/* Total Revenue Card */}
-          <Card className="hover:shadow-md transition-shadow duration-200 border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50">
+          <Card className="hover:shadow-md transition-shadow duration-200 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-950/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-emerald-700">
+                <CardTitle className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
                   Revenue
                 </CardTitle>
-                <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
+                <DollarSign className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
                 <div
-                  className="text-lg font-bold text-emerald-900 cursor-help"
+                  className="text-lg font-bold text-emerald-900 dark:text-emerald-100 cursor-help"
                   title={stats.totalRevenue >= 1000 ? `₹${stats.totalRevenue.toLocaleString()}` : undefined}
                 >
                   ₹{stats.totalRevenue >= 1000000
@@ -561,7 +561,7 @@ const OrdersPage = () => {
                       ? `${(stats.totalRevenue / 1000).toFixed(1)}K`
                       : stats.totalRevenue.toLocaleString()}
                 </div>
-                <p className="text-xs text-emerald-600/70">
+                <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70">
                   Total
                 </p>
               </div>
@@ -570,17 +570,17 @@ const OrdersPage = () => {
         </div>
 
         {/* Filters and Search */}
-        <Card className="bg-white border border-gray-200/60 shadow-sm mb-6 rounded-xl overflow-hidden">
+        <Card className="bg-card border border-border/60 shadow-sm mb-6 rounded-xl overflow-hidden">
           <CardContent className="p-0">
             {/* Search Section */}
-            <div className="p-6 border-b border-gray-100">
+            <div className="p-6 border-b border-border">
               <div className="relative max-w-2xl">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                 <Input
                   placeholder="Search orders by number, customer name, or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-4 py-3 text-base border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="pl-12 pr-4 py-3 text-base border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
                 />
               </div>
             </div>
@@ -591,15 +591,15 @@ const OrdersPage = () => {
                 {/* Filter Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                    <p className="text-sm text-gray-500 mt-1">Refine your search results</p>
+                    <h3 className="text-lg font-semibold text-foreground">Filters</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Refine your search results</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <Button
                       onClick={refreshOrdersData}
                       variant="outline"
                       size="sm"
-                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 px-4 py-2 font-medium"
+                      className="text-primary hover:text-primary/80 hover:bg-primary/10 border-primary/20 px-4 py-2 font-medium"
                     >
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Refresh
@@ -608,7 +608,7 @@ const OrdersPage = () => {
                       onClick={clearFilters}
                       variant="outline"
                       size="sm"
-                      className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-200 px-4 py-2 font-medium"
+                      className="text-muted-foreground hover:text-foreground hover:bg-accent border-border px-4 py-2 font-medium"
                     >
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Clear All
@@ -618,7 +618,7 @@ const OrdersPage = () => {
                         onClick={handleDeleteAllClick}
                         variant="outline"
                         size="sm"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 px-4 py-2 font-medium"
+                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 border-destructive/20 px-4 py-2 font-medium"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete All
@@ -630,12 +630,12 @@ const OrdersPage = () => {
                 {/* Primary Filters */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Order Status</label>
+                    <label className="text-sm font-medium text-foreground">Order Status</label>
                     <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="All Status" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         {orderStatusOptions.map((status) => (
                           <SelectItem key={status.value} value={status.value} className="rounded-md">
                             {status.label}
@@ -646,12 +646,12 @@ const OrdersPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Payment Status</label>
+                    <label className="text-sm font-medium text-foreground">Payment Status</label>
                     <Select value={selectedPaymentStatus} onValueChange={setSelectedPaymentStatus}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="All Payment" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         {paymentStatusOptions.map((status) => (
                           <SelectItem key={status.value} value={status.value} className="rounded-md">
                             {status.label}
@@ -662,12 +662,12 @@ const OrdersPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Sort By</label>
+                    <label className="text-sm font-medium text-foreground">Sort By</label>
                     <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="Sort Options" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         <SelectItem value="orderDate" className="rounded-md">Order Date</SelectItem>
                         <SelectItem value="totalAmount" className="rounded-md">Total Amount</SelectItem>
                         <SelectItem value="status" className="rounded-md">Status</SelectItem>
@@ -677,12 +677,12 @@ const OrdersPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Sort Order</label>
+                    <label className="text-sm font-medium text-foreground">Sort Order</label>
                     <Select value={sortOrder} onValueChange={setSortOrder}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="Sort Order" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         <SelectItem value="desc" className="rounded-md">Newest First</SelectItem>
                         <SelectItem value="asc" className="rounded-md">Oldest First</SelectItem>
                       </SelectContent>
@@ -692,7 +692,7 @@ const OrdersPage = () => {
 
                 {/* Date Range Filter */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Date Range</label>
+                  <label className="text-sm font-medium text-foreground">Date Range</label>
                   <DateRangePicker
                     startDate={startDate}
                     endDate={endDate}
@@ -705,22 +705,22 @@ const OrdersPage = () => {
                 {/* Results Count and Filter Summary */}
                 <div className="space-y-3">
                   <div className="flex items-end">
-                    <div className="w-full p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="w-full p-3 bg-muted/50 rounded-lg border border-border">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm font-medium text-gray-700">Results</p>
-                          <p className="text-lg font-semibold text-gray-900">
+                          <p className="text-sm font-medium text-foreground">Results</p>
+                          <p className="text-lg font-semibold text-foreground">
                             {filteredOrders.length} of {orders.length}
                             {/* Page No. */}
-                            <span className="ml-2 text-xs text-gray-500">
+                            <span className="ml-2 text-xs text-muted-foreground">
                               Page {currentPage} of {totalPages}
                             </span>
                           </p>
                         </div>
                         {getActiveFilterCount() > 0 && (
                           <div className="text-right">
-                            <p className="text-xs text-gray-500">Active Filters</p>
-                            <p className="text-sm font-medium text-blue-600">
+                            <p className="text-xs text-muted-foreground">Active Filters</p>
+                            <p className="text-sm font-medium text-primary">
                               {getActiveFilterCount()} filter{getActiveFilterCount() !== 1 ? 's' : ''}
                             </p>
                           </div>
@@ -731,31 +731,31 @@ const OrdersPage = () => {
 
                   {/* Active Filters Summary */}
                   {getActiveFilterCount() > 0 && (
-                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="p-3 bg-primary/5 rounded-lg border border-primary/20">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs font-medium text-blue-700">Active Filters:</span>
+                        <span className="text-xs font-medium text-primary">Active Filters:</span>
                         {searchTerm && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
                             Search: &quot;{searchTerm}&quot;
                           </span>
                         )}
                         {selectedStatus !== 'all' && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
                             Status: {orderStatusOptions.find(s => s.value === selectedStatus)?.label}
                           </span>
                         )}
                         {selectedPaymentStatus !== 'all' && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
                             Payment: {paymentStatusOptions.find(s => s.value === selectedPaymentStatus)?.label}
                           </span>
                         )}
                         {startDate && endDate && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
                             Date: {startDate.toLocaleDateString()} - {endDate.toLocaleDateString()}
                           </span>
                         )}
                         {(startDate || endDate) && !(startDate && endDate) && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
                             Date: {startDate ? `From ${startDate.toLocaleDateString()}` : `Until ${endDate.toLocaleDateString()}`}
                           </span>
                         )}
@@ -770,25 +770,25 @@ const OrdersPage = () => {
 
         {/* Loading State */}
         {loading && (
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-card border-0 shadow-sm">
             <CardContent className="p-6 sm:p-8 text-center">
-              <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-blue-600 mx-auto mb-3 sm:mb-4 animate-spin" />
-              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Loading orders...</h3>
-              <p className="text-sm sm:text-base text-gray-600">Please wait while we fetch your orders.</p>
+              <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4 animate-spin" />
+              <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">Loading orders...</h3>
+              <p className="text-sm sm:text-base text-muted-foreground">Please wait while we fetch your orders.</p>
             </CardContent>
           </Card>
         )}
 
         {/* Error State */}
         {error && !loading && (
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-card border-0 shadow-sm">
             <CardContent className="p-6 sm:p-8 text-center">
-              <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-red-600 mx-auto mb-3 sm:mb-4" />
-              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Error loading orders</h3>
-              <p className="text-sm sm:text-base text-gray-600 mb-4">{error}</p>
+              <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-destructive mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">Error loading orders</h3>
+              <p className="text-sm sm:text-base text-muted-foreground mb-4">{error}</p>
               <Button
                 onClick={() => window.location.reload()}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 Try Again
               </Button>
@@ -798,17 +798,17 @@ const OrdersPage = () => {
 
         {/* Orders List */}
         {!loading && !error && filteredOrders.length === 0 ? (
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-card border-0 shadow-sm">
             <CardContent className="p-6 sm:p-8 text-center">
-              <ShoppingCart className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No orders found</h3>
-              <p className="text-sm sm:text-base text-gray-600">Try adjusting your search or filter criteria.</p>
+              <ShoppingCart className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">No orders found</h3>
+              <p className="text-sm sm:text-base text-muted-foreground">Try adjusting your search or filter criteria.</p>
             </CardContent>
           </Card>
         ) : !loading && !error && (
           <>
             {/* Desktop Table View */}
-            <Card className="bg-white border-0 shadow-sm hidden lg:block p-2">
+            <Card className="bg-card border-0 shadow-sm hidden lg:block p-2">
               <CardContent className="p-0">
                 <Table className="text-sm">
                   <TableHeader>
@@ -827,28 +827,28 @@ const OrdersPage = () => {
                     {filteredOrders.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell>
-                          <div className="font-semibold text-gray-900 text-sm">
+                          <div className="font-semibold text-foreground text-sm">
                             {order.orderNumber}
                           </div>
                         </TableCell>
                         <TableCell>
                           <div>
-                            <div className="font-medium text-gray-900 text-sm">{order.customer.name}</div>
+                            <div className="font-medium text-foreground text-sm">{order.customer.name}</div>
                             {order.customer.email && (
-                              <div className="text-xs text-gray-500">{order.customer.email}</div>
+                              <div className="text-xs text-muted-foreground">{order.customer.email}</div>
                             )}
                             {order.customer.phone && (
-                              <div className="text-xs text-gray-500">{order.customer.phone}</div>
+                              <div className="text-xs text-muted-foreground">{order.customer.phone}</div>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm text-gray-700">
+                          <div className="text-sm text-foreground">
                             {order.items.length} item{order.items.length !== 1 ? 's' : ''}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm font-bold text-gray-900">{formatCurrency(order.totalAmount)}</div>
+                          <div className="text-sm font-bold text-foreground">{formatCurrency(order.totalAmount)}</div>
                         </TableCell>
                         <TableCell>
                           {getStatusBadge(order.status)}
@@ -857,7 +857,7 @@ const OrdersPage = () => {
                           {getPaymentStatusBadge(order.paymentStatus)}
                         </TableCell>
                         <TableCell>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-muted-foreground">
                             {new Date(order.orderDate).toLocaleDateString()}
                           </div>
                         </TableCell>
@@ -867,22 +867,22 @@ const OrdersPage = () => {
                               variant="ghost"
                               size="sm"
                               onClick={() => generateInvoice(order)}
-                              className="h-7 w-7 p-0 hover:bg-green-100 flex-shrink-0"
+                              className="h-7 w-7 p-0 hover:bg-green-100 dark:hover:bg-green-900/20 flex-shrink-0"
                               title="Generate invoice"
                             >
-                              <Receipt className="h-4 w-4 text-green-600" />
+                              <Receipt className="h-4 w-4 text-green-600 dark:text-green-400" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() => handleViewOrder(order.id)}
-                              className="h-7 w-7 p-0 hover:bg-blue-100 flex-shrink-0"
+                              className="h-7 w-7 p-0 hover:bg-primary/10 flex-shrink-0"
                               title={isViewer ? "View order" : "View/Edit order"}
                             >
                               {isViewer ? (
-                                <Eye className="h-4 w-4 text-blue-600" />
+                                <Eye className="h-4 w-4 text-primary" />
                               ) : (
-                                <Edit className="h-4 w-4 text-blue-600" />
+                                <Edit className="h-4 w-4 text-primary" />
                               )}
                             </Button>
                             {order.status === 'pending' && canDeleteOrders && (
@@ -890,10 +890,10 @@ const OrdersPage = () => {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => handleDeleteClick(order.id)}
-                                className="h-7 w-7 p-0 hover:bg-red-100 flex-shrink-0"
+                                className="h-7 w-7 p-0 hover:bg-destructive/10 flex-shrink-0"
                                 title="Delete order"
                               >
-                                <Trash2 className="h-4 w-4 text-red-600" />
+                                <Trash2 className="h-4 w-4 text-destructive" />
                               </Button>
                             )}
                           </div>
@@ -908,16 +908,16 @@ const OrdersPage = () => {
             {/* Mobile/Tablet Card View */}
             <div className="space-y-3 lg:hidden">
               {filteredOrders.map((order) => (
-                <Card key={order.id} className="bg-white border-0 shadow-sm hover:shadow-md transition-shadow">
+                <Card key={order.id} className="bg-card border-0 shadow-sm hover:shadow-md transition-shadow">
                   <CardContent className="p-5">
                     <div className="space-y-4">
                       {/* Header with order number and status */}
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-gray-900 text-base">
+                          <h3 className="font-semibold text-foreground text-base">
                             {order.orderNumber}
                           </h3>
-                          <p className="text-sm text-gray-600 mt-1">{order.customer.name}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{order.customer.name}</p>
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           {getStatusBadge(order.status)}
@@ -928,47 +928,47 @@ const OrdersPage = () => {
                       {/* Order details grid */}
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="space-y-1">
-                          <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Items</p>
-                          <p className="text-gray-900 font-medium">
+                          <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Items</p>
+                          <p className="text-foreground font-medium">
                             {order.items.length} item{order.items.length !== 1 ? 's' : ''}
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Total</p>
-                          <p className="text-gray-900 font-bold text-lg">{formatCurrency(order.totalAmount)}</p>
+                          <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Total</p>
+                          <p className="text-foreground font-bold text-lg">{formatCurrency(order.totalAmount)}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Date</p>
-                          <p className="text-gray-600">{new Date(order.orderDate).toLocaleDateString()}</p>
+                          <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Date</p>
+                          <p className="text-muted-foreground">{new Date(order.orderDate).toLocaleDateString()}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Customer</p>
-                          <p className="text-gray-600 truncate">{order.customer.email || 'No email'}</p>
+                          <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Customer</p>
+                          <p className="text-muted-foreground truncate">{order.customer.email || 'No email'}</p>
                         </div>
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-200">
+                      <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => generateInvoice(order)}
-                          className="h-8 w-8 p-0 hover:bg-green-100 flex-shrink-0"
+                          className="h-8 w-8 p-0 hover:bg-green-100 dark:hover:bg-green-900/20 flex-shrink-0"
                           title="Generate invoice"
                         >
-                          <Receipt className="h-4 w-4 text-green-600" />
+                          <Receipt className="h-4 w-4 text-green-600 dark:text-green-400" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => handleViewOrder(order.id)}
-                          className="h-8 w-8 p-0 hover:bg-blue-100 flex-shrink-0"
+                          className="h-8 w-8 p-0 hover:bg-primary/10 flex-shrink-0"
                           title={isViewer ? "View order" : "View/Edit order"}
                         >
                           {isViewer ? (
-                            <Eye className="h-4 w-4 text-blue-600" />
+                            <Eye className="h-4 w-4 text-primary" />
                           ) : (
-                            <Edit className="h-4 w-4 text-blue-600" />
+                            <Edit className="h-4 w-4 text-primary" />
                           )}
                         </Button>
                         {order.status === 'pending' && canDeleteOrders && (
@@ -976,10 +976,10 @@ const OrdersPage = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleDeleteClick(order.id)}
-                            className="h-8 w-8 p-0 hover:bg-red-100 flex-shrink-0"
+                            className="h-8 w-8 p-0 hover:bg-destructive/10 flex-shrink-0"
                             title="Delete order"
                           >
-                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
                         )}
                       </div>
@@ -1030,7 +1030,7 @@ const OrdersPage = () => {
               <AlertDialogAction
                 onClick={handleDeleteConfirm}
                 disabled={deleting}
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               >
                 {deleting ? (
                   <>

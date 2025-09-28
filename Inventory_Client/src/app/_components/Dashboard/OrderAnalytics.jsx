@@ -32,8 +32,8 @@ export default function OrderAnalytics({ stats }) {
             <TrendingUp className="h-5 w-5" />
             Order Trends (Last 7 Days)
           </CardTitle>
-          <CardDescription className="text-sm text-gray-600 bg-purple-50/50 border-l-2 border-purple-200 pl-3 py-2 rounded-r-md">
-            <span className="font-medium text-gray-700">Trend Analysis:</span> Daily order count and revenue trends over the past week. Bar chart shows order volume while line chart displays revenue trends to identify business growth patterns.
+          <CardDescription className="text-sm text-muted-foreground bg-purple-50/50 dark:bg-purple-950/20 border-l-2 border-purple-200 dark:border-purple-800 pl-3 py-2 rounded-r-md">
+            <span className="font-medium text-foreground">Trend Analysis:</span> Daily order count and revenue trends over the past week. Bar chart shows order volume while line chart displays revenue trends to identify business growth patterns.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-1 sm:p-2">
@@ -42,36 +42,36 @@ export default function OrderAnalytics({ stats }) {
             onClickCapture={blockChartInteraction}>
             <ResponsiveContainer width="100%" height="100%">
               <RechartsBarChart data={orderTrendsData} margin={{ top: 0, right: 0, left: 0, bottom: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="name"
                   fontSize={11}
-                  tick={{ fontSize: 9 }}
+                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
                   interval={0}
-                  axisLine={{ stroke: '#d1d5db' }}
-                  tickLine={{ stroke: '#d1d5db' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                 >
-                  <Label value="Date" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }} />
+                  <Label value="Date" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
                 </XAxis>
                 <YAxis
                   yAxisId="left"
                   fontSize={11}
-                  tick={{ fontSize: 9 }}
-                  axisLine={{ stroke: '#d1d5db' }}
-                  tickLine={{ stroke: '#d1d5db' }}
+                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                 >
-                  <Label value="Number of Orders" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }} />
+                  <Label value="Number of Orders" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
                 </YAxis>
                 <YAxis
                   yAxisId="right"
                   orientation="right"
                   fontSize={11}
-                  tick={{ fontSize: 9 }}
-                  axisLine={{ stroke: '#d1d5db' }}
-                  tickLine={{ stroke: '#d1d5db' }}
+                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                   tickFormatter={(value) => `₹${value >= 1000 ? (value / 1000).toFixed(1) + 'K' : value}`}
                 >
-                  <Label value="Revenue (₹)" angle={90} position="insideRight" style={{ textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }} />
+                  <Label value="Revenue (₹)" angle={90} position="insideRight" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
                 </YAxis>
                 <Tooltip
                   formatter={(value, name) => {
@@ -87,11 +87,12 @@ export default function OrderAnalytics({ stats }) {
                     fontSize: '12px',
                     padding: '12px',
                     borderRadius: '8px',
-                    border: '1px solid #e5e7eb',
-                    backgroundColor: 'white',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    border: 'none',
+                    backgroundColor: '#ffffff',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    color: '#000'
                   }}
-                  labelStyle={{ fontWeight: 'bold', color: '#374151', marginBottom: '4px' }}
+                  labelStyle={{ fontWeight: 'bold', color: '#000', marginBottom: '4px', fontSize: '12px' }}
                 />
                 <Legend
                   verticalAlign="top"
@@ -119,10 +120,10 @@ export default function OrderAnalytics({ stats }) {
           <CardContent>
             <div className="space-y-4">
               {[
-                { status: 'Pending', count: stats.orders.pendingOrders, color: '#f59e0b', bgColor: 'bg-yellow-50', textColor: 'text-yellow-700' },
-                { status: 'Processing', count: stats.orders.processingOrders, color: '#3b82f6', bgColor: 'bg-blue-50', textColor: 'text-blue-700' },
-                { status: 'Delivered', count: stats.orders.deliveredOrders, color: '#10b981', bgColor: 'bg-green-50', textColor: 'text-green-700' },
-                { status: 'Cancelled', count: stats.orders.cancelledOrders, color: '#ef4444', bgColor: 'bg-red-50', textColor: 'text-red-700' }
+                { status: 'Pending', count: stats.orders.pendingOrders, color: '#f59e0b', bgColor: 'bg-yellow-50 dark:bg-yellow-950/20', textColor: 'text-yellow-700 dark:text-yellow-300' },
+                { status: 'Processing', count: stats.orders.processingOrders, color: '#3b82f6', bgColor: 'bg-blue-50 dark:bg-blue-950/20', textColor: 'text-blue-700 dark:text-blue-300' },
+                { status: 'Delivered', count: stats.orders.deliveredOrders, color: '#10b981', bgColor: 'bg-green-50 dark:bg-green-950/20', textColor: 'text-green-700 dark:text-green-300' },
+                { status: 'Cancelled', count: stats.orders.cancelledOrders, color: '#ef4444', bgColor: 'bg-red-50 dark:bg-red-950/20', textColor: 'text-red-700 dark:text-red-300' }
               ].map((item) => {
                 // Calculate percentage with proper rounding
                 const percentage = stats.orders.totalOrders > 0
@@ -130,7 +131,7 @@ export default function OrderAnalytics({ stats }) {
                   : 0;
 
                 return (
-                  <div key={item.status} className={`p-3 rounded-lg ${item.bgColor} border border-opacity-20`}>
+                  <div key={item.status} className={`p-3 rounded-lg ${item.bgColor} border border-border/20`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div
@@ -141,10 +142,10 @@ export default function OrderAnalytics({ stats }) {
                       </div>
                       <div className="text-right">
                         <div className={`text-lg font-bold ${item.textColor}`}>{item.count}</div>
-                        <div className="text-xs text-gray-500">{percentage}%</div>
+                        <div className="text-xs text-foreground">{percentage}%</div>
                       </div>
                     </div>
-                    <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                    <div className="mt-2 w-full bg-muted rounded-full h-2">
                       <div
                         className="h-2 rounded-full transition-all duration-300"
                         style={{
@@ -159,10 +160,10 @@ export default function OrderAnalytics({ stats }) {
 
               {/* Total verification */}
               {stats.orders.totalOrders > 0 && (
-                <div className="mt-4 pt-3 border-t border-gray-200">
+                <div className="mt-4 pt-3 border-t border-border">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">Total Orders:</span>
-                    <span className="font-semibold text-gray-900">{stats.orders.totalOrders}</span>
+                    <span className="text-muted-foreground">Total Orders:</span>
+                    <span className="font-semibold text-foreground">{stats.orders.totalOrders}</span>
                   </div>
                 </div>
               )}
@@ -178,7 +179,7 @@ export default function OrderAnalytics({ stats }) {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Total Revenue</span>
-                <span className="text-lg font-bold text-green-600">{formatCurrency(stats.orders.totalRevenue)}</span>
+                <span className="text-lg font-bold text-green-600 dark:text-green-400">{formatCurrency(stats.orders.totalRevenue)}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Total Orders</span>

@@ -220,14 +220,14 @@ const EditProductDialog = ({
             {/* Loading indicator for options */}
             {loadingOptions && (
               <div className="flex items-center justify-center py-2">
-                <Loader2 className="h-4 w-4 animate-spin text-blue-600 mr-2" />
-                <span className="text-xs text-gray-600">Loading options...</span>
+                <Loader2 className="h-4 w-4 animate-spin text-primary mr-2" />
+                <span className="text-xs text-muted-foreground">Loading options...</span>
               </div>
             )}
 
             {/* Product Title */}
             <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-700">
+              <label className="text-xs font-medium text-foreground">
                 Product Title *
               </label>
               <Input
@@ -243,7 +243,7 @@ const EditProductDialog = ({
 
             {/* Distributor */}
             <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-700">
+              <label className="text-xs font-medium text-foreground">
                 Distributor *
               </label>
               <Combobox
@@ -262,7 +262,7 @@ const EditProductDialog = ({
             {/* Category and Sub-category */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-700">
+                <label className="text-xs font-medium text-foreground">
                   Category *
                 </label>
                 <Combobox
@@ -277,7 +277,7 @@ const EditProductDialog = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-700">
+                <label className="text-xs font-medium text-foreground">
                   Sub-category *
                 </label>
                 <Combobox
@@ -295,7 +295,7 @@ const EditProductDialog = ({
             {/* Pricing and Stock */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-700">
+                <label className="text-xs font-medium text-foreground">
                   Price (₹) *
                 </label>
               <Input
@@ -312,7 +312,7 @@ const EditProductDialog = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-700">
+                <label className="text-xs font-medium text-foreground">
                   Stock Quantity *
                 </label>
               <Input
@@ -328,7 +328,7 @@ const EditProductDialog = ({
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-medium text-gray-700">
+                <label className="text-xs font-medium text-foreground">
                   GST (%) *
                 </label>
               <Input
@@ -348,14 +348,14 @@ const EditProductDialog = ({
 
             {/* Description */}
             <div className="space-y-1">
-              <label className="text-xs font-medium text-gray-700">
+              <label className="text-xs font-medium text-foreground">
                 Description
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 placeholder="Enter product description (optional)"
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full p-2 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent resize-none bg-background text-foreground"
                 rows={2}
                 disabled={saving}
                 readOnly={readOnly}
@@ -364,7 +364,7 @@ const EditProductDialog = ({
           </form>
         </div>
 
-        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 pt-4 border-t bg-white flex-shrink-0">
+        <DialogFooter className="flex flex-col-reverse sm:flex-row gap-2 pt-4 border-t bg-background flex-shrink-0">
           <Button
             type="button"
             variant="outline"
@@ -380,7 +380,7 @@ const EditProductDialog = ({
               type="submit"
               disabled={saving}
               onClick={handleSubmit}
-              className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto h-9"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto h-9"
             >
               {saving ? (
                 <>

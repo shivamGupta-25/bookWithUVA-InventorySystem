@@ -205,10 +205,10 @@ const DistributorsPage = () => {
       <div className="mb-4 sm:mb-6">
         <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
               <span className="truncate">Distributors</span>
             </h1>
-            <p className="text-xs sm:text-sm md:text-base text-gray-600 mt-1">
+            <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">
               Manage your distributor records
             </p>
           </div>
@@ -280,11 +280,11 @@ const DistributorsPage = () => {
             </div>
 
             {loading ? (
-              <div className="py-10 text-center text-gray-600 flex items-center justify-center">
+              <div className="py-10 text-center text-muted-foreground flex items-center justify-center">
                 <Loader2 className="h-5 w-5 mr-2 animate-spin" /> Loading distributors...
               </div>
             ) : filtered.length === 0 ? (
-              <div className="py-10 text-center text-gray-600">No distributors found.</div>
+              <div className="py-10 text-center text-muted-foreground">No distributors found.</div>
             ) : (
               <>
               <div className="rounded-md border overflow-x-auto sm:p-2 md:p-4 lg:p-2">
@@ -301,20 +301,20 @@ const DistributorsPage = () => {
                   </TableHeader>
                 <TableBody>
                     {filtered.map((d) => (
-                      <TableRow key={d.id} className={d.isActive ? "" : "opacity-60 bg-gray-50"}>
+                      <TableRow key={d.id} className={d.isActive ? "" : "opacity-60 bg-muted/50"}>
                         <TableCell className="font-medium">
                           <div>
                             <div className="font-semibold">{d.name}</div>
-                            <div className="text-xs text-gray-500 sm:hidden">
+                            <div className="text-xs text-muted-foreground sm:hidden">
                               {d.phoneNumber && `Phone: ${d.phoneNumber}`}
                             </div>
-                            <div className="text-xs text-gray-500 md:hidden">
+                            <div className="text-xs text-muted-foreground md:hidden">
                               {d.email && `Email: ${d.email}`}
                             </div>
-                            <div className="text-xs text-gray-500 lg:hidden">
+                            <div className="text-xs text-muted-foreground lg:hidden">
                               {d.gstinNumber && `GSTIN: ${d.gstinNumber}`}
                             </div>
-                            <div className="text-xs text-gray-500 xl:hidden truncate max-w-[150px]">
+                            <div className="text-xs text-muted-foreground xl:hidden truncate max-w-[150px]">
                               {d.address && `Address: ${d.address}`}
                             </div>
                           </div>
@@ -383,7 +383,7 @@ const DistributorsPage = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Name *</label>
+              <label className="text-sm font-medium text-foreground">Name *</label>
               <Input 
                 value={form.name} 
                 onChange={(e) => setForm({ ...form, name: e.target.value })} 
@@ -393,7 +393,7 @@ const DistributorsPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Phone</label>
+              <label className="text-sm font-medium text-foreground">Phone</label>
               <Input 
                 value={form.phoneNumber} 
                 onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })} 
@@ -403,7 +403,7 @@ const DistributorsPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Email</label>
+              <label className="text-sm font-medium text-foreground">Email</label>
               <Input 
                 value={form.email} 
                 onChange={(e) => setForm({ ...form, email: e.target.value })} 
@@ -414,7 +414,7 @@ const DistributorsPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">GSTIN</label>
+              <label className="text-sm font-medium text-foreground">GSTIN</label>
               <Input 
                 value={form.gstinNumber} 
                 onChange={(e) => setForm({ ...form, gstinNumber: e.target.value })} 
@@ -424,7 +424,7 @@ const DistributorsPage = () => {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Address</label>
+              <label className="text-sm font-medium text-foreground">Address</label>
               <Input 
                 value={form.address} 
                 onChange={(e) => setForm({ ...form, address: e.target.value })} 
@@ -439,7 +439,7 @@ const DistributorsPage = () => {
               <Button 
                 onClick={save} 
                 disabled={saving} 
-                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
+                className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 w-full sm:w-auto"
               >
                 {saving ? (
                   <>
@@ -472,7 +472,7 @@ const DistributorsPage = () => {
           <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 w-full sm:w-auto"
               onClick={async () => {
                 setDeleting(true);
                 try {
@@ -512,7 +512,7 @@ const DistributorsPage = () => {
           <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 w-full sm:w-auto"
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 w-full sm:w-auto"
               onClick={async () => {
                 if (!deleteTarget) return;
                 setDeleting(true);

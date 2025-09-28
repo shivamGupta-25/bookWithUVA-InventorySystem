@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge'
 
 export default function NotFound() {
   return (
-    <div className="h-screen flex items-center justify-center relative overflow-hidden px-4 sm:px-6 lg:px-8 py-4 sm:py-6 bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div className="h-screen flex items-center justify-center relative overflow-hidden px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
       <div className="w-full max-w-lg mx-auto">
         {/* Book-themed 404 Number */}
         <div className="text-center mb-3">

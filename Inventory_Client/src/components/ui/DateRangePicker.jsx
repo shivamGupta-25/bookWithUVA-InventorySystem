@@ -121,8 +121,8 @@ const DateRangePicker = ({
       {/* Quick Select Section */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <Zap className="h-4 w-4 text-blue-600" />
-          <span className="text-sm font-medium text-gray-700">Quick Select</span>
+          <Zap className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Select</span>
         </div>
         
         <div className="flex gap-2">
@@ -130,17 +130,17 @@ const DateRangePicker = ({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className="h-10 flex-1 justify-start text-left font-normal border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100"
+                className="h-10 flex-1 justify-start text-left font-normal border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-950/30 dark:hover:to-indigo-950/30"
               >
-                <Calendar className="mr-2 h-4 w-4 text-blue-600" />
-                <span className="text-sm font-medium text-gray-700">{getCurrentPresetRange()}</span>
-                <ChevronDown className="ml-auto h-4 w-4 text-gray-500" />
+                <Calendar className="mr-2 h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{getCurrentPresetRange()}</span>
+                <ChevronDown className="ml-auto h-4 w-4 text-gray-500 dark:text-gray-400" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-3" align="start">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                  <Zap className="h-4 w-4 text-blue-600" />
+                <div className="flex items-center gap-2 pb-2 border-b border-gray-100 dark:border-gray-700">
+                  <Zap className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   <span className="text-sm font-semibold text-gray-800">Quick Date Ranges</span>
                 </div>
                 
@@ -151,8 +151,8 @@ const DateRangePicker = ({
                     onClick={setToday}
                     className={`w-full justify-start h-9 text-sm transition-colors ${
                       getCurrentPresetRange() === "Today" 
-                        ? "bg-blue-100 text-blue-700 border border-blue-200" 
-                        : "hover:bg-blue-50 hover:text-blue-700"
+                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700" 
+                        : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                     }`}
                   >
                     <Clock className="mr-3 h-4 w-4 text-blue-600" />
@@ -161,7 +161,7 @@ const DateRangePicker = ({
                       <span className="text-xs text-gray-500">{today.toLocaleDateString()}</span>
                     </div>
                     {getCurrentPresetRange() === "Today" && (
-                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="ml-auto w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
                     )}
                   </Button>
                   
@@ -171,8 +171,8 @@ const DateRangePicker = ({
                     onClick={setYesterday}
                     className={`w-full justify-start h-9 text-sm transition-colors ${
                       getCurrentPresetRange() === "Yesterday" 
-                        ? "bg-blue-100 text-blue-700 border border-blue-200" 
-                        : "hover:bg-blue-50 hover:text-blue-700"
+                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700" 
+                        : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                     }`}
                   >
                     <History className="mr-3 h-4 w-4 text-blue-600" />
@@ -181,7 +181,7 @@ const DateRangePicker = ({
                       <span className="text-xs text-gray-500">{yesterday.toLocaleDateString()}</span>
                     </div>
                     {getCurrentPresetRange() === "Yesterday" && (
-                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="ml-auto w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
                     )}
                   </Button>
                   
@@ -191,8 +191,8 @@ const DateRangePicker = ({
                     onClick={setLastWeek}
                     className={`w-full justify-start h-9 text-sm transition-colors ${
                       getCurrentPresetRange() === "Last 7 days" 
-                        ? "bg-blue-100 text-blue-700 border border-blue-200" 
-                        : "hover:bg-blue-50 hover:text-blue-700"
+                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700" 
+                        : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                     }`}
                   >
                     <TrendingUp className="mr-3 h-4 w-4 text-blue-600" />
@@ -201,7 +201,7 @@ const DateRangePicker = ({
                       <span className="text-xs text-gray-500">Past week</span>
                     </div>
                     {getCurrentPresetRange() === "Last 7 days" && (
-                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="ml-auto w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
                     )}
                   </Button>
                   
@@ -211,8 +211,8 @@ const DateRangePicker = ({
                     onClick={setLastMonth}
                     className={`w-full justify-start h-9 text-sm transition-colors ${
                       getCurrentPresetRange() === "Last 30 days" 
-                        ? "bg-blue-100 text-blue-700 border border-blue-200" 
-                        : "hover:bg-blue-50 hover:text-blue-700"
+                        ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700" 
+                        : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-700 dark:hover:text-blue-300"
                     }`}
                   >
                     <CalendarDays className="mr-3 h-4 w-4 text-blue-600" />
@@ -221,7 +221,7 @@ const DateRangePicker = ({
                       <span className="text-xs text-gray-500">Past month</span>
                     </div>
                     {getCurrentPresetRange() === "Last 30 days" && (
-                      <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full"></div>
+                      <div className="ml-auto w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></div>
                     )}
                   </Button>
                 </div>
@@ -234,7 +234,7 @@ const DateRangePicker = ({
               variant="outline"
               size="sm"
               onClick={onClear}
-              className="h-10 px-3 text-gray-600 hover:text-red-600 hover:bg-red-50 border-gray-200 hover:border-red-200 transition-all duration-200"
+              className="h-10 px-3 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border-gray-200 dark:border-gray-700 hover:border-red-200 dark:hover:border-red-800 transition-all duration-200"
               title="Clear date range"
             >
               <XCircle className="h-4 w-4" />
@@ -246,22 +246,22 @@ const DateRangePicker = ({
       {/* Custom Date Range */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="h-4 w-4 text-gray-600" />
-          <span className="text-sm font-medium text-gray-700">Custom Range</span>
+          <CalendarIcon className="h-4 w-4" />
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Custom Range</span>
         </div>
         
         {/* From and To Date Pickers - Side by Side */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Start Date Picker */}
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">From</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">From</label>
             <div className="flex gap-2">
               <Popover open={startDateOpen} onOpenChange={setStartDateOpen}>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={`h-9 flex-1 justify-start text-left font-normal border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
-                      !isDateRangeValid() ? 'border-red-300 bg-red-50' : ''
+                    className={`h-9 flex-1 justify-start text-left font-normal border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
+                      !isDateRangeValid() ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20' : ''
                     }`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -284,7 +284,7 @@ const DateRangePicker = ({
                   variant="outline"
                   size="sm"
                   onClick={() => onStartDateChange(undefined)}
-                  className="h-9 px-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-200"
+                  className="h-9 px-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700"
                   title="Clear start date"
                 >
                   <XCircle className="h-4 w-4" />
@@ -301,8 +301,8 @@ const DateRangePicker = ({
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={`h-9 flex-1 justify-start text-left font-normal border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
-                      !isDateRangeValid() ? 'border-red-300 bg-red-50' : ''
+                    className={`h-9 flex-1 justify-start text-left font-normal border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm ${
+                      !isDateRangeValid() ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20' : ''
                     }`}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -325,7 +325,7 @@ const DateRangePicker = ({
                   variant="outline"
                   size="sm"
                   onClick={() => onEndDateChange(undefined)}
-                  className="h-9 px-2 text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-200"
+                  className="h-9 px-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800 border-gray-200 dark:border-gray-700"
                   title="Clear end date"
                 >
                   <XCircle className="h-4 w-4" />
@@ -344,7 +344,7 @@ const DateRangePicker = ({
 
         {/* Date Range Summary */}
         {startDate && endDate && isDateRangeValid() && (
-          <div className="text-xs text-gray-600 bg-blue-50 border border-blue-200 rounded-md px-3 py-2">
+          <div className="text-xs text-gray-600 dark:text-gray-400 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md px-3 py-2">
             Showing orders from {startDate.toLocaleDateString()} to {endDate.toLocaleDateString()}
             {startDate.getTime() === endDate.getTime() && ' (same day)'}
           </div>

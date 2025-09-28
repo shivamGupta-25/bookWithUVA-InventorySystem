@@ -459,11 +459,11 @@ const Inventory = () => {
         <div className="mb-4 sm:mb-6">
           <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-blue-600 flex-shrink-0" />
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
+                <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary flex-shrink-0" />
                 <span className="truncate">Inventory Management</span>
               </h1>
-              <p className="text-xs sm:text-sm md:text-base text-gray-600 mt-1">
+              <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1">
                 Manage your product inventory with ease
               </p>
             </div>
@@ -472,9 +472,9 @@ const Inventory = () => {
                 <Button
                   onClick={handleAddProduct}
                   size="lg"
-                  className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border-0 rounded-lg px-6 py-3 min-w-[160px] cursor-pointer"
+                  className="relative group bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 active:scale-95 border-0 rounded-lg px-6 py-3 min-w-[160px] cursor-pointer"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary/70 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="relative flex items-center justify-center gap-2">
                     <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
                     <span className="text-base font-medium">Add Product</span>
@@ -488,21 +488,21 @@ const Inventory = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           {/* Total Products Card */}
-          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 transition-all duration-300 hover:shadow-lg">
+          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-950/30 dark:hover:to-indigo-950/30 transition-all duration-300 hover:shadow-lg">
             <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-blue-700/80">Total Products</p>
-                  <p className="text-2xl font-bold text-blue-900">{stats.totalProducts}</p>
-                  <div className="flex items-center text-xs text-blue-600/70">
+                  <p className="text-xs font-medium text-blue-700/80 dark:text-blue-300/80">Total Products</p>
+                  <p className="text-2xl font-bold text-blue-900 dark:text-blue-100">{stats.totalProducts}</p>
+                  <div className="flex items-center text-xs text-blue-600/70 dark:text-blue-400/70">
                     <Package className="h-3 w-3 mr-1" />
                     <span>All items</span>
                   </div>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-blue-500/10 rounded-full blur-xl"></div>
-                  <div className="relative bg-blue-500/20 p-1.5 rounded-xl">
-                    <Package className="h-4 w-4 text-blue-600" />
+                  <div className="absolute inset-0 bg-blue-500/10 dark:bg-blue-400/10 rounded-full blur-xl"></div>
+                  <div className="relative bg-blue-500/20 dark:bg-blue-400/20 p-1.5 rounded-xl">
+                    <Package className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                   </div>
                 </div>
               </div>
@@ -510,21 +510,21 @@ const Inventory = () => {
           </Card>
 
           {/* In Stock Card */}
-          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-emerald-50 to-green-50 hover:from-emerald-100 hover:to-green-100 transition-all duration-300 hover:shadow-lg">
+          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20 hover:from-emerald-100 hover:to-green-100 dark:hover:from-emerald-950/30 dark:hover:to-green-950/30 transition-all duration-300 hover:shadow-lg">
             <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-emerald-700/80">In Stock</p>
-                  <p className="text-2xl font-bold text-emerald-900">{stats.inStockProducts}</p>
-                  <div className="flex items-center text-xs text-emerald-600/70">
+                  <p className="text-xs font-medium text-emerald-700/80 dark:text-emerald-300/80">In Stock</p>
+                  <p className="text-2xl font-bold text-emerald-900 dark:text-emerald-100">{stats.inStockProducts}</p>
+                  <div className="flex items-center text-xs text-emerald-600/70 dark:text-emerald-400/70">
                     <TrendingUp className="h-3 w-3 mr-1" />
                     <span>Available</span>
                   </div>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-emerald-500/10 rounded-full blur-xl"></div>
-                  <div className="relative bg-emerald-500/20 p-1.5 rounded-xl">
-                    <TrendingUp className="h-4 w-4 text-emerald-600" />
+                  <div className="absolute inset-0 bg-emerald-500/10 dark:bg-emerald-400/10 rounded-full blur-xl"></div>
+                  <div className="relative bg-emerald-500/20 dark:bg-emerald-400/20 p-1.5 rounded-xl">
+                    <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                   </div>
                 </div>
               </div>
@@ -532,21 +532,21 @@ const Inventory = () => {
           </Card>
 
           {/* Low Stock Card */}
-          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 transition-all duration-300 hover:shadow-lg">
+          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/20 dark:to-yellow-950/20 hover:from-amber-100 hover:to-yellow-100 dark:hover:from-amber-950/30 dark:hover:to-yellow-950/30 transition-all duration-300 hover:shadow-lg">
             <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-amber-700/80">Low Stock</p>
-                  <p className="text-2xl font-bold text-amber-900">{stats.lowStockProducts}</p>
-                  <div className="flex items-center text-xs text-amber-600/70">
+                  <p className="text-xs font-medium text-amber-700/80 dark:text-amber-300/80">Low Stock</p>
+                  <p className="text-2xl font-bold text-amber-900 dark:text-amber-100">{stats.lowStockProducts}</p>
+                  <div className="flex items-center text-xs text-amber-600/70 dark:text-amber-400/70">
                     <AlertTriangle className="h-3 w-3 mr-1" />
                     <span>Need restock</span>
                   </div>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-amber-500/10 rounded-full blur-xl"></div>
-                  <div className="relative bg-amber-500/20 p-1.5 rounded-xl">
-                    <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  <div className="absolute inset-0 bg-amber-500/10 dark:bg-amber-400/10 rounded-full blur-xl"></div>
+                  <div className="relative bg-amber-500/20 dark:bg-amber-400/20 p-1.5 rounded-xl">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                   </div>
                 </div>
               </div>
@@ -554,21 +554,21 @@ const Inventory = () => {
           </Card>
 
           {/* Out of Stock Card */}
-          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-red-50 to-rose-50 hover:from-red-100 hover:to-rose-100 transition-all duration-300 hover:shadow-lg">
+          <Card className="group relative overflow-hidden border-0 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/20 dark:to-rose-950/20 hover:from-red-100 hover:to-rose-100 dark:hover:from-red-950/30 dark:hover:to-rose-950/30 transition-all duration-300 hover:shadow-lg">
             <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-red-700/80">Out of Stock</p>
-                  <p className="text-2xl font-bold text-red-900">{stats.outOfStockProducts}</p>
-                  <div className="flex items-center text-xs text-red-600/70">
+                  <p className="text-xs font-medium text-red-700/80 dark:text-red-300/80">Out of Stock</p>
+                  <p className="text-2xl font-bold text-red-900 dark:text-red-100">{stats.outOfStockProducts}</p>
+                  <div className="flex items-center text-xs text-red-600/70 dark:text-red-400/70">
                     <AlertTriangle className="h-3 w-3 mr-1" />
                     <span>Urgent restock</span>
                   </div>
                 </div>
                 <div className="relative">
-                  <div className="absolute inset-0 bg-red-500/10 rounded-full blur-xl"></div>
-                  <div className="relative bg-red-500/20 p-1.5 rounded-xl">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
+                  <div className="absolute inset-0 bg-red-500/10 dark:bg-red-400/10 rounded-full blur-xl"></div>
+                  <div className="relative bg-red-500/20 dark:bg-red-400/20 p-1.5 rounded-xl">
+                    <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
                   </div>
                 </div>
               </div>
@@ -577,17 +577,17 @@ const Inventory = () => {
         </div>
 
         {/* Filters and Search */}
-        <Card className="bg-white border border-gray-200/60 shadow-sm mb-6 rounded-xl overflow-hidden">
+        <Card className="bg-card border border-border/60 shadow-sm mb-6 rounded-xl overflow-hidden">
           <CardContent className="p-0">
             {/* Search Section */}
-            <div className="p-6 border-b border-gray-100">
+            <div className="p-6 border-b border-border">
               <div className="relative max-w-2xl">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                 <Input
                   placeholder="Search products by title or distributor..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-4 py-3 text-base border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="pl-12 pr-4 py-3 text-base border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
                 />
               </div>
             </div>
@@ -598,15 +598,15 @@ const Inventory = () => {
                 {/* Filter Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
-                    <p className="text-sm text-gray-500 mt-1">Refine your search results</p>
+                    <h3 className="text-lg font-semibold text-foreground">Filters</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Refine your search results</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <Button
                       onClick={refreshInventoryData}
                       variant="outline"
                       size="sm"
-                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 px-4 py-2 font-medium"
+                      className="text-primary hover:text-primary/80 hover:bg-primary/10 border-primary/20 px-4 py-2 font-medium"
                     >
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Refresh
@@ -615,7 +615,7 @@ const Inventory = () => {
                       onClick={clearFilters}
                       variant="outline"
                       size="sm"
-                      className="text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-gray-200 px-4 py-2 font-medium"
+                      className="text-muted-foreground hover:text-foreground hover:bg-accent border-border px-4 py-2 font-medium"
                     >
                       <RefreshCw className="h-4 w-4 mr-2" />
                       Clear All
@@ -625,7 +625,7 @@ const Inventory = () => {
                         onClick={handleDeleteAllClick}
                         variant="outline"
                         size="sm"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 px-4 py-2 font-medium"
+                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 border-destructive/20 px-4 py-2 font-medium"
                       >
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete All
@@ -637,12 +637,12 @@ const Inventory = () => {
                 {/* Primary Filters */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Category</label>
+                    <label className="text-sm font-medium text-foreground">Category</label>
                     <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="All Categories" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         {categories.map((category) => (
                           <SelectItem key={category} value={category} className="rounded-md">
                             {category}
@@ -653,12 +653,12 @@ const Inventory = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Sub Category</label>
+                    <label className="text-sm font-medium text-foreground">Sub Category</label>
                     <Select value={selectedSubCategory} onValueChange={setSelectedSubCategory}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="All Sub Categories" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         {subCategories.map((subCategory) => (
                           <SelectItem key={subCategory} value={subCategory} className="rounded-md">
                             {subCategory}
@@ -669,12 +669,12 @@ const Inventory = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Distributor</label>
+                    <label className="text-sm font-medium text-foreground">Distributor</label>
                     <Select value={selectedDistributor} onValueChange={setSelectedDistributor}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="All Distributors" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         {distributors.map((distributor) => (
                           <SelectItem key={distributor} value={distributor} className="rounded-md">
                             {distributor}
@@ -685,12 +685,12 @@ const Inventory = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Price Range</label>
+                    <label className="text-sm font-medium text-foreground">Price Range</label>
                     <Select value={selectedPriceRange} onValueChange={setSelectedPriceRange}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="All Prices" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         {priceRanges.map((range) => (
                           <SelectItem key={range.label} value={range.label} className="rounded-md">
                             {range.label}
@@ -704,12 +704,12 @@ const Inventory = () => {
                 {/* Secondary Filters */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Stock Status</label>
+                    <label className="text-sm font-medium text-foreground">Stock Status</label>
                     <Select value={selectedStockStatus} onValueChange={setSelectedStockStatus}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="All Stock" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         {stockStatus.map((status) => (
                           <SelectItem key={status.value} value={status.value} className="rounded-md">
                             {status.label}
@@ -720,12 +720,12 @@ const Inventory = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Product Status</label>
+                    <label className="text-sm font-medium text-foreground">Product Status</label>
                     <Select value={selectedProductStatus} onValueChange={setSelectedProductStatus}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="All Products" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         <SelectItem value="all" className="rounded-md">All</SelectItem>
                         <SelectItem value="active" className="rounded-md">Active</SelectItem>
                         <SelectItem value="inactive" className="rounded-md">Inactive</SelectItem>
@@ -734,12 +734,12 @@ const Inventory = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Sort By</label>
+                    <label className="text-sm font-medium text-foreground">Sort By</label>
                     <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="h-11 border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
                         <SelectValue placeholder="Sort Options" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-gray-200 shadow-lg">
+                      <SelectContent className="rounded-lg border-border shadow-lg">
                         <SelectItem value="title" className="rounded-md">Title A-Z</SelectItem>
                         <SelectItem value="distributor" className="rounded-md">Distributor A-Z</SelectItem>
                         <SelectItem value="price-low" className="rounded-md">Price: Low to High</SelectItem>
@@ -754,11 +754,11 @@ const Inventory = () => {
 
                   {/* Results Count */}
                   <div className="flex items-end">
-                    <div className="w-full p-3 bg-gray-50 rounded-lg border border-gray-200">
-                      <p className="text-sm font-medium text-gray-700">Results</p>
-                      <p className="text-lg font-semibold text-gray-900">
+                    <div className="w-full p-3 bg-muted/50 rounded-lg border border-border">
+                      <p className="text-sm font-medium text-foreground">Results</p>
+                      <p className="text-lg font-semibold text-foreground">
                         {filteredBooks.length} of {totalItems}
-                        <span className="ml-2 text-xs text-gray-500">
+                        <span className="ml-2 text-xs text-muted-foreground">
                           Page {currentPage} of {totalPages}
                         </span>
                       </p>
@@ -772,25 +772,25 @@ const Inventory = () => {
 
         {/* Loading State */}
         {loading && (
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-card border-0 shadow-sm">
             <CardContent className="p-6 sm:p-8 text-center">
-              <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-blue-600 mx-auto mb-3 sm:mb-4 animate-spin" />
-              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Loading inventory...</h3>
-              <p className="text-sm sm:text-base text-gray-600">Please wait while we fetch your products.</p>
+              <Loader2 className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-3 sm:mb-4 animate-spin" />
+              <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">Loading inventory...</h3>
+              <p className="text-sm sm:text-base text-muted-foreground">Please wait while we fetch your products.</p>
             </CardContent>
           </Card>
         )}
 
         {/* Error State */}
         {error && !loading && (
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-card border-0 shadow-sm">
             <CardContent className="p-6 sm:p-8 text-center">
-              <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-red-600 mx-auto mb-3 sm:mb-4" />
-              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Error loading inventory</h3>
-              <p className="text-sm sm:text-base text-gray-600 mb-4">{error}</p>
+              <AlertTriangle className="h-10 w-10 sm:h-12 sm:w-12 text-destructive mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">Error loading inventory</h3>
+              <p className="text-sm sm:text-base text-muted-foreground mb-4">{error}</p>
               <Button
                 onClick={() => window.location.reload()}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 Try Again
               </Button>
@@ -800,17 +800,17 @@ const Inventory = () => {
 
         {/* Products List */}
         {!loading && !error && filteredBooks.length === 0 ? (
-          <Card className="bg-white border-0 shadow-sm">
+          <Card className="bg-card border-0 shadow-sm">
             <CardContent className="p-6 sm:p-8 text-center">
-              <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
-              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No products found</h3>
-              <p className="text-sm sm:text-base text-gray-600">Try adjusting your search or filter criteria.</p>
+              <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-foreground mb-2">No products found</h3>
+              <p className="text-sm sm:text-base text-muted-foreground">Try adjusting your search or filter criteria.</p>
             </CardContent>
           </Card>
         ) : !loading && !error && (
           <>
             {/* Desktop Table View */}
-            <Card className="bg-white border-0 shadow-sm hidden lg:block p-2">
+            <Card className="bg-card border-0 shadow-sm hidden lg:block p-2">
               <CardContent className="p-0">
                 <Table className="text-sm">
                   <TableHeader>
@@ -832,10 +832,10 @@ const Inventory = () => {
                       return (
                         <TableRow key={book.id} className={!book.isActive ? "opacity-50" : ""}>
                           <TableCell>
-                            <h3 className="font-semibold text-gray-900 text-sm leading-tight break-words">{book.title}</h3>
+                            <h3 className="font-semibold text-foreground text-sm leading-tight break-words">{book.title}</h3>
                           </TableCell>
                           <TableCell>
-                            <p className="text-sm text-gray-700 leading-tight break-words">{book.distributor}</p>
+                            <p className="text-sm text-muted-foreground leading-tight break-words">{book.distributor}</p>
                           </TableCell>
                           <TableCell>
                             <Badge variant="outline" className="text-xs px-2 py-1 font-medium">
@@ -843,16 +843,16 @@ const Inventory = () => {
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <p className="text-sm text-gray-600 leading-tight break-words">{book.subCategory}</p>
+                            <p className="text-sm text-muted-foreground leading-tight break-words">{book.subCategory}</p>
                           </TableCell>
                           <TableCell>
-                            <p className="text-sm font-bold text-gray-900">₹{parseFloat(book.price).toFixed(2)}</p>
+                            <p className="text-sm font-bold text-foreground">₹{parseFloat(book.price).toFixed(2)}</p>
                           </TableCell>
                           <TableCell>
-                            <p className="text-sm text-gray-600 font-medium">{book.gst}%</p>
+                            <p className="text-sm text-muted-foreground font-medium">{book.gst}%</p>
                           </TableCell>
                           <TableCell>
-                            <p className="text-sm font-semibold text-gray-900">{book.stock}</p>
+                            <p className="text-sm font-semibold text-foreground">{book.stock}</p>
                           </TableCell>
                           <TableCell>
                             <Badge variant={stockStatus.variant} className="text-xs px-2 py-1 font-medium">
@@ -909,12 +909,12 @@ const Inventory = () => {
               {filteredBooks.map((book) => {
                 const stockStatus = getStockStatus(book.stock);
                 return (
-                  <Card key={book.id} className={`bg-white border-0 shadow-sm hover:shadow-md transition-shadow ${!book.isActive ? 'opacity-50' : ''}`}>
+                  <Card key={book.id} className={`bg-card border-0 shadow-sm hover:shadow-md transition-shadow ${!book.isActive ? 'opacity-50' : ''}`}>
                     <CardContent className="p-5">
                       <div className="space-y-4">
                         {/* Header with title and status */}
                         <div className="flex items-start justify-between gap-3">
-                          <h3 className="font-semibold text-gray-900 text-base flex-1 min-w-0 leading-tight">
+                          <h3 className="font-semibold text-foreground text-base flex-1 min-w-0 leading-tight">
                             {book.title}
                           </h3>
                           <Badge variant={stockStatus.variant} className="text-xs px-2 py-1 font-medium flex-shrink-0">
@@ -925,35 +925,35 @@ const Inventory = () => {
                         {/* Product details grid */}
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div className="space-y-1">
-                            <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Distributor</p>
-                            <p className="text-gray-900 font-medium truncate">{book.distributor}</p>
+                            <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Distributor</p>
+                            <p className="text-foreground font-medium truncate">{book.distributor}</p>
                           </div>
                           <div className="space-y-1">
-                            <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Price</p>
-                            <p className="text-gray-900 font-bold text-lg">₹{parseFloat(book.price).toFixed(2)}</p>
+                            <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Price</p>
+                            <p className="text-foreground font-bold text-lg">₹{parseFloat(book.price).toFixed(2)}</p>
                           </div>
                           <div className="space-y-1">
-                            <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Category</p>
+                            <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Category</p>
                             <Badge variant="outline" className="text-xs px-2 py-1 font-medium">
                               {book.category}
                             </Badge>
                           </div>
                           <div className="space-y-1">
-                            <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Stock</p>
-                            <p className="text-gray-900 font-semibold text-base">{book.stock}</p>
+                            <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Stock</p>
+                            <p className="text-foreground font-semibold text-base">{book.stock}</p>
                           </div>
                           <div className="space-y-1">
-                            <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">Sub Category</p>
-                            <p className="text-gray-600 truncate">{book.subCategory}</p>
+                            <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">Sub Category</p>
+                            <p className="text-muted-foreground truncate">{book.subCategory}</p>
                           </div>
                           <div className="space-y-1">
-                            <p className="text-gray-500 font-medium text-xs uppercase tracking-wide">GST</p>
-                            <p className="text-gray-600 font-medium">{book.gst}%</p>
+                            <p className="text-muted-foreground font-medium text-xs uppercase tracking-wide">GST</p>
+                            <p className="text-muted-foreground font-medium">{book.gst}%</p>
                           </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-200">
+                        <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
                           <Button
                             variant="ghost"
                             size="sm"
@@ -1106,9 +1106,9 @@ const Inventory = () => {
             <Button
               onClick={handleAddProduct}
               size="lg"
-              className="relative group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 rounded-full w-14 h-14 p-0"
+              className="relative group bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-110 active:scale-95 border-0 rounded-full w-14 h-14 p-0"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-primary/70 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <div className="relative flex items-center justify-center">
                 <Plus className="h-6 w-6 transition-transform duration-300 group-hover:rotate-90" />
               </div>

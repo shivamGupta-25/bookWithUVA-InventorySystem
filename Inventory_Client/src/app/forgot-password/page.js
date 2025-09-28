@@ -54,16 +54,16 @@ export default function ForgotPasswordPage() {
 
   if (emailSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <div className="min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="max-w-md w-full space-y-6 sm:space-y-8">
           <div className="text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-              <Mail className="h-6 w-6 text-green-600" />
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/20 mb-4">
+              <Mail className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground">
               Check Your Email
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               We&apos;ve sent a 6-digit OTP to your email address
             </p>
           </div>
@@ -76,16 +76,16 @@ export default function ForgotPasswordPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <AlertCircle className="h-5 w-5 text-blue-400" />
+                    <AlertCircle className="h-5 w-5 text-blue-400 dark:text-blue-300" />
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm text-blue-700">
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
                       <strong>Email sent to:</strong> {email}
                     </p>
-                    <p className="text-sm text-blue-600 mt-1">
+                    <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
                       The OTP code will expire in 10 minutes.
                     </p>
                   </div>
@@ -117,7 +117,7 @@ export default function ForgotPasswordPage() {
           <div className="text-center">
             <Link 
               href="/login" 
-              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Login
@@ -129,13 +129,13 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <div className="text-center">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground">
             Book with UVA
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             Reset your password
           </p>
         </div>
@@ -183,7 +183,7 @@ export default function ForgotPasswordPage() {
         <div className="text-center">
           <Link 
             href="/login" 
-            className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Login

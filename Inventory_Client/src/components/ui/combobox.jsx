@@ -111,7 +111,7 @@ const Combobox = ({
               variant="ghost"
               size="sm"
               onClick={handleClear}
-              className="h-6 w-6 p-0 hover:bg-gray-200"
+              className="h-6 w-6 p-0 hover:bg-accent hover:text-accent-foreground"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -121,7 +121,7 @@ const Combobox = ({
             variant="ghost"
             size="sm"
             onClick={() => setIsOpen(!isOpen)}
-            className="h-6 w-6 p-0 hover:bg-gray-200"
+            className="h-6 w-6 p-0 hover:bg-accent hover:text-accent-foreground"
           >
             <ChevronDown className={`h-3 w-3 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
           </Button>
@@ -129,20 +129,20 @@ const Combobox = ({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+        <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-auto">
           {filteredOptions.length > 0 ? (
             filteredOptions.map((option, index) => (
               <button
                 key={index}
                 type="button"
-                className="w-full px-3 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                className="w-full px-3 py-2 text-left hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
                 onClick={() => handleOptionSelect(option)}
               >
                 {getLabel(option)}
               </button>
             ))
           ) : (
-            <div className="px-3 py-2 text-gray-500 text-sm">
+            <div className="px-3 py-2 text-muted-foreground text-sm">
               {allowCustom ? 'Type to add new option' : 'No options found'}
             </div>
           )}

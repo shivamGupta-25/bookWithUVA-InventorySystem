@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import ConditionalNav from "./_components/ConditionalNav";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const jost = Jost({ subsets: ["latin"] });
 
@@ -14,18 +15,25 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body
         className={jost.className}
         suppressHydrationWarning={true}
       >
         <AuthProvider>
-          <NotificationProvider>
-            <ConditionalNav>
-              {children}
-            </ConditionalNav>
-            <Toaster />
-          </NotificationProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NotificationProvider>
+              <ConditionalNav>
+                {children}
+              </ConditionalNav>
+              <Toaster />
+            </NotificationProvider>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

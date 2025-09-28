@@ -47,7 +47,7 @@ export default function DeliveryAnalytics({ stats }) {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">On-Time Rate</p>
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">On-Time Rate</p>
                 <p className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600 mt-1">{stats.delivery.onTimeRate}%</p>
               </div>
               <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-500 flex-shrink-0 ml-2" />
@@ -59,7 +59,7 @@ export default function DeliveryAnalytics({ stats }) {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Avg Delivery Time</p>
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Avg Delivery Time</p>
                 <p className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 mt-1">{stats.delivery.avgDeliveryTime} days</p>
               </div>
               <Timer className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500 flex-shrink-0 ml-2" />
@@ -71,7 +71,7 @@ export default function DeliveryAnalytics({ stats }) {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Total Delivered</p>
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Total Delivered</p>
                 <p className="text-lg sm:text-xl lg:text-2xl font-bold text-purple-600 mt-1">{stats.delivery.totalDelivered}</p>
               </div>
               <Truck className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500 flex-shrink-0 ml-2" />
@@ -83,7 +83,7 @@ export default function DeliveryAnalytics({ stats }) {
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-center justify-between">
               <div className="min-w-0 flex-1">
-                <p className="text-xs sm:text-sm font-medium text-gray-600 truncate">Avg Delay</p>
+                <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">Avg Delay</p>
                 <p className="text-lg sm:text-xl lg:text-2xl font-bold text-orange-600 mt-1">{stats.delivery.avgDeliveryDelay} days</p>
               </div>
               <Clock3 className="h-6 w-6 sm:h-8 sm:w-8 text-orange-500 flex-shrink-0 ml-2" />
@@ -100,8 +100,8 @@ export default function DeliveryAnalytics({ stats }) {
               <BarChart className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Performance
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-emerald-50/50 border-l-2 border-emerald-200 pl-3 py-2 rounded-r-md">
-              <span className="font-medium text-gray-700">Performance Metrics:</span> Breakdown of deliveries by performance. Categorizes deliveries as on-time (delivered on or before expected date), late (after expected date), or early (more than 1 day before expected date) to measure delivery efficiency.
+            <CardDescription className="text-xs sm:text-sm text-muted-foreground bg-emerald-50/50 dark:bg-emerald-950/20 border-l-2 border-emerald-200 dark:border-emerald-800 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-foreground">Performance Metrics:</span> Breakdown of deliveries by performance. Categorizes deliveries as on-time (delivered on or before expected date), late (after expected date), or early (more than 1 day before expected date) to measure delivery efficiency.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
@@ -130,7 +130,7 @@ export default function DeliveryAnalytics({ stats }) {
                     labelStyle={{
                       fontSize: window.innerWidth < 640 ? '8px' : '10px',
                       fontWeight: 'bold',
-                      fill: '#374151'
+                      fill: 'hsl(var(--foreground))'
                     }}
                   >
                     {deliveryPerformanceData.map((entry, index) => (
@@ -142,13 +142,14 @@ export default function DeliveryAnalytics({ stats }) {
                       `${value} deliveries`,
                       `${props.payload.name}`
                     ]}
-                    labelStyle={{ fontWeight: 'bold', color: '#374151' }}
+                    labelStyle={{ fontWeight: 'bold', color: '#000', fontSize: '12px' }}
                     contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
+                      backgroundColor: '#ffffff',
+                      border: 'none',
                       borderRadius: '8px',
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                      fontSize: '12px'
+                      fontSize: '12px',
+                      color: '#000'
                     }}
                   />
                 </PieChart>
@@ -156,12 +157,12 @@ export default function DeliveryAnalytics({ stats }) {
             </div>
             <div className="grid grid-cols-3 gap-1 sm:gap-2 mt-3 sm:mt-4">
               {deliveryPerformanceData.map((item, index) => (
-                <div key={index} className="text-center p-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                <div key={index} className="text-center p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors">
                   <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1">
                     <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: item.color }}></div>
-                    <span className="text-xs sm:text-sm font-medium truncate">{item.name}</span>
+                    <span className="text-xs sm:text-sm font-medium truncate text-foreground">{item.name}</span>
                   </div>
-                  <div className="text-sm sm:text-base lg:text-lg font-bold">{item.value}</div>
+                  <div className="text-sm sm:text-base lg:text-lg font-bold text-foreground">{item.value}</div>
                 </div>
               ))}
             </div>
@@ -174,8 +175,8 @@ export default function DeliveryAnalytics({ stats }) {
               <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Trends (Last 7 Days)
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-cyan-50/50 border-l-2 border-cyan-200 pl-3 py-2 rounded-r-md">
-              <span className="font-medium text-gray-700">Delivery Trends:</span> Daily delivery count and average delivery time. Bar chart shows delivery volume while line chart displays average delivery time in days to track delivery performance trends.
+            <CardDescription className="text-xs sm:text-sm text-foreground bg-cyan-50/50 dark:bg-cyan-950/20 border-l-2 border-cyan-200 dark:border-cyan-800 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-foreground">Delivery Trends:</span> Daily delivery count and average delivery time. Bar chart shows delivery volume while line chart displays average delivery time in days to track delivery performance trends.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-1">
@@ -192,14 +193,14 @@ export default function DeliveryAnalytics({ stats }) {
                     bottom: 0
                   }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis
                     dataKey="name"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9 }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
                     interval={0}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                     angle={window.innerWidth < 640 ? -45 : 0}
                     textAnchor={window.innerWidth < 640 ? 'end' : 'middle'}
                     height={window.innerWidth < 640 ? 50 : 60}
@@ -208,9 +209,9 @@ export default function DeliveryAnalytics({ stats }) {
                   <YAxis
                     yAxisId="left"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9 }}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                     width={window.innerWidth < 640 ? 30 : 40}
                   >
                   </YAxis>
@@ -218,9 +219,9 @@ export default function DeliveryAnalytics({ stats }) {
                     yAxisId="right"
                     orientation="right"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9 }}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                     tickFormatter={(value) => `${value}d`}
                     width={window.innerWidth < 640 ? 30 : 40}
                   >
@@ -239,15 +240,16 @@ export default function DeliveryAnalytics({ stats }) {
                       fontSize: window.innerWidth < 640 ? '11px' : '12px',
                       padding: window.innerWidth < 640 ? '8px' : '12px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
-                      backgroundColor: 'white',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      border: 'none',
+                      backgroundColor: '#ffffff',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      color: '#000'
                     }}
                     labelStyle={{
                       fontWeight: 'bold',
-                      color: '#374151',
+                      color: '#000',
                       marginBottom: '4px',
-                      fontSize: window.innerWidth < 640 ? '11px' : '12px'
+                      fontSize: window.innerWidth < 640 ? '11px' : '12px',
                     }}
                   />
                   <Legend
@@ -294,33 +296,33 @@ export default function DeliveryAnalytics({ stats }) {
               <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
               Upcoming Deliveries (Next 7 Days)
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-yellow-50/50 border-l-2 border-yellow-200 pl-3 py-2 rounded-r-md">
-              <span className="font-medium text-gray-700">Upcoming Schedule:</span> Orders scheduled for delivery in the next week. Shows upcoming deliveries to help plan logistics and ensure timely order fulfillment.
+            <CardDescription className="text-xs sm:text-sm text-muted-foreground bg-yellow-50/50 dark:bg-yellow-950/20 border-l-2 border-yellow-200 dark:border-yellow-800 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-foreground">Upcoming Schedule:</span> Orders scheduled for delivery in the next week. Shows upcoming deliveries to help plan logistics and ensure timely order fulfillment.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             {stats.upcomingDeliveries.length === 0 ? (
-              <div className="text-center py-6 sm:py-8 text-gray-500">
-                <Calendar className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 text-gray-300" />
+              <div className="text-center py-6 sm:py-8 text-foreground">
+                <Calendar className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 text-muted-foreground/50" />
                 <p className="text-sm sm:text-base">No upcoming deliveries</p>
               </div>
             ) : (
               <div className="space-y-2 sm:space-y-3 max-h-80 overflow-y-auto">
                 {stats.upcomingDeliveries.slice(0, 10).map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <div key={order.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-accent transition-colors">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1 sm:gap-2 mb-1">
-                        <span className="font-medium text-xs sm:text-sm text-gray-900 truncate">{order.orderNumber}</span>
+                        <span className="font-medium text-xs sm:text-sm text-foreground truncate">{order.orderNumber}</span>
                         <Badge className={`text-xs px-1.5 py-0.5 ${getStatusColor(order.status)}`}>
                           {order.status}
                         </Badge>
                       </div>
-                      <div className="text-xs text-gray-500 truncate">
+                      <div className="text-xs text-foreground truncate">
                         {order.customer.name} • Expected: {formatDate(order.expectedDeliveryDate)}
                       </div>
                     </div>
                     <div className="text-right ml-2">
-                      <div className="font-semibold text-xs sm:text-sm text-gray-900">
+                      <div className="font-semibold text-xs sm:text-sm text-foreground">
                         {formatCurrency(order.totalAmount)}
                       </div>
                     </div>
@@ -337,13 +339,13 @@ export default function DeliveryAnalytics({ stats }) {
               <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5" />
               Overdue Deliveries
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-rose-50/50 border-l-2 border-rose-200 pl-3 py-2 rounded-r-md">
-              <span className="font-medium text-gray-700">Urgent Attention:</span> Orders past their expected delivery date. Identifies overdue orders requiring immediate attention to maintain customer satisfaction and delivery performance.
+            <CardDescription className="text-xs sm:text-sm text-muted-foreground bg-rose-50/50 dark:bg-rose-950/20 border-l-2 border-rose-200 dark:border-rose-800 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-foreground">Urgent Attention:</span> Orders past their expected delivery date. Identifies overdue orders requiring immediate attention to maintain customer satisfaction and delivery performance.
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             {stats.overdueDeliveries.length === 0 ? (
-              <div className="text-center py-6 sm:py-8 text-gray-500">
+              <div className="text-center py-6 sm:py-8 text-foreground">
                 <CheckCircle className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-2 text-green-300" />
                 <p className="text-sm sm:text-base">No overdue deliveries</p>
                 <p className="text-xs sm:text-sm">All deliveries are on track!</p>
@@ -351,20 +353,20 @@ export default function DeliveryAnalytics({ stats }) {
             ) : (
               <div className="space-y-2 sm:space-y-3 max-h-80 overflow-y-auto">
                 {stats.overdueDeliveries.slice(0, 10).map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                  <div key={order.id} className="flex items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-accent transition-colors">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1 sm:gap-2 mb-1">
-                        <span className="font-medium text-xs sm:text-sm text-gray-900 truncate">{order.orderNumber}</span>
+                        <span className="font-medium text-xs sm:text-sm text-foreground truncate">{order.orderNumber}</span>
                         <Badge className={`text-xs px-1.5 py-0.5 ${getStatusColor(order.status)}`}>
                           {order.status}
                         </Badge>
                       </div>
-                      <div className="text-xs text-gray-500 truncate">
+                      <div className="text-xs text-foreground truncate">
                         {order.customer.name} • Expected: {formatDate(order.expectedDeliveryDate)}
                       </div>
                     </div>
                     <div className="text-right ml-2">
-                      <div className="font-semibold text-xs sm:text-sm text-gray-900">
+                      <div className="font-semibold text-xs sm:text-sm text-foreground">
                         {formatCurrency(order.totalAmount)}
                       </div>
                     </div>
@@ -384,8 +386,8 @@ export default function DeliveryAnalytics({ stats }) {
               <BarChart className="h-4 w-4 sm:h-5 sm:w-5" />
               Delivery Performance by Day of Week
             </CardTitle>
-            <CardDescription className="text-xs sm:text-sm text-gray-600 bg-violet-50/50 border-l-2 border-violet-200 pl-3 py-2 rounded-r-md">
-              <span className="font-medium text-gray-700">Weekly Patterns:</span> This chart analyzes delivery performance patterns across days of the week. <strong className="underline">Blue bars</strong> show the number of deliveries completed each day (Sunday=1, Monday=2, etc.). <strong className="underline">Green line</strong> shows average <span className="underline font-medium">delivery time in days from order date to delivery date</span>. <span className="underline font-medium">Use this to identify which days have the most deliveries and which days have faster/slower delivery times.</span> <span className="underline font-medium">Lower line values indicate faster deliveries, while higher bars show busier delivery days.</span> This helps optimize delivery scheduling and resource allocation.
+            <CardDescription className="text-xs sm:text-sm text-muted-foreground bg-violet-50/50 dark:bg-violet-950/20 border-l-2 border-violet-200 dark:border-violet-800 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-foreground">Weekly Patterns:</span> This chart analyzes delivery performance patterns across days of the week. <strong className="underline">Blue bars</strong> show the number of deliveries completed each day (Sunday=1, Monday=2, etc.). <strong className="underline">Green line</strong> shows average <span className="underline font-medium">delivery time in days from order date to delivery date</span>. <span className="underline font-medium">Use this to identify which days have the most deliveries and which days have faster/slower delivery times.</span> <span className="underline font-medium">Lower line values indicate faster deliveries, while higher bars show busier delivery days.</span> This helps optimize delivery scheduling and resource allocation.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-2">
@@ -402,14 +404,14 @@ export default function DeliveryAnalytics({ stats }) {
                     bottom: 0
                   }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis
                     dataKey="day"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9 }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
                     interval={0}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                     angle={window.innerWidth < 640 ? -45 : 0}
                     textAnchor={window.innerWidth < 640 ? 'end' : 'middle'}
                     height={window.innerWidth < 640 ? 50 : 60}
@@ -418,9 +420,9 @@ export default function DeliveryAnalytics({ stats }) {
                   <YAxis
                     yAxisId="left"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9 }}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                     width={window.innerWidth < 640 ? 30 : 40}
                   >
                   </YAxis>
@@ -428,9 +430,9 @@ export default function DeliveryAnalytics({ stats }) {
                     yAxisId="right"
                     orientation="right"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9 }}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                     tickFormatter={(value) => `${value}d`}
                     width={window.innerWidth < 640 ? 30 : 40}
                   >
@@ -449,15 +451,16 @@ export default function DeliveryAnalytics({ stats }) {
                       fontSize: window.innerWidth < 640 ? '11px' : '12px',
                       padding: window.innerWidth < 640 ? '8px' : '12px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
-                      backgroundColor: 'white',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      border: 'none',
+                      backgroundColor: '#ffffff',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      color: '#000'
                     }}
                     labelStyle={{
                       fontWeight: 'bold',
-                      color: '#374151',
+                      color: '#000',
                       marginBottom: '4px',
-                      fontSize: window.innerWidth < 640 ? '11px' : '12px'
+                      fontSize: window.innerWidth < 640 ? '11px' : '12px',
                     }}
                   />
                   <Legend
@@ -466,7 +469,8 @@ export default function DeliveryAnalytics({ stats }) {
                     iconType="rect"
                     wrapperStyle={{
                       paddingBottom: window.innerWidth < 640 ? '5px' : '10px',
-                      fontSize: window.innerWidth < 640 ? '11px' : '12px'
+                      fontSize: window.innerWidth < 640 ? '11px' : '12px',
+                      color: '#000'
                     }}
                   />
                   <Bar

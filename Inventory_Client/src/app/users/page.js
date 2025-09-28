@@ -261,13 +261,13 @@ export default function UsersPage() {
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case "admin":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300";
       case "manager":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300";
       case "viewer":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300";
     }
   };
 
@@ -528,7 +528,7 @@ export default function UsersPage() {
                               variant="outline"
                               size="sm"
                               onClick={() => handleDeleteUserClick(user)}
-                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
                               disabled={deletingUser === user._id}
                             >
                               {deletingUser === user._id ? (
@@ -602,7 +602,7 @@ export default function UsersPage() {
                               </DropdownMenuItem>
                               <DropdownMenuItem 
                                 onClick={() => handleDeleteUserClick(user)}
-                                className="text-red-600 focus:text-red-600"
+                                className="text-destructive focus:text-destructive"
                                 disabled={deletingUser === user._id}
                               >
                                 {deletingUser === user._id ? (
@@ -762,7 +762,7 @@ export default function UsersPage() {
           <AlertDialogContent className="w-[95vw] max-w-md sm:max-w-lg md:max-w-xl">
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2 text-lg">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+                <AlertTriangle className="h-5 w-5 text-destructive" />
                 Delete User
               </AlertDialogTitle>
               <AlertDialogDescription className="text-sm">
@@ -777,7 +777,7 @@ export default function UsersPage() {
               <AlertDialogAction
                 onClick={handleDeleteUser}
                 disabled={deletingUser}
-                className="w-full sm:w-auto h-9 bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                className="w-full sm:w-auto h-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground"
               >
                 {deletingUser ? (
                   <>
@@ -801,9 +801,9 @@ export default function UsersPage() {
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2 text-lg">
                 {userToToggle?.isActive ? (
-                  <UserX className="h-5 w-5 text-amber-600" />
+                  <UserX className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 ) : (
-                  <UserCheck className="h-5 w-5 text-green-600" />
+                  <UserCheck className="h-5 w-5 text-green-600 dark:text-green-400" />
                 )}
                 {userToToggle?.isActive ? "Deactivate User" : "Activate User"}
               </AlertDialogTitle>
@@ -819,7 +819,7 @@ export default function UsersPage() {
               <AlertDialogAction
                 onClick={handleToggleStatus}
                 disabled={togglingStatus}
-                className={`w-full sm:w-auto h-9 ${userToToggle?.isActive ? "bg-amber-600 hover:bg-amber-700 focus:ring-amber-600" : "bg-green-600 hover:bg-green-700 focus:ring-green-600"}`}
+                className={`w-full sm:w-auto h-9 ${userToToggle?.isActive ? "bg-amber-600 hover:bg-amber-700 dark:bg-amber-600 dark:hover:bg-amber-700" : "bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700"} text-white`}
               >
                 {togglingStatus ? (
                   <>

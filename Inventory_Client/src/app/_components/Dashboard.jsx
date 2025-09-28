@@ -25,9 +25,9 @@ const DeliveryAnalytics = lazy(() => import('./Dashboard/DeliveryAnalytics'));
 
 // Loading component for Suspense fallback
 const ComponentLoader = () => (
-  <div className="flex items-center justify-center py-8">
-    <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
-  </div>
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
 );
 
 export default function Dashboard() {
@@ -154,9 +154,9 @@ export default function Dashboard() {
         <div className="flex items-center justify-center py-12">
           <Card className="w-full max-w-md">
             <CardContent className="p-8 text-center">
-              <Loader2 className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-spin" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Loading dashboard...</h3>
-              <p className="text-sm text-gray-600">Please wait while we fetch your data.</p>
+              <Loader2 className="h-12 w-12 text-primary mx-auto mb-4 animate-spin" />
+              <h3 className="text-lg font-medium text-foreground mb-2">Loading dashboard...</h3>
+              <p className="text-sm text-muted-foreground">Please wait while we fetch your data.</p>
             </CardContent>
           </Card>
         </div>
@@ -180,14 +180,14 @@ export default function Dashboard() {
 
         {/* Dashboard Title */}
         <div className="flex justify-center my-4 sm:my-6 lg:my-8 items-center gap-2">
-          <TrendingUp className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-slate-600" />
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 tracking-tight underline underline-offset-4 decoration-2 decoration-slate-600">Dashboard</h1>
+          <TrendingUp className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-muted-foreground" />
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground tracking-tight underline underline-offset-4 decoration-2 decoration-muted-foreground">Dashboard</h1>
         </div>
 
         {/* Key Metrics */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Key Metrics</h2>
+            <h2 className="text-lg font-semibold text-foreground">Key Metrics</h2>
           </div>
           <Suspense fallback={<ComponentLoader />}>
             <KeyMetrics stats={stats} />
@@ -197,34 +197,34 @@ export default function Dashboard() {
         {/* Analytics Tabs */}
         <Tabs defaultValue="overview" className="w-full">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <TabsList className="inline-flex h-auto p-1 bg-gray-50/80 backdrop-blur-sm rounded-2xl w-full lg:w-auto lg:flex-1 shadow-sm border border-gray-200/60 gap-1 overflow-x-auto">
+            <TabsList className="inline-flex h-auto p-1 bg-muted/80 backdrop-blur-sm rounded-2xl w-full lg:w-auto lg:flex-1 shadow-sm border border-border/60 gap-1 overflow-x-auto">
               <TabsTrigger
                 value="overview"
-                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-gray-900 data-[state=active]:border data-[state=active]:border-gray-200/50 data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-white/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
+                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-background/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
               >
                 <span className="truncate">Overview</span>
               </TabsTrigger>
               <TabsTrigger
                 value="orders"
-                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-gray-900 data-[state=active]:border data-[state=active]:border-gray-200/50 data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-white/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
+                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-background/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
               >
                 <span className="truncate">Orders</span>
               </TabsTrigger>
               <TabsTrigger
                 value="inventory"
-                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-gray-900 data-[state=active]:border data-[state=active]:border-gray-200/50 data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-white/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
+                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-background/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
               >
                 <span className="truncate">Inventory</span>
               </TabsTrigger>
               <TabsTrigger
                 value="delivery"
-                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-gray-900 data-[state=active]:border data-[state=active]:border-gray-200/50 data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-white/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
+                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-background/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
               >
                 <span className="truncate">Delivery</span>
               </TabsTrigger>
               <TabsTrigger
                 value="alerts"
-                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-white data-[state=active]:shadow-md data-[state=active]:text-gray-900 data-[state=active]:border data-[state=active]:border-gray-200/50 data-[state=inactive]:text-gray-600 data-[state=inactive]:hover:text-gray-800 data-[state=inactive]:hover:bg-white/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
+                className="flex-shrink-0 px-2 sm:px-3 py-2.5 text-xs sm:text-sm font-medium rounded-xl transition-all duration-300 data-[state=active]:bg-background data-[state=active]:shadow-md data-[state=active]:text-foreground data-[state=active]:border data-[state=active]:border-border/50 data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground data-[state=inactive]:hover:bg-background/50 min-h-[36px] sm:min-h-[40px] flex items-center justify-center"
               >
                 <span className="truncate">Alerts</span>
               </TabsTrigger>
@@ -233,7 +233,7 @@ export default function Dashboard() {
               onClick={refreshData}
               variant="outline"
               size="sm"
-              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-200 shrink-0 h-9 sm:h-10 px-2 sm:px-3 lg:ml-4 rounded-xl transition-all duration-300"
+              className="text-primary hover:text-primary/80 hover:bg-primary/10 border-primary/20 shrink-0 h-9 sm:h-10 px-2 sm:px-3 lg:ml-4 rounded-xl transition-all duration-300"
             >
               <RefreshCw className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Refresh

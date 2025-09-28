@@ -160,10 +160,10 @@ const SettingsPage = () => {
     <ProtectedRoute requiredRole="admin">
       <div className="p-6 space-y-6">
         <div className="flex items-center gap-3">
-          <Settings className="h-6 w-6 text-gray-700" />
+          <Settings className="h-6 w-6 text-foreground" />
           <h1 className="text-2xl font-bold">Settings</h1>
         </div>
-        <p className="text-sm text-gray-600">Configure system settings and manage data. Admins only.</p>
+        <p className="text-sm text-muted-foreground">Configure system settings and manage data. Admins only.</p>
 
         <Tabs defaultValue="stock-alerts" className="space-y-6">
           <TabsList className="w-full flex flex-row gap-1 p-1 bg-muted rounded-lg h-auto overflow-x-auto">
@@ -218,7 +218,7 @@ const SettingsPage = () => {
                       onChange={(e) => handleThresholdChange("lowStockThreshold", e.target.value)}
                       placeholder="Enter threshold"
                     />
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                       Products with stock at or below this level will trigger low stock alerts
                     </p>
                   </div>
@@ -233,7 +233,7 @@ const SettingsPage = () => {
                       onChange={(e) => handleThresholdChange("outOfStockThreshold", e.target.value)}
                       placeholder="Enter threshold"
                     />
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                       Products with stock at or below this level will trigger out of stock alerts
                     </p>
                   </div>
@@ -296,7 +296,7 @@ const SettingsPage = () => {
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <Label>Enable Low Stock Alerts</Label>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         Receive notifications when products reach low stock levels
                       </p>
                     </div>
@@ -309,7 +309,7 @@ const SettingsPage = () => {
                   <div className="flex items-center justify-between">
                     <div className="space-y-1">
                       <Label>Enable Out of Stock Alerts</Label>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         Receive notifications when products are out of stock
                       </p>
                     </div>
@@ -336,7 +336,7 @@ const SettingsPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <Label>Enable Notification Sounds</Label>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-muted-foreground">
                           Play sounds when stock alerts are triggered
                         </p>
                       </div>
@@ -476,16 +476,16 @@ const SettingsPage = () => {
                   <CardTitle>Products</CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">Delete all products from the database.</p>
+                  <p className="text-sm text-muted-foreground">Delete all products from the database.</p>
                   <AlertDialog open={open.products} onOpenChange={(v) => setOpen((o) => ({ ...o, products: v }))}>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                      <Button variant="outline" className="text-destructive border-destructive/20 hover:bg-destructive/10">
                         <Trash2 className="h-4 w-4 mr-2" /> Delete All
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-600"><ShieldAlert className="h-5 w-5" /> Delete ALL Products?</AlertDialogTitle>
+                        <AlertDialogTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="h-5 w-5" /> Delete ALL Products?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action is irreversible and will remove every product record.
                         </AlertDialogDescription>
@@ -493,7 +493,7 @@ const SettingsPage = () => {
                       <AlertDialogFooter>
                         <AlertDialogCancel disabled={busy.products}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-red-600 hover:bg-red-700"
+                          className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                           disabled={busy.products}
                           onClick={() =>
                             run("products", () => api.products.deleteAll(), (d) => `Deleted ${d.deletedCount || d.data?.deletedCount || 0} products`)
@@ -513,16 +513,16 @@ const SettingsPage = () => {
                   <CardTitle>Distributors</CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">Delete all distributors from the database.</p>
+                  <p className="text-sm text-muted-foreground">Delete all distributors from the database.</p>
                   <AlertDialog open={open.distributors} onOpenChange={(v) => setOpen((o) => ({ ...o, distributors: v }))}>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                      <Button variant="outline" className="text-destructive border-destructive/20 hover:bg-destructive/10">
                         <Trash2 className="h-4 w-4 mr-2" /> Delete All
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-600"><ShieldAlert className="h-5 w-5" /> Delete ALL Distributors?</AlertDialogTitle>
+                        <AlertDialogTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="h-5 w-5" /> Delete ALL Distributors?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action is irreversible and will remove every distributor record.
                         </AlertDialogDescription>
@@ -530,7 +530,7 @@ const SettingsPage = () => {
                       <AlertDialogFooter>
                         <AlertDialogCancel disabled={busy.distributors}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-red-600 hover:bg-red-700"
+                          className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                           disabled={busy.distributors}
                           onClick={() =>
                             run("distributors", () => api.distributors.deleteAll(), (d) => `Deleted ${d.deletedCount || d.data?.deletedCount || 0} distributors`)
@@ -550,16 +550,16 @@ const SettingsPage = () => {
                   <CardTitle>Orders</CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">Delete all orders and restore product stock.</p>
+                  <p className="text-sm text-muted-foreground">Delete all orders and restore product stock.</p>
                   <AlertDialog open={open.orders} onOpenChange={(v) => setOpen((o) => ({ ...o, orders: v }))}>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                      <Button variant="outline" className="text-destructive border-destructive/20 hover:bg-destructive/10">
                         <Trash2 className="h-4 w-4 mr-2" /> Delete All
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-600"><ShieldAlert className="h-5 w-5" /> Delete ALL Orders?</AlertDialogTitle>
+                        <AlertDialogTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="h-5 w-5" /> Delete ALL Orders?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action is irreversible and will remove every order record and restore product stock.
                         </AlertDialogDescription>
@@ -567,7 +567,7 @@ const SettingsPage = () => {
                       <AlertDialogFooter>
                         <AlertDialogCancel disabled={busy.orders}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-red-600 hover:bg-red-700"
+                          className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                           disabled={busy.orders}
                           onClick={() =>
                             run("orders", () => api.orders.deleteAll(), (d) => `Deleted ${d.data?.deletedCount || d.deletedCount || 0} orders`)
@@ -587,16 +587,16 @@ const SettingsPage = () => {
                   <CardTitle>Activity Logs</CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">Delete all activity logs (audit trail).</p>
+                  <p className="text-sm text-muted-foreground">Delete all activity logs (audit trail).</p>
                   <AlertDialog open={open.logs} onOpenChange={(v) => setOpen((o) => ({ ...o, logs: v }))}>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                      <Button variant="outline" className="text-destructive border-destructive/20 hover:bg-destructive/10">
                         <Trash2 className="h-4 w-4 mr-2" /> Delete All
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-600"><ShieldAlert className="h-5 w-5" /> Delete ALL Activity Logs?</AlertDialogTitle>
+                        <AlertDialogTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="h-5 w-5" /> Delete ALL Activity Logs?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action is irreversible and will remove all audit logs. Consider exporting before deletion.
                         </AlertDialogDescription>
@@ -604,7 +604,7 @@ const SettingsPage = () => {
                       <AlertDialogFooter>
                         <AlertDialogCancel disabled={busy.logs}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-red-600 hover:bg-red-700"
+                          className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                           disabled={busy.logs}
                           onClick={() =>
                             run("logs", () => api.activityLogs.deleteAll(0), (d) => `Deleted ${d.data?.deletedCount || d.deletedCount || 0} logs`)
@@ -624,16 +624,16 @@ const SettingsPage = () => {
                   <CardTitle>Stock Alerts</CardTitle>
                 </CardHeader>
                 <CardContent className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">Delete all stock alerts (low/out-of-stock notifications).</p>
+                  <p className="text-sm text-muted-foreground">Delete all stock alerts (low/out-of-stock notifications).</p>
                   <AlertDialog open={open.stockalerts} onOpenChange={(v) => setOpen((o) => ({ ...o, stockalerts: v }))}>
                     <AlertDialogTrigger asChild>
-                      <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
+                      <Button variant="outline" className="text-destructive border-destructive/20 hover:bg-destructive/10">
                         <Trash2 className="h-4 w-4 mr-2" /> Delete All
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle className="flex items-center gap-2 text-red-600"><ShieldAlert className="h-5 w-5" /> Delete ALL Stock Alerts?</AlertDialogTitle>
+                        <AlertDialogTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="h-5 w-5" /> Delete ALL Stock Alerts?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action is irreversible and will remove every stock alert record.
                         </AlertDialogDescription>
@@ -641,7 +641,7 @@ const SettingsPage = () => {
                       <AlertDialogFooter>
                         <AlertDialogCancel disabled={busy.stockalerts}>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                          className="bg-red-600 hover:bg-red-700"
+                          className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
                           disabled={busy.stockalerts}
                           onClick={() =>
                             run("stockalerts", () => api.stockAlerts.deleteAll(), (d) => `Deleted ${d.deletedCount || d.data?.deletedCount || 0} stock alerts`)

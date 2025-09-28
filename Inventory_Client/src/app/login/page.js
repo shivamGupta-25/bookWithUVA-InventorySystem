@@ -47,7 +47,7 @@ export default function LoginPage() {
   // Show loading spinner while authentication is being verified
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
         <div className="flex flex-col items-center space-y-4">
           <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin" />
           <p className="text-sm text-muted-foreground">Loading...</p>
@@ -57,13 +57,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <div className="text-center">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground">
             Book with UVA
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             Sign in to your inventory management account
           </p>
         </div>
@@ -138,7 +138,7 @@ export default function LoginPage() {
             <div className="text-center mt-4">
               <Link 
                 href="/forgot-password" 
-                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                className="text-sm text-primary hover:text-primary/80 hover:underline"
               >
                 Forgot your password?
               </Link>

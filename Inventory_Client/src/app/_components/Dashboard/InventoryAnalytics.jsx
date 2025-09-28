@@ -45,8 +45,8 @@ export default function InventoryAnalytics({ stats }) {
               <Package className="h-5 w-5" />
               Stock Levels Distribution
             </CardTitle>
-            <CardDescription className="text-sm text-gray-600 bg-orange-50/50 border-l-2 border-orange-200 pl-3 py-2 rounded-r-md">
-              <span className="font-medium text-gray-700">Inventory Health:</span> Current inventory status across all products. Categorizes products as in-stock (above low threshold), low stock (between out-of-stock and low thresholds), or out-of-stock to monitor inventory health.
+            <CardDescription className="text-sm text-muted-foreground bg-orange-50/50 dark:bg-orange-950/20 border-l-2 border-orange-200 dark:border-orange-800 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-foreground">Inventory Health:</span> Current inventory status across all products. Categorizes products as in-stock (above low threshold), low stock (between out-of-stock and low thresholds), or out-of-stock to monitor inventory health.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -67,7 +67,7 @@ export default function InventoryAnalytics({ stats }) {
                     labelLine={false}
                     labelStyle={{
                       fontWeight: 'bold',
-                      fill: '#374151',
+                      fill: 'hsl(var(--foreground))',
                     }}
                   >
                     {stockLevelsData.map((entry, index) => (
@@ -79,12 +79,13 @@ export default function InventoryAnalytics({ stats }) {
                       `${value} products`,
                       `${props.payload.name} Status`
                     ]}
-                    labelStyle={{ fontWeight: 'bold', color: '#374151' }}
+                    labelStyle={{ fontWeight: 'bold', color: '#000', fontSize: '12px' }}
                     contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
+                      backgroundColor: '#ffffff',
+                      border: 'none',
                       borderRadius: '8px',
-                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                      color: '#000'
                     }}
                   />
                 </PieChart>
@@ -114,40 +115,40 @@ export default function InventoryAnalytics({ stats }) {
           <CardContent>
             <div className="space-y-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-900">{stats.inventory.totalProducts}</div>
-                <div className="text-sm text-gray-600">Total Products</div>
+                <div className="text-3xl font-bold text-foreground">{stats.inventory.totalProducts}</div>
+                <div className="text-sm text-foreground">Total Products</div>
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500 dark:bg-green-400"></div>
                     <span className="text-sm font-medium">In Stock</span>
                   </div>
-                  <span className="text-lg font-bold text-green-600">{stats.inventory.inStockProducts}</span>
+                  <span className="text-lg font-bold text-green-600 dark:text-green-400">{stats.inventory.inStockProducts}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500 dark:bg-yellow-400"></div>
                     <span className="text-sm font-medium">Low Stock</span>
                   </div>
-                  <span className="text-lg font-bold text-yellow-600">{stats.inventory.lowStockProducts}</span>
+                  <span className="text-lg font-bold text-yellow-600 dark:text-yellow-400">{stats.inventory.lowStockProducts}</span>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-950/20 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-red-500 dark:bg-red-400"></div>
                     <span className="text-sm font-medium">Out of Stock</span>
                   </div>
-                  <span className="text-lg font-bold text-red-600">{stats.inventory.outOfStockProducts}</span>
+                  <span className="text-lg font-bold text-red-600 dark:text-red-400">{stats.inventory.outOfStockProducts}</span>
                 </div>
               </div>
 
               <div className="pt-4 border-t">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-purple-600">{formatCurrency(stats.inventory.inventoryValue)}</div>
-                  <div className="text-sm text-gray-600">Total Inventory Value</div>
+                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{formatCurrency(stats.inventory.inventoryValue)}</div>
+                  <div className="text-sm text-foreground">Total Inventory Value</div>
                 </div>
               </div>
             </div>
@@ -163,8 +164,8 @@ export default function InventoryAnalytics({ stats }) {
               <BarChart className="h-5 w-5" />
               Products by Category
             </CardTitle>
-            <CardDescription className="text-sm text-gray-600 bg-indigo-50/50 border-l-2 border-indigo-200 pl-3 py-2 rounded-r-md">
-              <span className="font-medium text-gray-700">Category Analysis:</span> Distribution of products across different categories. Shows product count per category to understand inventory composition and identify category performance.
+            <CardDescription className="text-sm text-foreground bg-indigo-50/50 dark:bg-indigo-950/20 border-l-2 border-indigo-200 dark:border-indigo-800 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-foreground">Category Analysis:</span> Distribution of products across different categories. Shows product count per category to understand inventory composition and identify category performance.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -173,7 +174,7 @@ export default function InventoryAnalytics({ stats }) {
               onClickCapture={blockChartInteraction}>
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart data={categoryData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis
                     dataKey="name"
                     angle={-45}
@@ -181,19 +182,19 @@ export default function InventoryAnalytics({ stats }) {
                     height={60}
                     fontSize={11}
                     interval={0}
-                    tick={{ fontSize: 9 }}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                   >
-                    <Label value="Product Categories" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }} />
+                    <Label value="Product Categories" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
                   </XAxis>
                   <YAxis
                     fontSize={11}
-                    tick={{ fontSize: 9 }}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                   >
-                    <Label value="Number of Products" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }} />
+                    <Label value="Number of Products" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
                   </YAxis>
                   <Tooltip
                     formatter={(value, name) => [
@@ -205,11 +206,11 @@ export default function InventoryAnalytics({ stats }) {
                       fontSize: '12px',
                       padding: '12px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
-                      backgroundColor: 'white',
+                      border: 'none',
+                      backgroundColor: '#ffffff',
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                     }}
-                    labelStyle={{ fontWeight: 'bold', color: '#374151', marginBottom: '4px' }}
+                    labelStyle={{ fontWeight: 'bold', color: '#000', marginBottom: '4px', fontSize: '12px' }}
                   />
                   <Bar
                     dataKey="count"
@@ -229,8 +230,8 @@ export default function InventoryAnalytics({ stats }) {
               <Users className="h-5 w-5" />
               Products by Distributor
             </CardTitle>
-            <CardDescription className="text-sm text-gray-600 bg-teal-50/50 border-l-2 border-teal-200 pl-3 py-2 rounded-r-md">
-              <span className="font-medium text-gray-700">Supplier Relations:</span> Distribution of products across different distributors. Shows product count per distributor to understand supplier relationships and identify key distribution partners.
+            <CardDescription className="text-sm text-foreground bg-teal-50/50 dark:bg-teal-950/20 border-l-2 border-teal-200 dark:border-teal-800 pl-3 py-2 rounded-r-md">
+              <span className="font-medium text-foreground">Supplier Relations:</span> Distribution of products across different distributors. Shows product count per distributor to understand supplier relationships and identify key distribution partners.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
@@ -239,7 +240,7 @@ export default function InventoryAnalytics({ stats }) {
               onClickCapture={blockChartInteraction}>
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart data={distributorData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis
                     dataKey="name"
                     angle={-45}
@@ -247,19 +248,19 @@ export default function InventoryAnalytics({ stats }) {
                     height={60}
                     fontSize={11}
                     interval={0}
-                    tick={{ fontSize: 9 }}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                   >
-                    <Label value="Distributor Names" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }} />
+                    <Label value="Distributor Names" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
                   </XAxis>
                   <YAxis
                     fontSize={11}
-                    tick={{ fontSize: 9 }}
-                    axisLine={{ stroke: '#d1d5db' }}
-                    tickLine={{ stroke: '#d1d5db' }}
+                    tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
+                    axisLine={{ stroke: 'hsl(var(--border))' }}
+                    tickLine={{ stroke: 'hsl(var(--border))' }}
                   >
-                    <Label value="Number of Products" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: '#6b7280' }} />
+                    <Label value="Number of Products" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
                   </YAxis>
                   <Tooltip
                     formatter={(value, name) => [
@@ -271,11 +272,11 @@ export default function InventoryAnalytics({ stats }) {
                       fontSize: '12px',
                       padding: '12px',
                       borderRadius: '8px',
-                      border: '1px solid #e5e7eb',
-                      backgroundColor: 'white',
+                      border: 'none',
+                      backgroundColor: '#ffffff',
                       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                     }}
-                    labelStyle={{ fontWeight: 'bold', color: '#374151', marginBottom: '4px' }}
+                    labelStyle={{ fontWeight: 'bold', color: '#000', marginBottom: '4px', fontSize: '12px' }}
                   />
                   <Bar
                     dataKey="count"

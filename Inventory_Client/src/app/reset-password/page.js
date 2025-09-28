@@ -101,16 +101,16 @@ export default function ResetPasswordPage() {
 
   if (passwordReset) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+      <div className="min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="max-w-md w-full space-y-6 sm:space-y-8">
           <div className="text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-              <CheckCircle className="h-6 w-6 text-green-600" />
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/20 mb-4">
+              <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground">
               Password Reset Successful
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-muted-foreground">
               Your password has been successfully reset
             </p>
           </div>
@@ -123,13 +123,13 @@ export default function ResetPasswordPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <CheckCircle className="h-5 w-5 text-green-400" />
+                    <CheckCircle className="h-5 w-5 text-green-400 dark:text-green-300" />
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm text-green-700">
+                    <p className="text-sm text-green-700 dark:text-green-300">
                       Your password has been successfully updated. You can now log in to your account.
                     </p>
                   </div>
@@ -150,13 +150,13 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <div className="max-w-md w-full space-y-6 sm:space-y-8">
         <div className="text-center">
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground">
             Book with UVA
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-muted-foreground">
             Reset your password
           </p>
         </div>
@@ -256,13 +256,13 @@ export default function ResetPasswordPage() {
                 </div>
               </div>
               
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <AlertCircle className="h-4 w-4 text-blue-400" />
+                    <AlertCircle className="h-4 w-4 text-blue-400 dark:text-blue-300" />
                   </div>
                   <div className="ml-2">
-                    <p className="text-xs text-blue-700">
+                    <p className="text-xs text-blue-700 dark:text-blue-300">
                       Password must be at least 6 characters with uppercase, lowercase, and number
                     </p>
                   </div>
@@ -288,16 +288,16 @@ export default function ResetPasswordPage() {
         </Card>
         
         <div className="text-center space-y-2">
-          <Link 
-            href="/forgot-password" 
-            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 hover:underline"
-          >
+            <Link 
+              href="/forgot-password" 
+              className="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline"
+            >
             Didn&apos;t receive OTP? Resend
           </Link>
           <div>
             <Link 
               href="/login" 
-              className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
+              className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Login

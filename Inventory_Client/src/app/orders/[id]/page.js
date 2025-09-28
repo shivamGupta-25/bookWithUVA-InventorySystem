@@ -585,7 +585,7 @@ const OrderDetailPage = ({ params }) => {
   }
 
   return (
-    <div className="min-h-screen scroll-smooth">
+    <div className="min-h-screen scroll-smooth bg-background">
       {/* Enhanced Header */}
       <div className="w-full px-2 sm:px-4 lg:px-6 xl:px-8">
         <div className="flex items-center justify-between h-14 sm:h-16 md:h-18">
@@ -594,15 +594,15 @@ const OrderDetailPage = ({ params }) => {
               variant="ghost"
               size="sm"
               onClick={() => router.back()}
-              className="hover:bg-slate-100 flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 touch-manipulation"
+              className="hover:bg-accent flex-shrink-0 h-9 w-9 sm:h-10 sm:w-10 touch-manipulation"
             >
               <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <div className="min-w-0 flex-1">
-              <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-slate-900 truncate">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-foreground truncate">
                 Order #{order.orderNumber}
               </h1>
-              <p className="text-sm sm:text-base text-slate-500 hidden sm:block">
+              <p className="text-sm sm:text-base text-muted-foreground hidden sm:block">
                 Placed on {new Date(order.orderDate).toLocaleDateString()}
               </p>
             </div>
@@ -611,20 +611,20 @@ const OrderDetailPage = ({ params }) => {
             {/* Desktop status indicators */}
             <div className="hidden sm:flex items-center gap-3">
               <div className="text-right">
-                <div className="text-xs text-slate-500">Status</div>
-                <div className="text-sm font-semibold text-slate-900">
+                <div className="text-xs text-muted-foreground">Status</div>
+                <div className="text-sm font-semibold text-foreground">
                   {getStatusBadge(order.status)}
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-xs text-slate-500">Payment</div>
-                <div className="text-sm font-semibold text-slate-900">
+                <div className="text-xs text-muted-foreground">Payment</div>
+                <div className="text-sm font-semibold text-foreground">
                   {getPaymentStatusBadge(order.paymentStatus)}
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-xs text-slate-500">Method</div>
-                <div className="text-sm font-semibold text-slate-900">
+                <div className="text-xs text-muted-foreground">Method</div>
+                <div className="text-sm font-semibold text-foreground">
                   {getPaymentStatusBadge(order.paymentMethod)}
                 </div>
               </div>
@@ -648,7 +648,7 @@ const OrderDetailPage = ({ params }) => {
           {/* Left Column - Order Details */}
           <div className="lg:col-span-2 space-y-3 sm:space-y-4">
             {/* Order Status and Payment */}
-            <Card className="border-2 border-slate-200 hover:border-slate-300 transition-colors">
+            <Card className="border-2 border-border hover:border-border/80 transition-colors">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <Package className="h-4 w-4" />
@@ -678,7 +678,7 @@ const OrderDetailPage = ({ params }) => {
                         </SelectContent>
                       </Select>
                     ) : (
-                      <div className="flex items-center p-2 bg-slate-50 rounded-lg">
+                      <div className="flex items-center p-2 bg-muted rounded-lg">
                         {getStatusBadge(order.status)}
                       </div>
                     )}
@@ -701,7 +701,7 @@ const OrderDetailPage = ({ params }) => {
                         </SelectContent>
                       </Select>
                     ) : (
-                      <div className="flex items-center p-2 bg-slate-50 rounded-lg">
+                      <div className="flex items-center p-2 bg-muted rounded-lg">
                         {getPaymentStatusBadge(order.paymentStatus)}
                       </div>
                     )}
@@ -713,7 +713,7 @@ const OrderDetailPage = ({ params }) => {
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Order Notes</label>
                       <textarea
-                        className="min-h-[80px] w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-none"
+                        className="min-h-[80px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-none"
                         rows={3}
                         placeholder="Add order notes or special instructions..."
                         value={editData.notes}
@@ -725,7 +725,7 @@ const OrderDetailPage = ({ params }) => {
                       <div className="space-y-2 p-3 bg-destructive/5 rounded-lg border border-destructive/20">
                         <label className="text-sm font-medium text-destructive">Cancellation Reason</label>
                         <textarea
-                          className="min-h-[60px] w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-none"
+                          className="min-h-[60px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-none"
                           rows={2}
                           placeholder="Please provide a reason for cancellation..."
                           value={editData.cancellationReason}
@@ -751,7 +751,7 @@ const OrderDetailPage = ({ params }) => {
                         <div className="space-y-2">
                           <label className="text-sm font-medium">Refund Reason</label>
                           <textarea
-                            className="min-h-[60px] w-full rounded-lg border border-slate-200 bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-none"
+                            className="min-h-[60px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 resize-none"
                             rows={2}
                             placeholder="Please provide a reason for refund..."
                             value={editData.refundReason}
@@ -766,7 +766,7 @@ const OrderDetailPage = ({ params }) => {
             </Card>
 
             {/* Customer Information */}
-            <Card className="border-2 border-slate-200 hover:border-slate-300 transition-colors">
+            <Card className="border-2 border-border hover:border-border/80 transition-colors">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <User className="h-4 w-4" />
@@ -789,7 +789,7 @@ const OrderDetailPage = ({ params }) => {
                         className="h-9 text-sm"
                       />
                     ) : (
-                      <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
+                      <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
                         <User className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm font-medium">{order.customer.name}</span>
                       </div>
@@ -809,7 +809,7 @@ const OrderDetailPage = ({ params }) => {
                         className="h-9 text-sm"
                       />
                     ) : (
-                      <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
+                      <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
                         <Mail className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">{order.customer.email || 'Not provided'}</span>
                       </div>
@@ -829,7 +829,7 @@ const OrderDetailPage = ({ params }) => {
                         className="h-9 text-sm"
                       />
                     ) : (
-                      <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
+                      <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
                         <Phone className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">{order.customer.phone || 'Not provided'}</span>
                       </div>
@@ -853,7 +853,7 @@ const OrderDetailPage = ({ params }) => {
                         </SelectContent>
                       </Select>
                     ) : (
-                      <div className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
+                      <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm capitalize font-medium">{order.paymentMethod}</span>
                       </div>
@@ -864,7 +864,7 @@ const OrderDetailPage = ({ params }) => {
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Delivery Address</label>
                   {editing ? (
-                    <div className="space-y-3 p-3 bg-slate-50 rounded-lg border">
+                    <div className="space-y-3 p-3 bg-muted rounded-lg border">
                       <Input
                         type="text"
                         placeholder="Street Address"
@@ -936,7 +936,7 @@ const OrderDetailPage = ({ params }) => {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg">
+                    <div className="flex items-start gap-2 p-2 bg-muted rounded-lg">
                       <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
                       <div className="text-sm space-y-1">
                         {order.customer.address.street && <div className="font-medium">{order.customer.address.street}</div>}
@@ -954,30 +954,28 @@ const OrderDetailPage = ({ params }) => {
             </Card>
 
             {/* Enhanced Order Financial Details */}
-            <Card className="border-2 border-slate-200 hover:border-slate-300 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Card className="border-2 border-border hover:border-border/80 shadow-lg hover:shadow-xl transition-all duration-300">
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-base">
-                  <div className="p-1.5 bg-green-100 rounded-lg">
-                    <span className="text-base font-bold text-green-600">₹</span>
-                  </div>
+                  <span className="p-1.5 pr-2.5 pl-2.5 bg-green-100 dark:bg-green-900/20 rounded-full text-xs font-bold text-green-600 dark:text-green-400">₹</span>
                   Financial Details
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 sm:space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                       <Truck className="h-4 w-4 text-blue-500" />
                       Shipping Charges
                     </label>
                     {editing ? (
                       <div className="relative">
-                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium text-sm">₹</span>
+                        <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground font-medium text-sm">₹</span>
                         <input
                           type="number"
                           min="0"
                           step="0.01"
-                          className="w-full pl-8 pr-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+                          className="w-full pl-8 pr-3 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition-all duration-200 text-sm bg-background"
                           placeholder="0.00"
                           value={editData.shippingCharges}
                           onChange={(e) => setEditData(prev => ({
@@ -987,14 +985,14 @@ const OrderDetailPage = ({ params }) => {
                         />
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <Truck className="h-4 w-4 text-gray-500" />
+                      <div className="flex items-center gap-2 p-3 bg-muted rounded-lg border border-border">
+                        <Truck className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm font-semibold">₹{(order.shippingCharges || 0).toFixed(2)}</span>
                       </div>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                       <span className="text-green-600 font-bold text-sm">-</span>
                       Discount %
                     </label>
@@ -1005,7 +1003,7 @@ const OrderDetailPage = ({ params }) => {
                           min="0"
                           max="100"
                           step="0.01"
-                          className="w-full pl-3 pr-8 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-sm"
+                          className="w-full pl-3 pr-8 py-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition-all duration-200 text-sm bg-background"
                           placeholder="0"
                           value={editData.discount}
                           onChange={(e) => setEditData(prev => ({
@@ -1016,16 +1014,16 @@ const OrderDetailPage = ({ params }) => {
                         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-600 font-medium text-sm">%</span>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
-                        <span className="text-sm text-green-600 font-semibold">-₹{((order.subtotal + order.totalGst) * (order.discount || 0) / 100).toFixed(2)}</span>
-                        <span className="text-xs text-gray-500">({order.discount || 0}%)</span>
+                      <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-100 dark:border-green-800">
+                        <span className="text-sm text-green-600 dark:text-green-400 font-semibold">-₹{((order.subtotal + order.totalGst) * (order.discount || 0) / 100).toFixed(2)}</span>
+                        <span className="text-xs text-muted-foreground">({order.discount || 0}%)</span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
                     <CalendarIcon className="h-4 w-4 text-purple-500" />
                     Expected Delivery Date
                   </label>
@@ -1034,7 +1032,7 @@ const OrderDetailPage = ({ params }) => {
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className="w-full justify-start text-left font-normal p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-200 text-sm h-9"
+                          className="w-full justify-start text-left font-normal p-2 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-ring transition-all duration-200 text-sm h-9"
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
                           {editData.expectedDeliveryDate ? (
@@ -1069,8 +1067,8 @@ const OrderDetailPage = ({ params }) => {
                       </PopoverContent>
                     </Popover>
                   ) : (
-                    <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                      <CalendarIcon className="h-4 w-4 text-gray-500" />
+                    <div className="flex items-center gap-2 p-3 bg-muted rounded-lg border border-border">
+                      <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                       <span className="text-sm font-medium">
                         {order.expectedDeliveryDate
                           ? new Date(order.expectedDeliveryDate).toLocaleDateString('en-US', {
@@ -1130,22 +1128,22 @@ const OrderDetailPage = ({ params }) => {
                     <Table>
                       <TableHeader>
                         <TableRow className="border-b-2">
-                          <TableHead className="font-semibold text-gray-700 text-sm sm:text-base">Product Details</TableHead>
-                          <TableHead className="text-center font-semibold text-gray-700 text-sm sm:text-base">Quantity</TableHead>
-                          <TableHead className="text-right font-semibold text-gray-700 text-sm sm:text-base">Unit Price</TableHead>
-                          <TableHead className="text-right font-semibold text-gray-700 text-sm sm:text-base">GST</TableHead>
-                          <TableHead className="text-right font-semibold text-gray-700 text-sm sm:text-base">Total</TableHead>
-                          {editing && editingItems && <TableHead className="text-center font-semibold text-gray-700 text-sm sm:text-base">Actions</TableHead>}
+                          <TableHead className="font-semibold text-foreground text-sm sm:text-base">Product Details</TableHead>
+                          <TableHead className="text-center font-semibold text-foreground text-sm sm:text-base">Quantity</TableHead>
+                          <TableHead className="text-right font-semibold text-foreground text-sm sm:text-base">Unit Price</TableHead>
+                          <TableHead className="text-right font-semibold text-foreground text-sm sm:text-base">GST</TableHead>
+                          <TableHead className="text-right font-semibold text-foreground text-sm sm:text-base">Total</TableHead>
+                          {editing && editingItems && <TableHead className="text-center font-semibold text-foreground text-sm sm:text-base">Actions</TableHead>}
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {(editing ? editData.items : order.items).map((item, index) => (
-                          <TableRow key={index} className="hover:bg-gray-50/50 transition-colors duration-200">
+                          <TableRow key={index} className="hover:bg-accent/50 transition-colors duration-200">
                             <TableCell>
                               <div className="space-y-1">
-                                <div className="font-semibold text-gray-900">{item.productName}</div>
+                                <div className="font-semibold text-foreground">{item.productName}</div>
                                 {item.product && (
-                                  <div className="text-sm text-gray-500 flex items-center gap-1">
+                                  <div className="text-sm text-muted-foreground flex items-center gap-1">
                                     <Badge variant="outline" className="text-xs">
                                       {item.product.category}
                                     </Badge>
@@ -1168,7 +1166,7 @@ const OrderDetailPage = ({ params }) => {
                                     >
                                       -
                                     </Button>
-                                    <span className="w-10 text-center font-medium bg-gray-100 rounded-lg py-1 text-sm">{item.quantity}</span>
+                                    <span className="w-10 text-center font-medium bg-muted rounded-lg py-1 text-sm">{item.quantity}</span>
                                     <Button
                                       size="sm"
                                       variant="outline"
@@ -1310,17 +1308,17 @@ const OrderDetailPage = ({ params }) => {
                   ))}
                 </div>
                 {editing && editingItems && editData.items.length === 0 && (
-                  <div className="text-center py-12 text-gray-500">
-                    <div className="p-4 bg-gray-100 rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                      <Package className="h-10 w-10 text-gray-400" />
+                  <div className="text-center py-12 text-muted-foreground">
+                    <div className="p-4 bg-muted rounded-full w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                      <Package className="h-10 w-10 text-muted-foreground/50" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No items in this order</h3>
-                    <p className="text-sm text-gray-600">Add items from the inventory or create a new order.</p>
+                    <h3 className="text-lg font-medium text-foreground mb-2">No items in this order</h3>
+                    <p className="text-sm text-muted-foreground">Add items from the inventory or create a new order.</p>
                   </div>
                 )}
                 {editing && editingItems && order.status === 'pending' && (
-                  <div className="mt-6 p-4 bg-blue-50 border-2 border-blue-200 rounded-xl">
-                    <div className="flex items-start gap-3 text-sm text-blue-700">
+                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl">
+                    <div className="flex items-start gap-3 text-sm text-blue-700 dark:text-blue-300">
                       <AlertTriangle className="h-5 w-5 mt-0.5 flex-shrink-0" />
                       <div>
                         <span className="font-semibold">Editing Mode:</span>
@@ -1519,8 +1517,8 @@ const OrderDetailPage = ({ params }) => {
                   </div>
 
                   {/* Total after GST + Shipping */}
-                  <div className="border-t border-gray-200 pt-2 mt-3">
-                    <div className="flex justify-between text-sm font-semibold text-gray-700">
+                  <div className="border-t border-border pt-2 mt-3">
+                    <div className="flex justify-between text-sm font-semibold text-foreground">
                       <span>Total (GST + shipping):</span>
                       <span className={editing ? "text-blue-600" : ""}>
                         ₹{editing
@@ -1537,7 +1535,7 @@ const OrderDetailPage = ({ params }) => {
                   <div className="flex justify-between text-sm">
                     <span>
                       Discount
-                      <span className="ml-1 text-xs text-gray-500 align-middle">
+                      <span className="ml-1 text-xs text-muted-foreground align-middle">
                         ({editing ? (editData.discount ?? 0) : (order.discount ?? 0)}%)
                       </span>
                       :

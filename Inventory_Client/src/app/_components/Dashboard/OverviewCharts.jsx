@@ -39,8 +39,8 @@ export default function OverviewCharts({ stats }) {
             <BarChart className="h-5 w-5" />
             Order Status Distribution
           </CardTitle>
-          <CardDescription className="text-sm text-gray-600 bg-blue-50/50 border-l-2 border-blue-200 pl-3 py-2 rounded-r-md">
-            <span className="font-medium text-gray-700">Analysis:</span> Breakdown of orders by current status. Shows the distribution of pending, processing, delivered, and cancelled orders to understand order pipeline health.
+          <CardDescription className="text-sm text-accent-foreground/70 bg-blue-50/50 dark:bg-blue-950/20 border-l-2 border-blue-200 dark:border-blue-800 pl-3 py-2 rounded-r-md">
+            <span className="font-medium text-foreground">Analysis:</span> Breakdown of orders by current status. Shows the distribution of pending, processing, delivered, and cancelled orders to understand order pipeline health.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -48,7 +48,7 @@ export default function OverviewCharts({ stats }) {
             onMouseDownCapture={blockChartInteraction}
             onClickCapture={blockChartInteraction}>
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 0, right: 0, left: 10, bottom: 0 }}>
+              <PieChart margin={{ top: 0, right: 0, left: 14, bottom: 0 }}>
                 <Pie
                   data={orderStatusData}
                   cx="50%"
@@ -68,7 +68,7 @@ export default function OverviewCharts({ stats }) {
                   labelStyle={{
                     fontSize: '10px',
                     fontWeight: 'bold',
-                    fill: '#374151'
+                    fill: 'hsl(var(--foreground))'
                   }}
                 >
                   {orderStatusData.map((entry, index) => (
@@ -80,13 +80,16 @@ export default function OverviewCharts({ stats }) {
                     `${value} orders`,
                     `${props.payload.name} Status`
                   ]}
-                  labelStyle={{ fontWeight: 'bold', color: '#374151' }}
+                  labelStyle={{ fontWeight: 'bold', color: '#000', fontSize: '12px' }}
                   contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
+                    fontSize: '12px',
+                    backgroundColor: '#ffffff',
+                    border: 'none',
                     borderRadius: '8px',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    color: '#000'
                   }}
+                  labelFormatter={(label, payload) => `${label}: ${payload.value}`}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -95,7 +98,7 @@ export default function OverviewCharts({ stats }) {
             {orderStatusData.map((item, index) => (
               <div key={index} className="flex items-center gap-1 text-sm">
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
-                <span className="text-gray-600 text-xs">{item.name}:</span>
+                <span className="text-muted-foreground text-xs">{item.name}:</span>
                 <span className="text-xs font-medium">{item.value}</span>
               </div>
             ))}
@@ -110,8 +113,8 @@ export default function OverviewCharts({ stats }) {
             <TrendingUp className="h-5 w-5" />
             Top Selling Products
           </CardTitle>
-          <CardDescription className="text-sm text-gray-600 bg-green-50/50 border-l-2 border-green-200 pl-3 py-2 rounded-r-md">
-            <span className="font-medium text-gray-700">Revenue Focus:</span> Products ranked by total revenue generated. Calculated by summing final prices of all delivered orders for each product to identify top revenue drivers.
+          <CardDescription className="text-sm text-accent-foreground/70 bg-green-50/50 dark:bg-green-950/20 border-l-2 border-green-200 dark:border-green-800 pl-3 py-2 rounded-r-md">
+            <span className="font-medium text-foreground">Revenue Focus:</span> Products ranked by total revenue generated. Calculated by summing final prices of all delivered orders for each product to identify top revenue drivers.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -120,7 +123,7 @@ export default function OverviewCharts({ stats }) {
             onClickCapture={blockChartInteraction}>
             <ResponsiveContainer width="100%" height="100%">
               <RechartsBarChart data={topProductsData} margin={{ top: 20, right: 30, left: 0, bottom: 10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="name"
                   angle={-45}
@@ -128,16 +131,16 @@ export default function OverviewCharts({ stats }) {
                   height={60}
                   fontSize={11}
                   interval={0}
-                  tick={{ fontSize: 9 }}
-                  axisLine={{ stroke: '#d1d5db' }}
-                  tickLine={{ stroke: '#d1d5db' }}
+                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                 >
                 </XAxis>
                 <YAxis
                   fontSize={11}
-                  tick={{ fontSize: 9 }}
-                  axisLine={{ stroke: '#d1d5db' }}
-                  tickLine={{ stroke: '#d1d5db' }}
+                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
+                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                  tickLine={{ stroke: 'hsl(var(--border))' }}
                   tickFormatter={(value) => `₹${value >= 1000 ? (value / 1000).toFixed(1) + 'K' : value}`}
                 >
                 </YAxis>
@@ -151,11 +154,12 @@ export default function OverviewCharts({ stats }) {
                     fontSize: '12px',
                     padding: '12px',
                     borderRadius: '8px',
-                    border: '1px solid #e5e7eb',
-                    backgroundColor: 'white',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    border: 'none',
+                    backgroundColor: '#ffffff',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    color: '#000'
                   }}
-                  labelStyle={{ fontWeight: 'bold', color: '#374151', marginBottom: '4px' }}
+                  labelStyle={{ fontWeight: 'bold', color: '#000', marginBottom: '4px' }}
                 />
                 <Bar
                   dataKey="revenue"
@@ -179,27 +183,27 @@ export default function OverviewCharts({ stats }) {
         </CardHeader>
         <CardContent>
           {stats.recentOrders.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <ShoppingCart className="h-12 w-12 mx-auto mb-2 text-gray-300" />
+            <div className="text-center py-8 text-muted-foreground">
+              <ShoppingCart className="h-12 w-12 mx-auto mb-2 text-muted-foreground/50" />
               <p>No recent orders</p>
             </div>
           ) : (
             <div className="space-y-3">
               {stats.recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent transition-colors">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-medium text-sm text-gray-900">{order.orderNumber}</span>
+                      <span className="font-medium text-sm text-foreground">{order.orderNumber}</span>
                       <Badge className={`text-xs capitalize ${getStatusColor(order.status)}`}>
                         {order.status}
                       </Badge>
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted-foreground">
                       {order.customer.name} • {formatDate(order.orderDate)}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold text-sm text-gray-900">
+                    <div className="font-semibold text-sm text-foreground">
                       {formatCurrency(order.totalAmount)}
                     </div>
                   </div>

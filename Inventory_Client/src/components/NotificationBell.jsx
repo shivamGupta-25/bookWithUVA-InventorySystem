@@ -115,11 +115,11 @@ const NotificationBell = () => {
   const getAlertIcon = (alertType) => {
     switch (alertType) {
       case 'out-of-stock':
-        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+        return <AlertTriangle className="h-4 w-4 text-red-500 dark:text-red-400" />;
       case 'low-stock':
-        return <Package className="h-4 w-4 text-orange-500" />;
+        return <Package className="h-4 w-4 text-orange-500 dark:text-orange-400" />;
       default:
-        return <AlertTriangle className="h-4 w-4 text-gray-500" />;
+        return <AlertTriangle className="h-4 w-4 text-gray-500 dark:text-gray-400" />;
     }
   };
 
@@ -216,10 +216,10 @@ const NotificationBell = () => {
         <Button
           variant="ghost"
           size="sm"
-          className="relative h-10 w-10 rounded-full bg-white shadow-lg border border-gray-200 hover:bg-gray-50 hover:shadow-xl transition-all duration-200"
+          className="relative h-10 w-10 rounded-full bg-background shadow-lg border border-border hover:bg-accent hover:shadow-xl transition-all duration-200"
         >
           {isLoading ? (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
           ) : (
             <Bell className="h-5 w-5" />
           )}
@@ -232,7 +232,7 @@ const NotificationBell = () => {
             </Badge>
           )}
           {!isConnected && (
-            <span className="absolute -bottom-1 -right-1 h-2 w-2 bg-gray-400 rounded-full" />
+            <span className="absolute -bottom-1 -right-1 h-2 w-2 bg-muted-foreground rounded-full" />
           )}
         </Button>
       </PopoverTrigger>
@@ -282,7 +282,7 @@ const NotificationBell = () => {
                   variant="ghost"
                   size="sm"
                   onClick={handleClearAll}
-                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 sm:px-2 text-red-600 hover:text-red-700"
+                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 sm:px-2 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                   disabled={loading}
                   title="Clear all"
                 >
@@ -295,8 +295,8 @@ const NotificationBell = () => {
           <CardContent className="p-0">
             {/* Viewer Notice */}
             {!canManageAlerts && (
-              <div className="px-3 py-2 bg-blue-50 border-b border-blue-200">
-                <p className="text-xs text-blue-700">
+              <div className="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+                <p className="text-xs text-blue-700 dark:text-blue-300">
                   <span className="font-medium">Viewer Mode:</span> You can view alerts but cannot acknowledge or resolve them.
                 </p>
               </div>
@@ -306,11 +306,11 @@ const NotificationBell = () => {
             <ScrollArea className="h-[60vh] max-h-80 sm:h-80">
               {loading ? (
                 <div className="flex items-center justify-center py-6 sm:py-8">
-                  <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-gray-900"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-foreground"></div>
                 </div>
               ) : filteredAlerts.length === 0 ? (
-                <div className="p-4 sm:p-6 text-center text-gray-500">
-                  <Bell className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-gray-300" />
+                <div className="p-4 sm:p-6 text-center text-muted-foreground">
+                  <Bell className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 text-muted-foreground/50" />
                   <p className="text-xs sm:text-sm">No alerts found</p>
                 </div>
               ) : (
@@ -318,7 +318,7 @@ const NotificationBell = () => {
                   {filteredAlerts.map((alert) => (
                     <div
                       key={alert._id}
-                      className="p-2 sm:p-3 rounded-lg border transition-colors hover:bg-gray-50"
+                      className="p-2 sm:p-3 rounded-lg border transition-colors hover:bg-accent"
                     >
                       <div className="flex items-start gap-2 sm:gap-3">
                         <div className="flex-shrink-0 mt-0.5">
@@ -327,7 +327,7 @@ const NotificationBell = () => {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
-                            <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
+                            <p className="text-xs sm:text-sm font-medium text-foreground truncate">
                               {alert.productName}
                             </p>
                             <div className="flex items-center gap-1 flex-wrap">
@@ -346,7 +346,7 @@ const NotificationBell = () => {
                             </div>
                           </div>
 
-                          <p className="text-[10px] sm:text-xs text-gray-600 mb-2 overflow-hidden" style={{
+                          <p className="text-[10px] sm:text-xs text-muted-foreground mb-2 overflow-hidden" style={{
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical'
@@ -355,7 +355,7 @@ const NotificationBell = () => {
                           </p>
 
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                            <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-gray-500">
+                            <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground">
                               <span className="truncate">Stock: {alert.currentStock}</span>
                               <span className="hidden sm:inline">•</span>
                               <span className="flex items-center gap-1 truncate">

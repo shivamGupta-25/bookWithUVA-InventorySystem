@@ -174,13 +174,13 @@ export default function ProfilePage() {
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case "admin":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300";
       case "manager":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300";
       case "viewer":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300";
     }
   };
 
@@ -513,9 +513,9 @@ export default function ProfilePage() {
                   </ul>
                 </div>
                 
-                <div className="p-4 border rounded-lg bg-amber-50 border-amber-200">
-                  <h3 className="font-semibold mb-2 text-amber-800">Security Notice</h3>
-                  <p className="text-sm text-amber-700">
+                <div className="p-4 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
+                  <h3 className="font-semibold mb-2 text-amber-800 dark:text-amber-300">Security Notice</h3>
+                  <p className="text-sm text-amber-700 dark:text-amber-300">
                     For security reasons, you will be automatically logged out after changing your password. 
                   </p>
                 </div>
