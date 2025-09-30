@@ -9,6 +9,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -43,7 +44,12 @@ import {
   Package,
   AlertTriangle,
   RefreshCw,
-  Loader2
+  Loader2,
+  X,
+  SlidersHorizontal,
+  ChevronDown,
+  Filter,
+  ChevronUp
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -64,6 +70,7 @@ const Inventory = () => {
   const [selectedStockStatus, setSelectedStockStatus] = useState('all');
   const [selectedProductStatus, setSelectedProductStatus] = useState('all');
   const [sortBy, setSortBy] = useState('title');
+  const [showFilters, setShowFilters] = useState(false);
 
   // API data states
   const [products, setProducts] = useState([]);
@@ -452,6 +459,10 @@ const Inventory = () => {
     }
   };
 
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
   return (
     <ProtectedRoute>
       <div className="min-h-screen p-2 sm:p-3 md:p-4 lg:p-2 overflow-x-hidden">
@@ -578,194 +589,193 @@ const Inventory = () => {
 
         {/* Filters and Search */}
         <Card className="bg-card border border-border/60 shadow-sm mb-6 rounded-xl overflow-hidden">
-          <CardContent className="p-0">
+          <CardContent className="p-6">
             {/* Search Section */}
-            <div className="p-6 border-b border-border">
-              <div className="relative max-w-2xl">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-                <Input
-                  placeholder="Search products by title or distributor..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 pr-4 py-3 text-base border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
-                />
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Input
+                placeholder="Search products by title or distributor..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-12 pr-4 py-3 text-base border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200"
+              />
+            </div>
+
+            <SelectSeparator className="my-4" />
+
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-2 mt-4 mb-4">
+              <div className="flex flex-col gap-2 sm:gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <Button variant="outline" size="sm" className="text-primary hover:text-primary/80 hover:bg-primary/10 border-primary/20 px-4 py-2 font-medium cursor-pointer" onClick={toggleFilters}>
+                  <Filter className="h-4 w-4 mr-2" />
+                  Filters {showFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button>
+
+                <Button
+                  onClick={refreshInventoryData}
+                  variant="outline"
+                  size="sm"
+                  className="text-primary hover:text-primary/80 hover:bg-primary/10 border-primary/20 px-4 py-2 font-medium"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh
+                </Button>
+                <Button
+                  onClick={clearFilters}
+                  variant="outline"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground hover:bg-accent border-border px-4 py-2 font-medium"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Clear All
+                </Button>
+                {canDeleteProducts && (
+                  <Button
+                    onClick={handleDeleteAllClick}
+                    variant="outline"
+                    size="sm"
+                    className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 border-destructive/20 px-4 py-2 font-medium"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete All
+                  </Button>
+                )}
               </div>
             </div>
 
             {/* Filters Section */}
-            <div className="p-6">
-              <div className="space-y-6">
-                {/* Filter Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">Filters</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Refine your search results</p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      onClick={refreshInventoryData}
-                      variant="outline"
-                      size="sm"
-                      className="text-primary hover:text-primary/80 hover:bg-primary/10 border-primary/20 px-4 py-2 font-medium"
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Refresh
-                    </Button>
-                    <Button
-                      onClick={clearFilters}
-                      variant="outline"
-                      size="sm"
-                      className="text-muted-foreground hover:text-foreground hover:bg-accent border-border px-4 py-2 font-medium"
-                    >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Clear All
-                    </Button>
-                    {canDeleteProducts && (
-                      <Button
-                        onClick={handleDeleteAllClick}
-                        variant="outline"
-                        size="sm"
-                        className="text-destructive hover:text-destructive/80 hover:bg-destructive/10 border-destructive/20 px-4 py-2 font-medium"
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete All
-                      </Button>
-                    )}
-                  </div>
+            <div className={`flex flex-col gap-4 ${showFilters ? 'block' : 'hidden'}`}>
+              <div className="flex flex-col">
+                <h3 className="text-lg font-semibold text-foreground">Filters</h3>
+                <p className="text-sm text-muted-foreground mt-1">Refine your search results</p>
+              </div>
+
+              <div className="flex flex-wrap gap-4 sm:gap-6 justify-between items-center">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Category</label>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-lg border-border shadow-lg">
+                      {categories.map((category) => (
+                        <SelectItem key={category} value={category} className="rounded-md">
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                {/* Primary Filters */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Category</label>
-                    <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="All Categories" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        {categories.map((category) => (
-                          <SelectItem key={category} value={category} className="rounded-md">
-                            {category}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Sub Category</label>
-                    <Select value={selectedSubCategory} onValueChange={setSelectedSubCategory}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="All Sub Categories" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        {subCategories.map((subCategory) => (
-                          <SelectItem key={subCategory} value={subCategory} className="rounded-md">
-                            {subCategory}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Distributor</label>
-                    <Select value={selectedDistributor} onValueChange={setSelectedDistributor}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="All Distributors" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        {distributors.map((distributor) => (
-                          <SelectItem key={distributor} value={distributor} className="rounded-md">
-                            {distributor}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Price Range</label>
-                    <Select value={selectedPriceRange} onValueChange={setSelectedPriceRange}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="All Prices" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        {priceRanges.map((range) => (
-                          <SelectItem key={range.label} value={range.label} className="rounded-md">
-                            {range.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Sub Category</label>
+                  <Select value={selectedSubCategory} onValueChange={setSelectedSubCategory}>
+                    <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
+                      <SelectValue placeholder="All Sub Categories" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-lg border-border shadow-lg">
+                      {subCategories.map((subCategory) => (
+                        <SelectItem key={subCategory} value={subCategory} className="rounded-md">
+                          {subCategory}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
-                {/* Secondary Filters */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Stock Status</label>
-                    <Select value={selectedStockStatus} onValueChange={setSelectedStockStatus}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="All Stock" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        {stockStatus.map((status) => (
-                          <SelectItem key={status.value} value={status.value} className="rounded-md">
-                            {status.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Distributor</label>
+                  <Select value={selectedDistributor} onValueChange={setSelectedDistributor}>
+                    <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
+                      <SelectValue placeholder="All Distributors" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-lg border-border shadow-lg">
+                      {distributors.map((distributor) => (
+                        <SelectItem key={distributor} value={distributor} className="rounded-md">
+                          {distributor}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Product Status</label>
-                    <Select value={selectedProductStatus} onValueChange={setSelectedProductStatus}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="All Products" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        <SelectItem value="all" className="rounded-md">All</SelectItem>
-                        <SelectItem value="active" className="rounded-md">Active</SelectItem>
-                        <SelectItem value="inactive" className="rounded-md">Inactive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Price Range</label>
+                  <Select value={selectedPriceRange} onValueChange={setSelectedPriceRange}>
+                    <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
+                      <SelectValue placeholder="All Prices" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-lg border-border shadow-lg">
+                      {priceRanges.map((range) => (
+                        <SelectItem key={range.label} value={range.label} className="rounded-md">
+                          {range.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Sort By</label>
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="Sort Options" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        <SelectItem value="title" className="rounded-md">Title A-Z</SelectItem>
-                        <SelectItem value="distributor" className="rounded-md">Distributor A-Z</SelectItem>
-                        <SelectItem value="price-low" className="rounded-md">Price: Low to High</SelectItem>
-                        <SelectItem value="price-high" className="rounded-md">Price: High to Low</SelectItem>
-                        <SelectItem value="stock-low" className="rounded-md">Stock: Low to High</SelectItem>
-                        <SelectItem value="stock-high" className="rounded-md">Stock: High to Low</SelectItem>
-                        <SelectItem value="gst-low" className="rounded-md">GST: Low to High</SelectItem>
-                        <SelectItem value="gst-high" className="rounded-md">GST: High to Low</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Stock Status</label>
+                  <Select value={selectedStockStatus} onValueChange={setSelectedStockStatus}>
+                    <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
+                      <SelectValue placeholder="All Stock" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-lg border-border shadow-lg">
+                      {stockStatus.map((status) => (
+                        <SelectItem key={status.value} value={status.value} className="rounded-md">
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  {/* Results Count */}
-                  <div className="flex items-end">
-                    <div className="w-full p-3 bg-muted/50 rounded-lg border border-border">
-                      <p className="text-sm font-medium text-foreground">Results</p>
-                      <p className="text-lg font-semibold text-foreground">
-                        {filteredBooks.length} of {totalItems}
-                        <span className="ml-2 text-xs text-muted-foreground">
-                          Page {currentPage} of {totalPages}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Product Status</label>
+                  <Select value={selectedProductStatus} onValueChange={setSelectedProductStatus}>
+                    <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
+                      <SelectValue placeholder="All Products" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-lg border-border shadow-lg">
+                      <SelectItem value="all" className="rounded-md">All</SelectItem>
+                      <SelectItem value="active" className="rounded-md">Active</SelectItem>
+                      <SelectItem value="inactive" className="rounded-md">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Sort By</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
+                      <SelectValue placeholder="Sort Options" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-lg border-border shadow-lg">
+                      <SelectItem value="title" className="rounded-md">Title A-Z</SelectItem>
+                      <SelectItem value="distributor" className="rounded-md">Distributor A-Z</SelectItem>
+                      <SelectItem value="price-low" className="rounded-md">Price: Low to High</SelectItem>
+                      <SelectItem value="price-high" className="rounded-md">Price: High to Low</SelectItem>
+                      <SelectItem value="stock-low" className="rounded-md">Stock: Low to High</SelectItem>
+                      <SelectItem value="stock-high" className="rounded-md">Stock: High to Low</SelectItem>
+                      <SelectItem value="gst-low" className="rounded-md">GST: Low to High</SelectItem>
+                      <SelectItem value="gst-high" className="rounded-md">GST: High to Low</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
+            </div>
+
+            <SelectSeparator className="my-4" />
+
+            {/* Results Count */}
+            <div className="flex flex-col w-full p-3 bg-muted/50 rounded-lg border border-border mt-6">
+              <p className="text-sm font-medium text-foreground">Results</p>
+              <p className="text-lg font-semibold text-foreground">
+                {filteredBooks.length} of {totalItems}
+                <span className="ml-2 text-xs text-muted-foreground">
+                  Page {currentPage} of {totalPages}
+                </span>
+              </p>
             </div>
           </CardContent>
         </Card>

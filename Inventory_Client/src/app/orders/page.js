@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -115,7 +115,7 @@ const OrdersPage = () => {
   }, [searchTerm, preset, startDate, endDate]);
 
   // Helper: resolve date range for presets/custom
-  const resolveDateRange = () => {
+  const resolveDateRange = useCallback(() => {
     let dateFrom, dateTo;
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -186,7 +186,7 @@ const OrdersPage = () => {
       ...(dateFrom ? { dateFrom: dateFrom.toISOString() } : {}),
       ...(dateTo ? { dateTo: dateTo.toISOString() } : {}),
     };
-  };
+  }, [preset, startDate, endDate]);
 
   // Load data from API
   useEffect(() => {
@@ -246,7 +246,7 @@ const OrdersPage = () => {
     };
 
     loadData();
-  }, [currentPage, pageSize, searchTerm, preset, startDate, endDate]);
+  }, [currentPage, pageSize, searchTerm, preset, startDate, endDate, resolveDateRange]);
 
 
   const getStatusBadge = (status) => {
@@ -671,7 +671,7 @@ const OrdersPage = () => {
 
                 {/* Date range validity note */}
                 {preset === 'custom' && !isDateRangeValid() && (
-                  <div className="text-xs text-destructive">Invalid date range. "From" should be before "To".</div>
+                  <div className="text-xs text-destructive">Invalid date range. &quot;From&quot; should be before &quot;To&quot;.</div>
                 )}
 
                 {/* Results Count and Filter Summary */}
