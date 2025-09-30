@@ -170,6 +170,13 @@ export const api = {
 				{ headers: getHeaders() }
 			);
 		},
+		getAnalytics: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/orders/analytics${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
+			);
+		},
 		getDeliveryStats: (params = {}) => {
 			const queryString = new URLSearchParams(params).toString();
 			return fetch(

@@ -18,14 +18,15 @@ import {
     delete_all_distributors,
 } from "./controllers/distributors_controller.js";
 import {
-	get_orders,
-	get_order,
-	post_orders,
-	put_order,
-	delete_order,
-	delete_all_orders,
-	get_order_stats,
-	get_delivery_stats,
+    get_orders,
+    get_order,
+    post_orders,
+    put_order,
+    delete_order,
+    delete_all_orders,
+    get_order_stats,
+    get_delivery_stats,
+    get_order_analytics,
 } from "./controllers/orders_controller.js";
 import {
 	register,
@@ -130,6 +131,7 @@ api_routes.delete("/order/:id", authorize(UserRole.ADMIN, UserRole.MANAGER), log
 api_routes.delete("/orders", authorize(UserRole.ADMIN), logActivity(ActivityType.DELETE, "Deleted all orders", "Orders"), delete_all_orders);
 api_routes.get("/orders/stats", get_order_stats);
 api_routes.get("/orders/delivery-stats", get_delivery_stats);
+api_routes.get("/orders/analytics", get_order_analytics);
 
 // Settings routes (Admin only)
 api_routes.get("/settings", authorize(UserRole.ADMIN), getSettings);

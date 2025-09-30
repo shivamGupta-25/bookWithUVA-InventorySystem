@@ -6,6 +6,143 @@ import mongoose from "mongoose";
 import { calculateItemTotals, calculateOrderTotals } from "../utils/monetaryUtils.js";
 import { checkStockLevels } from "../utils/stockAlertUtils.js";
 
+// GET /api/orders/analytics - Get order analytics for a date range or preset
+export const get_order_analytics = async (req: Request, res: Response) => {
+    try {
+        const {
+            preset = "",
+            dateFrom = "",
+            dateTo = "",
+            status = "",
+            paymentStatus = ""
+        } = req.query as Record<string, string>;
+
+        // Resolve date range from preset or explicit dates
+        let start: Date | undefined;
+        let end: Date | undefined;
+
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+        switch (preset) {
+            case "today":
+                start = startOfToday;
+                end = endOfToday;
+                break;
+            case "yesterday": {
+                const yStart = new Date(startOfToday);
+                yStart.setDate(yStart.getDate() - 1);
+                const yEnd = new Date(endOfToday);
+                yEnd.setDate(yEnd.getDate() - 1);
+                start = yStart;
+                end = yEnd;
+                break;
+            }
+            case "last7": {
+                const s = new Date(startOfToday);
+                s.setDate(s.getDate() - 6);
+                start = s;
+                end = endOfToday;
+                break;
+            }
+            case "last30": {
+                const s = new Date(startOfToday);
+                s.setDate(s.getDate() - 29);
+                start = s;
+                end = endOfToday;
+                break;
+            }
+            case "thisMonth": {
+                const s = new Date(now.getFullYear(), now.getMonth(), 1);
+                const e = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+                start = s;
+                end = e;
+                break;
+            }
+            case "lastMonth": {
+                const s = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                const e = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+                start = s;
+                end = e;
+                break;
+            }
+        }
+
+        // Override with explicit dateFrom/dateTo if provided
+        if (dateFrom) start = new Date(dateFrom);
+        if (dateTo) end = new Date(dateTo);
+
+        const filter: any = { isActive: true };
+        if (start || end) {
+            filter.orderDate = {} as any;
+            if (start) (filter.orderDate as any).$gte = start;
+            if (end) (filter.orderDate as any).$lte = end;
+        }
+        if (status && status !== "all") filter.status = status;
+        if (paymentStatus && paymentStatus !== "all") filter.paymentStatus = paymentStatus;
+
+        // Build a stricter filter for revenue KPIs: delivered and paid
+        const revenueFilter: any = { ...filter, status: OrderStatus.DELIVERED, paymentStatus: "paid" };
+
+        const [
+            totalOrders,
+            subtotalAgg,
+            revenueAgg,
+            revenueOrdersCount,
+            statusCountsAgg
+        ] = await Promise.all([
+            order_model.countDocuments(filter),
+            order_model.aggregate([
+                { $match: filter },
+                { $group: { _id: null, subtotal: { $sum: { $ifNull: ["$subtotal", 0] } } } }
+            ]),
+            order_model.aggregate([
+                { $match: revenueFilter },
+                { $group: { _id: null, revenue: { $sum: { $ifNull: ["$totalAmount", 0] } } } }
+            ]),
+            order_model.countDocuments(revenueFilter),
+            order_model.aggregate([
+                { $match: filter },
+                { $group: { _id: "$status", count: { $sum: 1 } } }
+            ])
+        ]);
+
+        const subtotal = subtotalAgg.length ? subtotalAgg[0].subtotal : 0;
+        const revenue = revenueAgg.length ? revenueAgg[0].revenue : 0;
+        const averageOrderValue = revenueOrdersCount > 0 ? revenue / revenueOrdersCount : 0;
+
+        // Map status counts
+        const statusCountsMap = (statusCountsAgg || []).reduce((acc: Record<string, number>, s: any) => {
+            acc[s._id] = s.count;
+            return acc;
+        }, {} as Record<string, number>);
+
+        res.json({
+            success: true,
+            data: {
+                range: {
+                    from: start ? start.toISOString() : null,
+                    to: end ? end.toISOString() : null,
+                    preset: preset || null,
+                },
+                kpis: {
+                    revenue,
+                    totalOrders,
+                    averageOrderValue,
+                    pending: statusCountsMap[OrderStatus.PENDING] || 0,
+                    processing: statusCountsMap[OrderStatus.PROCESSING] || 0,
+                    delivered: statusCountsMap[OrderStatus.DELIVERED] || 0,
+                    cancelled: statusCountsMap[OrderStatus.CANCELLED] || 0,
+                },
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching order analytics:", error);
+        res.status(500).json({ success: false, error: "Failed to fetch order analytics" });
+    }
+};
+
 // GET /api/orders - Fetch all orders with optional filtering
 export const get_orders = async (req: Request, res: Response) => {
 	try {

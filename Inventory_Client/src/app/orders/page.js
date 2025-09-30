@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DateRangePicker from "@/components/ui/DateRangePicker";
 import {
   Table,
   TableBody,
@@ -54,6 +53,9 @@ import {
   Truck,
   Receipt
 } from "lucide-react";
+ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -66,22 +68,19 @@ const OrdersPage = () => {
   const router = useRouter();
   const { canPerformAction, user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState('all');
-  const [sortBy, setSortBy] = useState('orderDate');
-  const [sortOrder, setSortOrder] = useState('desc');
+  const [preset, setPreset] = useState('all');
   const [startDate, setStartDate] = useState(undefined);
   const [endDate, setEndDate] = useState(undefined);
 
   // API data states
   const [orders, setOrders] = useState([]);
-  const [stats, setStats] = useState({
+  const [kpis, setKpis] = useState({
+    revenue: 0,
     totalOrders: 0,
-    pendingOrders: 0,
-    processingOrders: 0,
-    deliveredOrders: 0,
-    cancelledOrders: 0,
-    totalRevenue: 0
+    pending: 0,
+    processing: 0,
+    delivered: 0,
+    cancelled: 0,
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -98,29 +97,96 @@ const OrdersPage = () => {
   const isViewer = user?.role === 'viewer';
 
 
-  // Order status options
-  const orderStatusOptions = [
-    { label: "All Status", value: "all" },
-    { label: "Pending", value: "pending" },
-    { label: "Processing", value: "processing" },
-    { label: "Shipped", value: "shipped" },
-    { label: "Delivered", value: "delivered" },
-    { label: "Cancelled", value: "cancelled" },
-    { label: "Refunded", value: "refunded" }
-  ];
-
-  const paymentStatusOptions = [
-    { label: "All Payment", value: "all" },
-    { label: "Pending", value: "pending" },
-    { label: "Paid", value: "paid" },
-    { label: "Failed", value: "failed" },
-    { label: "Refunded", value: "refunded" }
+  // Preset options for date ranges
+  const presetOptions = [
+    { label: "All", value: "all" },
+    { label: "Today", value: "today" },
+    { label: "Yesterday", value: "yesterday" },
+    { label: "Last 7 days", value: "last7" },
+    { label: "Last 30 days", value: "last30" },
+    { label: "This month", value: "thisMonth" },
+    { label: "Last month", value: "lastMonth" },
+    { label: "Custom", value: "custom" }
   ];
 
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedStatus, selectedPaymentStatus, sortBy, sortOrder, startDate, endDate]);
+  }, [searchTerm, preset, startDate, endDate]);
+
+  // Helper: resolve date range for presets/custom
+  const resolveDateRange = () => {
+    let dateFrom, dateTo;
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+    switch (preset) {
+      case 'today':
+        dateFrom = startOfToday;
+        dateTo = endOfToday;
+        break;
+      case 'yesterday': {
+        const yStart = new Date(startOfToday);
+        yStart.setDate(yStart.getDate() - 1);
+        const yEnd = new Date(endOfToday);
+        yEnd.setDate(yEnd.getDate() - 1);
+        dateFrom = yStart;
+        dateTo = yEnd;
+        break;
+      }
+      case 'last7': {
+        const s = new Date(startOfToday);
+        s.setDate(s.getDate() - 6);
+        dateFrom = s;
+        dateTo = endOfToday;
+        break;
+      }
+      case 'last30': {
+        const s = new Date(startOfToday);
+        s.setDate(s.getDate() - 29);
+        dateFrom = s;
+        dateTo = endOfToday;
+        break;
+      }
+      case 'thisMonth': {
+        const s = new Date(now.getFullYear(), now.getMonth(), 1);
+        const e = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+        dateFrom = s;
+        dateTo = e;
+        break;
+      }
+      case 'lastMonth': {
+        const s = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const e = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+        dateFrom = s;
+        dateTo = e;
+        break;
+      }
+      case 'custom': {
+        if (startDate) {
+          const s = new Date(startDate);
+          // normalize to start-of-day
+          dateFrom = new Date(s.getFullYear(), s.getMonth(), s.getDate());
+        }
+        if (endDate) {
+          const e = new Date(endDate);
+          // normalize to end-of-day to include same-day ranges fully
+          dateTo = new Date(e.getFullYear(), e.getMonth(), e.getDate(), 23, 59, 59, 999);
+        }
+        // If both provided and equal days, above normalization already covers full day
+        break;
+      }
+      default:
+        // 'all' or unknown -> no date filters
+        break;
+    }
+
+    return {
+      ...(dateFrom ? { dateFrom: dateFrom.toISOString() } : {}),
+      ...(dateTo ? { dateTo: dateTo.toISOString() } : {}),
+    };
+  };
 
   // Load data from API
   useEffect(() => {
@@ -129,27 +195,28 @@ const OrdersPage = () => {
         setLoading(true);
         setError('');
 
-        // Load orders and stats in parallel
+        // Build params: orders list uses resolved dateFrom/dateTo; analytics can use preset or resolved too
+        const resolvedRange = resolveDateRange();
+        const analyticsRangeParams = {
+          ...(preset && preset !== 'custom' && preset !== 'all' ? { preset } : {}),
+          ...(preset === 'custom' ? resolvedRange : {}),
+        };
+
         const queryParams = {
           page: String(currentPage),
           limit: String(pageSize),
           ...(searchTerm && { search: searchTerm }),
-          ...(selectedStatus && selectedStatus !== 'all' && { status: selectedStatus }),
-          ...(selectedPaymentStatus && selectedPaymentStatus !== 'all' && { paymentStatus: selectedPaymentStatus }),
-          ...(startDate && { dateFrom: startDate.toISOString() }),
-          ...(endDate && { dateTo: endDate.toISOString() }),
-          sortBy,
-          sortOrder,
+          ...resolvedRange
         };
 
-        const [ordersResponse, statsResponse] = await Promise.all([
+        const [ordersResponse, analyticsResponse] = await Promise.all([
           api.orders.getAll(queryParams),
-          api.orders.getStats()
+          api.orders.getAnalytics(analyticsRangeParams)
         ]);
 
-        const [ordersData, statsData] = await Promise.all([
+        const [ordersData, analyticsData] = await Promise.all([
           ordersResponse.json(),
-          statsResponse.json()
+          analyticsResponse.json()
         ]);
 
         if (ordersData.success) {
@@ -159,8 +226,16 @@ const OrdersPage = () => {
           setError('Failed to load orders');
         }
 
-        if (statsData.success) {
-          setStats(statsData.data.overview);
+        if (analyticsData.success) {
+          const { kpis: serverKpis } = analyticsData.data;
+          setKpis({
+            revenue: serverKpis.revenue || 0,
+            totalOrders: serverKpis.totalOrders || 0,
+            pending: serverKpis.pending || 0,
+            processing: serverKpis.processing || 0,
+            delivered: serverKpis.delivered || 0,
+            cancelled: serverKpis.cancelled || 0,
+          });
         }
       } catch (error) {
         console.error('Error loading data:', error);
@@ -171,76 +246,8 @@ const OrdersPage = () => {
     };
 
     loadData();
-  }, [currentPage, pageSize, searchTerm, selectedStatus, selectedPaymentStatus, sortBy, sortOrder, startDate, endDate]);
+  }, [currentPage, pageSize, searchTerm, preset, startDate, endDate]);
 
-  // Enhanced filtering logic
-  const filteredOrders = useMemo(() => {
-    let filtered = orders.filter(order => {
-      // Search filtering
-      const matchesSearch =
-        order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (order.customer.email && order.customer.email.toLowerCase().includes(searchTerm.toLowerCase()));
-
-      // Status filtering
-      const matchesStatus = selectedStatus === 'all' || order.status === selectedStatus;
-      const matchesPaymentStatus = selectedPaymentStatus === 'all' || order.paymentStatus === selectedPaymentStatus;
-
-      // Enhanced date range filtering
-      const orderDate = new Date(order.orderDate);
-      let matchesDateRange = true;
-
-      if (startDate || endDate) {
-        // Normalize dates to start of day for accurate comparison
-        const orderDateStart = new Date(orderDate.getFullYear(), orderDate.getMonth(), orderDate.getDate());
-
-        if (startDate) {
-          const startDateStart = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-          matchesDateRange = matchesDateRange && orderDateStart >= startDateStart;
-        }
-
-        if (endDate) {
-          const endDateEnd = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate(), 23, 59, 59, 999);
-          matchesDateRange = matchesDateRange && orderDate <= endDateEnd;
-        }
-      }
-
-      return matchesSearch && matchesStatus && matchesPaymentStatus && matchesDateRange;
-    });
-
-    // Sort orders
-    filtered.sort((a, b) => {
-      let aValue, bValue;
-      switch (sortBy) {
-        case 'orderDate':
-          aValue = new Date(a.orderDate);
-          bValue = new Date(b.orderDate);
-          break;
-        case 'totalAmount':
-          aValue = a.totalAmount;
-          bValue = b.totalAmount;
-          break;
-        case 'status':
-          aValue = a.status;
-          bValue = b.status;
-          break;
-        case 'customer':
-          aValue = a.customer.name;
-          bValue = b.customer.name;
-          break;
-        default:
-          return 0;
-      }
-
-      if (sortOrder === 'asc') {
-        return aValue > bValue ? 1 : -1;
-      } else {
-        return aValue < bValue ? 1 : -1;
-      }
-    });
-
-    return filtered;
-  }, [orders, searchTerm, selectedStatus, selectedPaymentStatus, sortBy, sortOrder, startDate, endDate]);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -282,10 +289,7 @@ const OrdersPage = () => {
 
   const clearFilters = () => {
     setSearchTerm('');
-    setSelectedStatus('all');
-    setSelectedPaymentStatus('all');
-    setSortBy('orderDate');
-    setSortOrder('desc');
+    setPreset('all');
     setStartDate(undefined);
     setEndDate(undefined);
   };
@@ -299,14 +303,14 @@ const OrdersPage = () => {
   const getActiveFilterCount = () => {
     let count = 0;
     if (searchTerm) count++;
-    if (selectedStatus !== 'all') count++;
-    if (selectedPaymentStatus !== 'all') count++;
-    if (startDate || endDate) count++;
+    if (preset && preset !== 'all' && preset !== 'custom') count++;
+    if (preset === 'custom' && (startDate || endDate)) count++;
     return count;
   };
 
   // Validate date range
   const isDateRangeValid = () => {
+    if (preset !== 'custom') return true;
     if (!startDate || !endDate) return true;
     return startDate <= endDate;
   };
@@ -332,25 +336,25 @@ const OrdersPage = () => {
 
   const refreshOrdersData = async () => {
     try {
+      const resolvedRange = resolveDateRange();
+      const analyticsRangeParams = {
+        ...(preset && preset !== 'custom' && preset !== 'all' ? { preset } : {}),
+        ...(preset === 'custom' ? resolvedRange : {}),
+      };
       const queryParams = {
         page: String(currentPage),
         limit: String(pageSize),
         ...(searchTerm && { search: searchTerm }),
-        ...(selectedStatus && selectedStatus !== 'all' && { status: selectedStatus }),
-        ...(selectedPaymentStatus && selectedPaymentStatus !== 'all' && { paymentStatus: selectedPaymentStatus }),
-        ...(startDate && { dateFrom: startDate.toISOString() }),
-        ...(endDate && { dateTo: endDate.toISOString() }),
-        sortBy,
-        sortOrder,
+        ...resolvedRange
       };
-      const [ordersResponse, statsResponse] = await Promise.all([
+      const [ordersResponse, analyticsResponse] = await Promise.all([
         api.orders.getAll(queryParams),
-        api.orders.getStats()
+        api.orders.getAnalytics(analyticsRangeParams)
       ]);
 
-      const [ordersData, statsData] = await Promise.all([
+      const [ordersData, analyticsData] = await Promise.all([
         ordersResponse.json(),
-        statsResponse.json()
+        analyticsResponse.json()
       ]);
 
       if (ordersData.success) {
@@ -358,8 +362,8 @@ const OrdersPage = () => {
         setTotalPages(ordersData.data.pagination.pages || 1);
       }
 
-      if (statsData.success) {
-        setStats(statsData.data.overview);
+      if (analyticsData.success) {
+        setKpis(analyticsData.data.kpis);
       }
     } catch (error) {
       console.error('Error refreshing data:', error);
@@ -449,8 +453,8 @@ const OrdersPage = () => {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
+        {/* KPI Cards (based on filter) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           {/* Total Orders Card */}
           <Card className="hover:shadow-md transition-shadow duration-200 border-primary/20 bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/15">
             <CardContent className="p-4">
@@ -461,120 +465,89 @@ const OrdersPage = () => {
                 <ShoppingCart className="h-3.5 w-3.5 text-primary" />
               </div>
               <div>
-                <div className="text-lg font-bold text-foreground">{stats.totalOrders.toLocaleString()}</div>
-                <p className="text-xs text-muted-foreground">
-                  All orders
-                </p>
+                <div className="text-lg font-bold text-foreground">{kpis.totalOrders.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground">In selected range</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Pending Orders Card */}
-          <Card className="hover:shadow-md transition-shadow duration-200 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                  Pending
-                </CardTitle>
-                <Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-              </div>
-              <div>
-                <div className="text-lg font-bold text-amber-900 dark:text-amber-100">{stats.pendingOrders.toLocaleString()}</div>
-                <p className="text-xs text-amber-600/70 dark:text-amber-400/70">
-                  Awaiting
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Processing Orders Card */}
+          {/* Revenue Card */}
           <Card className="hover:shadow-md transition-shadow duration-200 border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/20 hover:bg-purple-50 dark:hover:bg-purple-950/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-purple-700 dark:text-purple-300">
-                  Processing
-                </CardTitle>
-                <Package className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                <CardTitle className="text-xs font-medium text-purple-700 dark:text-purple-300">Revenue</CardTitle>
+                <TrendingUp className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
-                <div className="text-lg font-bold text-purple-900 dark:text-purple-100">{stats.processingOrders.toLocaleString()}</div>
-                <p className="text-xs text-purple-600/70 dark:text-purple-400/70">
-                  In progress
-                </p>
+                <div className="text-lg font-bold text-purple-900 dark:text-purple-100">₹{kpis.revenue.toLocaleString()}</div>
+                <p className="text-xs text-purple-600/70 dark:text-purple-400/70">Paid totals</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Delivered Orders Card */}
+          {/* Pending Card */}
+          <Card className="hover:shadow-md transition-shadow duration-200 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-50 dark:hover:bg-amber-950/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between space-y-0 pb-1">
+                <CardTitle className="text-xs font-medium text-amber-700 dark:text-amber-300">Pending</CardTitle>
+                <Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-amber-900 dark:text-amber-100">{kpis.pending.toLocaleString()}</div>
+                <p className="text-xs text-amber-600/70 dark:text-amber-400/70">Awaiting processing</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Processing Card */}
+          <Card className="hover:shadow-md transition-shadow duration-200 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20 hover:bg-blue-50 dark:hover:bg-blue-950/30">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between space-y-0 pb-1">
+                <CardTitle className="text-xs font-medium text-blue-700 dark:text-blue-300">Processing</CardTitle>
+                <Package className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <div className="text-lg font-bold text-blue-900 dark:text-blue-100">{kpis.processing.toLocaleString()}</div>
+                <p className="text-xs text-blue-600/70 dark:text-blue-400/70">In progress</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Delivered Card */}
           <Card className="hover:shadow-md transition-shadow duration-200 border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-950/20 hover:bg-green-50 dark:hover:bg-green-950/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-green-700 dark:text-green-300">
-                  Delivered
-                </CardTitle>
+                <CardTitle className="text-xs font-medium text-green-700 dark:text-green-300">Delivered</CardTitle>
                 <CheckCircle className="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
               </div>
               <div>
-                <div className="text-lg font-bold text-green-900 dark:text-green-100">{stats.deliveredOrders.toLocaleString()}</div>
-                <p className="text-xs text-green-600/70 dark:text-green-400/70">
-                  Completed
-                </p>
+                <div className="text-lg font-bold text-green-900 dark:text-green-100">{kpis.delivered.toLocaleString()}</div>
+                <p className="text-xs text-green-600/70 dark:text-green-400/70">Completed</p>
               </div>
             </CardContent>
           </Card>
 
-          {/* Cancelled Orders Card */}
+          {/* Cancelled Card */}
           <Card className="hover:shadow-md transition-shadow duration-200 border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20 hover:bg-red-50 dark:hover:bg-red-950/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-red-700 dark:text-red-300">
-                  Cancelled
-                </CardTitle>
+                <CardTitle className="text-xs font-medium text-red-700 dark:text-red-300">Cancelled</CardTitle>
                 <XCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <div className="text-lg font-bold text-red-900 dark:text-red-100">{stats.cancelledOrders.toLocaleString()}</div>
-                <p className="text-xs text-red-600/70 dark:text-red-400/70">
-                  Cancelled
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Total Revenue Card */}
-          <Card className="hover:shadow-md transition-shadow duration-200 border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-50 dark:hover:bg-emerald-950/30">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between space-y-0 pb-1">
-                <CardTitle className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
-                  Revenue
-                </CardTitle>
-                <DollarSign className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <div>
-                <div
-                  className="text-lg font-bold text-emerald-900 dark:text-emerald-100 cursor-help"
-                  title={stats.totalRevenue >= 1000 ? `₹${stats.totalRevenue.toLocaleString()}` : undefined}
-                >
-                  ₹{stats.totalRevenue >= 1000000
-                    ? `${(stats.totalRevenue / 1000000).toFixed(1)}M`
-                    : stats.totalRevenue >= 1000
-                      ? `${(stats.totalRevenue / 1000).toFixed(1)}K`
-                      : stats.totalRevenue.toLocaleString()}
-                </div>
-                <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70">
-                  Total
-                </p>
+                <div className="text-lg font-bold text-red-900 dark:text-red-100">{kpis.cancelled.toLocaleString()}</div>
+                <p className="text-xs text-red-600/70 dark:text-red-400/70">Cancelled</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Filters and Search */}
+        {/* Advanced Filter and Search */}
         <Card className="bg-card border border-border/60 shadow-sm mb-6 rounded-xl overflow-hidden">
           <CardContent className="p-0">
             {/* Search Section */}
             <div className="p-6 border-b border-border">
-              <div className="relative max-w-2xl">
+              <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                 <Input
                   placeholder="Search orders by number, customer name, or email..."
@@ -591,8 +564,8 @@ const OrdersPage = () => {
                 {/* Filter Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground">Filters</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Refine your search results</p>
+                    <h3 className="text-lg font-semibold text-foreground">Advanced Filters</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Preset ranges or custom dates</p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     <Button
@@ -628,17 +601,17 @@ const OrdersPage = () => {
                 </div>
 
                 {/* Primary Filters */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Order Status</label>
-                    <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                    <label className="text-sm font-medium text-foreground">Preset</label>
+                    <Select value={preset} onValueChange={setPreset}>
                       <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="All Status" />
+                        <SelectValue placeholder="Select preset" />
                       </SelectTrigger>
                       <SelectContent className="rounded-lg border-border shadow-lg">
-                        {orderStatusOptions.map((status) => (
-                          <SelectItem key={status.value} value={status.value} className="rounded-md">
-                            {status.label}
+                        {presetOptions.map((p) => (
+                          <SelectItem key={p.value} value={p.value} className="rounded-md">
+                            {p.label}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -646,61 +619,60 @@ const OrdersPage = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Payment Status</label>
-                    <Select value={selectedPaymentStatus} onValueChange={setSelectedPaymentStatus}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="All Payment" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        {paymentStatusOptions.map((status) => (
-                          <SelectItem key={status.value} value={status.value} className="rounded-md">
-                            {status.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <label className="text-sm font-medium text-foreground">From</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={preset !== 'custom'}
+                          className="justify-start h-11 w-full border-input rounded-lg"
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {startDate ? format(startDate, "PPP") : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={startDate}
+                          onSelect={setStartDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Sort By</label>
-                    <Select value={sortBy} onValueChange={setSortBy}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="Sort Options" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        <SelectItem value="orderDate" className="rounded-md">Order Date</SelectItem>
-                        <SelectItem value="totalAmount" className="rounded-md">Total Amount</SelectItem>
-                        <SelectItem value="status" className="rounded-md">Status</SelectItem>
-                        <SelectItem value="customer" className="rounded-md">Customer Name</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Sort Order</label>
-                    <Select value={sortOrder} onValueChange={setSortOrder}>
-                      <SelectTrigger className="h-11 border-input rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all duration-200">
-                        <SelectValue placeholder="Sort Order" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border shadow-lg">
-                        <SelectItem value="desc" className="rounded-md">Newest First</SelectItem>
-                        <SelectItem value="asc" className="rounded-md">Oldest First</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <label className="text-sm font-medium text-foreground">To</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          disabled={preset !== 'custom'}
+                          className="justify-start h-11 w-full border-input rounded-lg"
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {endDate ? format(endDate, "PPP") : "Pick a date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <CalendarComponent
+                          mode="single"
+                          selected={endDate}
+                          onSelect={setEndDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
 
-                {/* Date Range Filter */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">Date Range</label>
-                  <DateRangePicker
-                    startDate={startDate}
-                    endDate={endDate}
-                    onStartDateChange={setStartDate}
-                    onEndDateChange={setEndDate}
-                    onClear={clearDateRange}
-                  />
-                </div>
+                {/* Date range validity note */}
+                {preset === 'custom' && !isDateRangeValid() && (
+                  <div className="text-xs text-destructive">Invalid date range. "From" should be before "To".</div>
+                )}
 
                 {/* Results Count and Filter Summary */}
                 <div className="space-y-3">
@@ -710,7 +682,7 @@ const OrdersPage = () => {
                         <div>
                           <p className="text-sm font-medium text-foreground">Results</p>
                           <p className="text-lg font-semibold text-foreground">
-                            {filteredOrders.length} of {orders.length}
+                            {orders.length} results
                             {/* Page No. */}
                             <span className="ml-2 text-xs text-muted-foreground">
                               Page {currentPage} of {totalPages}
@@ -739,15 +711,8 @@ const OrdersPage = () => {
                             Search: &quot;{searchTerm}&quot;
                           </span>
                         )}
-                        {selectedStatus !== 'all' && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
-                            Status: {orderStatusOptions.find(s => s.value === selectedStatus)?.label}
-                          </span>
-                        )}
-                        {selectedPaymentStatus !== 'all' && (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
-                            Payment: {paymentStatusOptions.find(s => s.value === selectedPaymentStatus)?.label}
-                          </span>
+                        {preset && preset !== 'custom' && (
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">Preset: {presetOptions.find(p => p.value === preset)?.label}</span>
                         )}
                         {startDate && endDate && (
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">
@@ -797,7 +762,7 @@ const OrdersPage = () => {
         )}
 
         {/* Orders List */}
-        {!loading && !error && filteredOrders.length === 0 ? (
+        {!loading && !error && orders.length === 0 ? (
           <Card className="bg-card border-0 shadow-sm">
             <CardContent className="p-6 sm:p-8 text-center">
               <ShoppingCart className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3 sm:mb-4" />
@@ -824,7 +789,7 @@ const OrdersPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredOrders.map((order) => (
+                    {orders.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell>
                           <div className="font-semibold text-foreground text-sm">
@@ -907,7 +872,7 @@ const OrdersPage = () => {
 
             {/* Mobile/Tablet Card View */}
             <div className="space-y-3 lg:hidden">
-              {filteredOrders.map((order) => (
+              {orders.map((order) => (
                 <Card key={order.id} className="bg-card border-0 shadow-sm hover:shadow-md transition-shadow">
                   <CardContent className="p-5">
                     <div className="space-y-4">
