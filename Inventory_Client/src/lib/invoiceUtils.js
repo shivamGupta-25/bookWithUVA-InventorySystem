@@ -16,17 +16,71 @@ export const generateInvoice = (order) => {
   // Create invoice HTML content
   const invoiceHTML = createInvoiceHTML(order);
 
-  // Create a new window with the invoice content
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(invoiceHTML);
-  printWindow.document.close();
-  
-  // Wait for content to load, then print
-  printWindow.onload = () => {
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
+  // Ensure assets (images/fonts) are ready before printing
+  const waitForAssets = async (doc) => {
+    try {
+      const images = Array.from(doc.images || []);
+      await Promise.all(
+        images
+          .filter((img) => !img.complete)
+          .map((img) => new Promise((resolve) => {
+            img.onload = img.onerror = () => resolve();
+          }))
+      );
+      if (doc.fonts && doc.fonts.ready) {
+        await doc.fonts.ready;
+      }
+    } catch (_) {
+      // Ignore asset wait failures; proceed to print
+    }
   };
+
+  // Fallback print via hidden iframe (more reliable on mobile)
+  const printViaIframe = async () => {
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    iframe.style.visibility = 'hidden';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(invoiceHTML);
+    doc.close();
+
+    await waitForAssets(doc);
+
+    // On iOS Safari, a slight delay helps before print
+    setTimeout(() => {
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch (e) {
+        console.error('Iframe print failed:', e);
+      } finally {
+        // Give the print dialog time before removal on desktop; keep on mobile to avoid dialog dismissal
+        if (!(isIOS || isAndroid)) {
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+          }, 1000);
+        }
+      }
+    }, 150);
+  };
+
+  try {
+    // Always use iframe-based printing on all platforms to avoid opening new windows
+    return void printViaIframe();
+  } catch (error) {
+    console.error('Iframe print failed:', error);
+  }
 };
 
 /**
