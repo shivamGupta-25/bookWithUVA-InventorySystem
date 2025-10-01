@@ -19,14 +19,14 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!email) {
       toast.error("Please enter your email address");
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: "POST",
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
               We&apos;ve sent a 6-digit OTP to your email address
             </p>
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>OTP Sent Successfully</CardTitle>
@@ -104,7 +104,7 @@ export default function ForgotPasswordPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-4">
                 <Button
                   onClick={() => router.push("/reset-password")}
@@ -112,7 +112,7 @@ export default function ForgotPasswordPage() {
                 >
                   Enter OTP Code
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -126,10 +126,10 @@ export default function ForgotPasswordPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <div className="text-center">
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
@@ -152,7 +152,7 @@ export default function ForgotPasswordPage() {
             Reset your password
           </p>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Forgot Password?</CardTitle>
@@ -174,7 +174,7 @@ export default function ForgotPasswordPage() {
                   disabled={isLoading}
                 />
               </div>
-              
+
               <Button
                 type="submit"
                 className="w-full"
@@ -192,10 +192,10 @@ export default function ForgotPasswordPage() {
             </form>
           </CardContent>
         </Card>
-        
+
         <div className="text-center">
-          <Link 
-            href="/login" 
+          <Link
+            href="/login"
             className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

@@ -175,8 +175,8 @@ export default function ActivityLogsPage() {
               Monitor user activities and system changes
             </p>
           </div>
-          <AlertDialog 
-            open={deleteDialogOpen} 
+          <AlertDialog
+            open={deleteDialogOpen}
             onOpenChange={setDeleteDialogOpen}
           >
             <AlertDialogTrigger asChild>

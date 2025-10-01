@@ -73,7 +73,7 @@ export default function UsersPage() {
       if (statusFilter && statusFilter !== "all") params.append("isActive", statusFilter);
 
       const response = await fetch(`${API_BASE_URL}/users?${params}`, {
-      // const response = await fetch(`http://192.168.1.7:4000/api/users?${params}`, {
+        // const response = await fetch(`http://192.168.1.7:4000/api/users?${params}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -249,6 +249,8 @@ export default function UsersPage() {
 
   // Open edit dialog
   const openEditDialog = (user) => {
+    // Ensure create dialog is closed when opening edit
+    setShowCreateDialog(false);
     setSelectedUser(user);
     setFormData({
       name: user.name,
@@ -316,9 +318,28 @@ export default function UsersPage() {
               Manage system users and their permissions
             </p>
           </div>
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <Dialog
+            open={showCreateDialog}
+            onOpenChange={(open) => {
+              setShowCreateDialog(open);
+              if (open) {
+                // When opening create, ensure edit dialog is closed and form is reset
+                setShowEditDialog(false);
+                setSelectedUser(null);
+                setFormData({ name: "", email: "", password: "", role: "viewer", avatar: "" });
+              }
+            }}
+          >
             <DialogTrigger asChild>
-              <Button className="w-full sm:w-auto">
+              <Button
+                className="w-full sm:w-auto"
+                onClick={() => {
+                  // Explicitly prepare create state
+                  setShowEditDialog(false);
+                  setSelectedUser(null);
+                  setFormData({ name: "", email: "", password: "", role: "viewer", avatar: "" });
+                }}
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 <span className="hidden sm:inline">Add User</span>
                 <span className="sm:hidden">Add</span>
@@ -393,9 +414,9 @@ export default function UsersPage() {
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 pt-4">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={() => setShowCreateDialog(false)}
                     className="w-full sm:w-auto h-9"
                   >
@@ -491,116 +512,116 @@ export default function UsersPage() {
               <>
                 {/* Desktop Table View */}
                 <div className="hidden lg:block p-2">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Role</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Last Login</TableHead>
-                      <TableHead>Lock</TableHead>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Last Login</TableHead>
+                        <TableHead>Lock</TableHead>
                         <TableHead className="w-[120px]">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {users.map((user) => (
-                      <TableRow key={user._id}>
-                        <TableCell className="font-medium">
-                          <div className="flex items-center space-x-3">
-                            <Avatar className="w-8 h-8">
-                              <AvatarImage src={user.avatar || getDefaultAvatarByRole(user.role)} alt={user.name} />
-                              <AvatarFallback>
-                                <User className="h-4 w-4" />
-                              </AvatarFallback>
-                            </Avatar>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {users.map((user) => (
+                        <TableRow key={user._id}>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center space-x-3">
+                              <Avatar className="w-8 h-8">
+                                <AvatarImage src={user.avatar || getDefaultAvatarByRole(user.role)} alt={user.name} />
+                                <AvatarFallback>
+                                  <User className="h-4 w-4" />
+                                </AvatarFallback>
+                              </Avatar>
                               <span className="truncate">{user.name}</span>
-                          </div>
-                        </TableCell>
+                            </div>
+                          </TableCell>
                           <TableCell className="truncate max-w-[200px]">{user.email}</TableCell>
-                        <TableCell>
-                          <Badge className={getRoleBadgeColor(user.role)}>
-                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={user.isActive ? "default" : "secondary"}>
-                            {user.isActive ? "Active" : "Inactive"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {user.lastLogin
-                            ? new Date(user.lastLogin).toLocaleDateString()
-                            : "Never"}
-                        </TableCell>
-                        <TableCell>
-                          {isLocked(user) ? (
-                            <Badge variant="destructive">Locked</Badge>
-                          ) : (
-                            <Badge variant="outline">OK</Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
+                          <TableCell>
+                            <Badge className={getRoleBadgeColor(user.role)}>
+                              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={user.isActive ? "default" : "secondary"}>
+                              {user.isActive ? "Active" : "Inactive"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            {user.lastLogin
+                              ? new Date(user.lastLogin).toLocaleDateString()
+                              : "Never"}
+                          </TableCell>
+                          <TableCell>
+                            {isLocked(user) ? (
+                              <Badge variant="destructive">Locked</Badge>
+                            ) : (
+                              <Badge variant="outline">OK</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
                             <div className="flex space-x-1">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openEditDialog(user)}
-                              disabled={updatingUser}
-                                className="h-8 w-8 p-0"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleToggleStatusClick(user)}
-                              disabled={togglingStatus === user._id}
-                                className="h-8 w-8 p-0"
-                            >
-                              {togglingStatus === user._id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : user.isActive ? (
-                                <UserX className="h-4 w-4" />
-                              ) : (
-                                <UserCheck className="h-4 w-4" />
-                              )}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleDeleteUserClick(user)}
-                                className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
-                              disabled={deletingUser === user._id}
-                            >
-                              {deletingUser === user._id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <Trash2 className="h-4 w-4" />
-                              )}
-                            </Button>
-                            {isLocked(user) && (
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleUnlockUser(user)}
-                                disabled={unlockingUserId === user._id}
+                                onClick={() => openEditDialog(user)}
+                                disabled={updatingUser}
                                 className="h-8 w-8 p-0"
-                                title="Unlock user"
                               >
-                                {unlockingUserId === user._id ? (
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleToggleStatusClick(user)}
+                                disabled={togglingStatus === user._id}
+                                className="h-8 w-8 p-0"
+                              >
+                                {togglingStatus === user._id ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : user.isActive ? (
+                                  <UserX className="h-4 w-4" />
                                 ) : (
-                                  <LockOpen className="h-4 w-4" />
+                                  <UserCheck className="h-4 w-4" />
                                 )}
                               </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteUserClick(user)}
+                                className="h-8 w-8 p-0 text-destructive hover:text-destructive/80"
+                                disabled={deletingUser === user._id}
+                              >
+                                {deletingUser === user._id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Trash2 className="h-4 w-4" />
+                                )}
+                              </Button>
+                              {isLocked(user) && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleUnlockUser(user)}
+                                  disabled={unlockingUserId === user._id}
+                                  className="h-8 w-8 p-0"
+                                  title="Unlock user"
+                                >
+                                  {unlockingUserId === user._id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <LockOpen className="h-4 w-4" />
+                                  )}
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </div>
 
                 {/* Mobile Card View */}
@@ -646,7 +667,7 @@ export default function UsersPage() {
                                 Edit
                               </DropdownMenuItem>
                               {isLocked(user) && (
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => handleUnlockUser(user)}
                                   disabled={unlockingUserId === user._id}
                                 >
@@ -658,7 +679,7 @@ export default function UsersPage() {
                                   Unlock
                                 </DropdownMenuItem>
                               )}
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleToggleStatusClick(user)}
                                 disabled={togglingStatus === user._id}
                               >
@@ -671,7 +692,7 @@ export default function UsersPage() {
                                 )}
                                 {user.isActive ? "Deactivate" : "Activate"}
                               </DropdownMenuItem>
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => handleDeleteUserClick(user)}
                                 className="text-destructive focus:text-destructive"
                                 disabled={deletingUser === user._id}

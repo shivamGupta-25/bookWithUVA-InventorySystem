@@ -34,9 +34,9 @@ export const NotificationProvider = ({ children }) => {
         }
 
         // Fetch active alerts from server
-        const response = await api.stockAlerts.getAll({ 
+        const response = await api.stockAlerts.getAll({
           status: 'active',
-          limit: 50 
+          limit: 50
         });
         const data = await response.json();
 
@@ -56,7 +56,7 @@ export const NotificationProvider = ({ children }) => {
           }));
 
           setNotifications(serverNotifications);
-          
+
           // Update unread count based on server data
           const activeCount = serverNotifications.length;
           setUnreadCount(activeCount);
@@ -80,7 +80,7 @@ export const NotificationProvider = ({ children }) => {
       import("socket.io-client").then(({ io }) => {
         const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
         const socketUrl = API_BASE_URL.replace("/api", "");
-        
+
         const newSocket = io(socketUrl, {
           transports: ["websocket", "polling"],
         });
@@ -113,7 +113,7 @@ export const NotificationProvider = ({ children }) => {
 
   const handleStockAlert = (data) => {
     const { alert, type, timestamp, soundSettings } = data;
-    
+
     // Add to notifications list
     const newNotification = {
       id: Date.now() + Math.random(),
@@ -138,15 +138,15 @@ export const NotificationProvider = ({ children }) => {
     // Play notification sound if enabled (check both server settings and local preference)
     const localSoundEnabled = localStorage.getItem('notificationSoundEnabled');
     const isLocalSoundEnabled = localSoundEnabled !== null ? JSON.parse(localSoundEnabled) : true;
-    
+
     if (soundSettings && soundSettings.enableSound && isLocalSoundEnabled) {
       soundManager.setVolume(soundSettings.volume);
       soundManager.setEnabled(true);
-      
-      const soundType = alert.alertType === "out-of-stock" 
-        ? soundSettings.outOfStockSound 
+
+      const soundType = alert.alertType === "out-of-stock"
+        ? soundSettings.outOfStockSound
         : soundSettings.lowStockSound;
-      
+
       soundManager.playSound(soundType);
     }
 

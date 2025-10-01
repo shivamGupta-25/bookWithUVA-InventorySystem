@@ -14,6 +14,7 @@ import NotificationBell from "@/components/NotificationBell";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sun, Moon } from "lucide-react";
 import { useTheme } from "next-themes";
+import Footer from "./Footer";
 
 const getDefaultAvatarByRole = (role) => {
   switch (role) {
@@ -324,12 +325,13 @@ export default function Nav({ children }) {
         </div>
       )}
 
-      {/* Main content */}
+      {/* Main content + Footer container (inherits sidebar offset) */}
       <div className={cn(
-        "flex-1",
+        "flex-1 flex min-h-screen flex-col",
         isMobile ? "mt-14 ml-0" : (isCollapsed ? "ml-16" : "ml-64")
       )}>
         <main className="flex-1 p-4 md:p-6">{children}</main>
+        <Footer />
       </div>
     </div>
   );

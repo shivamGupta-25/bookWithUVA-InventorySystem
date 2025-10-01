@@ -33,29 +33,29 @@ export default function ResetPasswordPage() {
 
   const validatePassword = (password) => {
     const errors = [];
-    
+
     if (password.length < 6) {
       errors.push("Password must be at least 6 characters long");
     }
-    
+
     if (!/(?=.*[a-z])/.test(password)) {
       errors.push("Password must contain at least one lowercase letter");
     }
-    
+
     if (!/(?=.*[A-Z])/.test(password)) {
       errors.push("Password must contain at least one uppercase letter");
     }
-    
+
     if (!/(?=.*\d)/.test(password)) {
       errors.push("Password must contain at least one number");
     }
-    
+
     return errors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!email || !otp || !newPassword || !confirmPassword) {
       toast.error("Please fill in all fields");
       return;
@@ -73,7 +73,7 @@ export default function ResetPasswordPage() {
     }
 
     setIsLoading(true);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
         method: "POST",
@@ -114,7 +114,7 @@ export default function ResetPasswordPage() {
               Your password has been successfully reset
             </p>
           </div>
-          
+
           <Card>
             <CardHeader>
               <CardTitle>Success!</CardTitle>
@@ -135,7 +135,7 @@ export default function ResetPasswordPage() {
                   </div>
                 </div>
               </div>
-              
+
               <Button
                 onClick={() => router.push("/login")}
                 className="w-full"
@@ -160,7 +160,7 @@ export default function ResetPasswordPage() {
             Reset your password
           </p>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Enter OTP &amp; New Password</CardTitle>
@@ -182,7 +182,7 @@ export default function ResetPasswordPage() {
                   disabled={isLoading}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="otp">OTP Code</Label>
                 <Input
@@ -197,7 +197,7 @@ export default function ResetPasswordPage() {
                   className="text-center text-lg tracking-widest"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="newPassword">New Password</Label>
                 <div className="relative">
@@ -226,7 +226,7 @@ export default function ResetPasswordPage() {
                   </Button>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <div className="relative">
@@ -255,7 +255,7 @@ export default function ResetPasswordPage() {
                   </Button>
                 </div>
               </div>
-              
+
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                 <div className="flex">
                   <div className="flex-shrink-0">
@@ -268,7 +268,7 @@ export default function ResetPasswordPage() {
                   </div>
                 </div>
               </div>
-              
+
               <Button
                 type="submit"
                 className="w-full"
@@ -286,20 +286,20 @@ export default function ResetPasswordPage() {
             </form>
           </CardContent>
         </Card>
-        
+
         <div className="text-center space-y-2">
-            <Link 
-              href="/forgot-password" 
-              className="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline"
-            >
+          <Link
+            href="/forgot-password"
+            className="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline"
+          >
             Didn&apos;t receive OTP? Resend
           </Link>
           <p className="text-xs text-muted-foreground">
             If you don&apos;t see the email, check your Spam/Junk or Promotions folder.
           </p>
           <div>
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />

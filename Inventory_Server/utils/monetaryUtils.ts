@@ -56,11 +56,11 @@ export const calculateOrderTotals = (
 ): { subtotal: number; totalGst: number; discountAmount: number; totalAmount: number } => {
   const subtotal = roundToTwoDecimals(items.reduce((sum, item) => sum + item.totalPrice, 0));
   const totalGst = roundToTwoDecimals(items.reduce((sum, item) => sum + item.gstAmount, 0));
-  
+
   // Calculate discount amount from percentage
   const discountAmount = roundToTwoDecimals((subtotal + totalGst) * (discountPercentage / 100));
   const totalAmount = roundToTwoDecimals(subtotal + totalGst + shippingCharges - discountAmount);
-  
+
   return {
     subtotal,
     totalGst,
@@ -82,7 +82,7 @@ export const calculateItemTotals = (item: {
   const totalPrice = calculateTotalPrice(item.quantity, item.unitPrice);
   const gstAmount = calculateGstAmount(totalPrice, item.gstRate);
   const finalPrice = calculateFinalPrice(totalPrice, gstAmount);
-  
+
   return {
     totalPrice,
     gstAmount,

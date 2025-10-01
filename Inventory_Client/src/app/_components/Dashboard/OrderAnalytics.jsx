@@ -18,19 +18,19 @@ export default function OrderAnalytics({ stats }) {
   // Use real-time data from the API with improved date formatting
   const orderTrendsData = stats.trends.orderTrends && stats.trends.orderTrends.length > 0
     ? stats.trends.orderTrends.map(trend => {
-        const date = new Date(trend.date);
-        // Format date based on the data range
-        const isLongRange = stats.trends.orderTrends.length > 14;
-        const name = isLongRange 
-          ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-          : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        
-        return {
-          name,
-          orders: trend.orders || 0,
-          revenue: trend.revenue || 0
-        };
-      })
+      const date = new Date(trend.date);
+      // Format date based on the data range
+      const isLongRange = stats.trends.orderTrends.length > 14;
+      const name = isLongRange
+        ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+        : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+      return {
+        name,
+        orders: trend.orders || 0,
+        revenue: trend.revenue || 0
+      };
+    })
     : [
       // Fallback data if no real-time data is available
       { name: 'No Data', orders: 0, revenue: 0 }

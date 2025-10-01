@@ -49,8 +49,8 @@ const ProtectedRoute = ({ children, requiredRole = null, requiredPermission = nu
   }
 
   // Show nothing while redirecting - never render protected content if not authenticated
-  if (!user || (requiredRole && !hasPermission(requiredRole)) || 
-      (requiredPermission && !canPerformAction(requiredPermission.action, requiredPermission.resource))) {
+  if (!user || (requiredRole && !hasPermission(requiredRole)) ||
+    (requiredPermission && !canPerformAction(requiredPermission.action, requiredPermission.resource))) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="flex flex-col items-center space-y-4">

@@ -64,7 +64,7 @@ export default function ProfilePage() {
         toast.error('Please select an image file');
         return;
       }
-      
+
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Image size must be less than 5MB');
@@ -72,11 +72,11 @@ export default function ProfilePage() {
       }
 
       setAvatarFile(file);
-      
+
       // Create preview URL
       const previewUrl = URL.createObjectURL(file);
       setAvatarPreview(previewUrl);
-      
+
       // Clear the URL input when file is selected
       setProfileData({ ...profileData, avatar: "" });
     }
@@ -96,7 +96,7 @@ export default function ProfilePage() {
 
     try {
       let updateData = { ...profileData };
-      
+
       // If a file is selected, convert it to base64 or handle file upload
       if (avatarFile) {
         // For now, we'll convert to base64 data URL
@@ -133,7 +133,7 @@ export default function ProfilePage() {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    
+
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast.error("New passwords do not match");
       return;
@@ -156,7 +156,7 @@ export default function ProfilePage() {
         });
         setShowPasswordDialog(false);
         toast.success("Password changed successfully! You will be logged out for security reasons.");
-        
+
         // Log out the user after successful password change
         setTimeout(async () => {
           toast.info("Logging out for security reasons...");
@@ -219,9 +219,9 @@ export default function ProfilePage() {
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-4">
                     <Avatar className="w-16 h-16">
-                      <AvatarImage 
-                        src={avatarPreview || user?.avatar || getDefaultAvatarByRole(user?.role)} 
-                        alt="Avatar" 
+                      <AvatarImage
+                        src={avatarPreview || user?.avatar || getDefaultAvatarByRole(user?.role)}
+                        alt="Avatar"
                       />
                       <AvatarFallback>
                         <User className="w-8 h-8 text-primary" />
@@ -235,7 +235,7 @@ export default function ProfilePage() {
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Last Login:</span>
@@ -275,7 +275,7 @@ export default function ProfilePage() {
                         disabled={loading}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address</Label>
                       <Input
@@ -287,7 +287,7 @@ export default function ProfilePage() {
                         disabled={loading}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="avatar">Avatar</Label>
                       <p className="text-sm text-muted-foreground">Upload an image file to update your avatar. You can also enter a URL to an image.</p>
@@ -331,9 +331,9 @@ export default function ProfilePage() {
                       {(avatarPreview || profileData.avatar) && (
                         <div className="mt-2">
                           <Avatar className="w-16 h-16">
-                            <AvatarImage 
-                              src={avatarPreview || profileData.avatar || getDefaultAvatarByRole(user?.role)} 
-                              alt="Avatar preview" 
+                            <AvatarImage
+                              src={avatarPreview || profileData.avatar || getDefaultAvatarByRole(user?.role)}
+                              alt="Avatar preview"
                             />
                             <AvatarFallback>
                               <User className="w-8 h-8" />
@@ -342,7 +342,7 @@ export default function ProfilePage() {
                         </div>
                       )}
                     </div>
-                    
+
                     <Button type="submit" disabled={loading}>
                       {loading ? (
                         <>
@@ -421,7 +421,7 @@ export default function ProfilePage() {
                             </Button>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="newPassword">New Password</Label>
                           <div className="relative">
@@ -449,7 +449,7 @@ export default function ProfilePage() {
                             </Button>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="confirmPassword">Confirm New Password</Label>
                           <div className="relative">
@@ -477,7 +477,7 @@ export default function ProfilePage() {
                             </Button>
                           </div>
                         </div>
-                        
+
                         <div className="flex justify-end space-x-2">
                           <Button
                             type="button"
@@ -502,7 +502,7 @@ export default function ProfilePage() {
                     </DialogContent>
                   </Dialog>
                 </div>
-                
+
                 <div className="p-4 border rounded-lg bg-muted/50">
                   <h3 className="font-semibold mb-2">Password Requirements</h3>
                   <ul className="text-sm text-muted-foreground space-y-1">
@@ -512,11 +512,11 @@ export default function ProfilePage() {
                     <li>• Contains at least one number</li>
                   </ul>
                 </div>
-                
+
                 <div className="p-4 border rounded-lg bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800">
                   <h3 className="font-semibold mb-2 text-amber-800 dark:text-amber-300">Security Notice</h3>
                   <p className="text-sm text-amber-700 dark:text-amber-300">
-                    For security reasons, you will be automatically logged out after changing your password. 
+                    For security reasons, you will be automatically logged out after changing your password.
                   </p>
                 </div>
               </CardContent>

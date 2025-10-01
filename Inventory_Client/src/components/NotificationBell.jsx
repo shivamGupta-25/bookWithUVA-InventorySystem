@@ -26,7 +26,7 @@ const NotificationBell = () => {
     getNotificationIcon,
     getPriorityColor,
   } = useNotifications();
-  
+
   const { user } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -163,15 +163,15 @@ const NotificationBell = () => {
       const acknowledgePromises = alerts
         .filter(alert => alert.status === 'active')
         .map(alert => api.stockAlerts.acknowledge(alert._id));
-      
+
       await Promise.all(acknowledgePromises);
-      
+
       // Reload alerts to reflect changes
       await loadAlerts();
-      
+
       // Also update the context notifications
       markAllAsRead();
-      
+
       toast.success('All alerts acknowledged');
     } catch (error) {
       console.error('Error acknowledging alerts:', error);
@@ -185,15 +185,15 @@ const NotificationBell = () => {
       const resolvePromises = alerts
         .filter(alert => ['active', 'acknowledged'].includes(alert.status))
         .map(alert => api.stockAlerts.resolve(alert._id));
-      
+
       await Promise.all(resolvePromises);
-      
+
       // Clear context notifications
       clearNotifications();
-      
+
       // Close dialog
       setIsOpen(false);
-      
+
       toast.success('All alerts resolved');
     } catch (error) {
       console.error('Error resolving alerts:', error);
@@ -206,7 +206,7 @@ const NotificationBell = () => {
     setIsSoundEnabled(newSoundState);
     soundManager.setEnabled(newSoundState);
     localStorage.setItem('notificationSoundEnabled', JSON.stringify(newSoundState));
-    
+
     toast.success(newSoundState ? 'Alert sounds enabled' : 'Alert sounds muted');
   };
 
@@ -237,18 +237,18 @@ const NotificationBell = () => {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent 
-        className="w-[95vw] max-w-md sm:w-96 md:w-[28rem] lg:w-[32rem] p-0" 
+      <PopoverContent
+        className="w-[95vw] max-w-md sm:w-96 md:w-[28rem] lg:w-[32rem] p-0"
         align="end"
         side="bottom"
         sideOffset={8}
       >
         <Card className="border-0 shadow-none">
-           <CardHeader className="flex items-center justify-between px-3 py-1 sm:px-4 sm:py-1.5 pb-0">
-             <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
-               <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-               <span className="truncate">Stock Alerts</span>
-             </CardTitle>
+          <CardHeader className="flex items-center justify-between px-3 py-1 sm:px-4 sm:py-1.5 pb-0">
+            <CardTitle className="text-xs sm:text-sm font-medium flex items-center gap-1.5">
+              <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="truncate">Stock Alerts</span>
+            </CardTitle>
             <div className="flex items-center gap-1 flex-shrink-0">
               {/* Sound toggle button - available for all users */}
               <Button
@@ -264,7 +264,7 @@ const NotificationBell = () => {
                   <VolumeX className="h-3 w-3 sm:h-4 sm:w-4" />
                 )}
               </Button>
-              
+
               {canManageAlerts && alerts.filter(alert => alert.status === 'active').length > 0 && (
                 <Button
                   variant="ghost"
@@ -301,7 +301,7 @@ const NotificationBell = () => {
                 </p>
               </div>
             )}
-            
+
             {/* Alerts List */}
             <ScrollArea className="h-[60vh] max-h-80 sm:h-80">
               {loading ? (

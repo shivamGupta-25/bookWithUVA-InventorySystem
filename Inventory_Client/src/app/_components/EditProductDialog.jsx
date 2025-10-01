@@ -11,20 +11,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Combobox from "@/components/ui/combobox";
-import { 
-  Save, 
+import {
+  Save,
   Loader2,
   X
 } from "lucide-react";
 import { toast } from "sonner";
 import api from '@/lib/api';
 
-const EditProductDialog = ({ 
-  isOpen, 
-  onClose, 
-  product, 
-  categories, 
-  subCategories, 
+const EditProductDialog = ({
+  isOpen,
+  onClose,
+  product,
+  categories,
+  subCategories,
   distributors,
   onProductUpdated,
   readOnly = false,
@@ -53,7 +53,7 @@ const EditProductDialog = ({
         try {
           const response = await api.products.getAll({ limit: 1 });
           const data = await response.json();
-          
+
           if (data.success) {
             setLocalCategories(data.data.filters.categories);
             setLocalSubCategories(data.data.filters.subCategories);
@@ -110,7 +110,7 @@ const EditProductDialog = ({
       // Allow only whole numbers for stock
       value = value.replace(/[^0-9]/g, '');
     }
-    
+
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -120,7 +120,7 @@ const EditProductDialog = ({
   const validateForm = () => {
     const requiredFields = ['title', 'distributor', 'category', 'subCategory', 'price', 'stock'];
     const missingFields = requiredFields.filter(field => !formData[field]);
-    
+
     if (missingFields.length > 0) {
       toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
       return false;
@@ -298,7 +298,7 @@ const EditProductDialog = ({
                 <label className="text-xs font-medium text-foreground">
                   Price (₹) *
                 </label>
-              <Input
+                <Input
                   type="number"
                   step="0.01"
                   min="0"
@@ -306,8 +306,8 @@ const EditProductDialog = ({
                   onChange={(e) => handleInputChange('price', e.target.value)}
                   placeholder="0.00"
                   className="w-full h-9"
-                disabled={saving}
-                readOnly={readOnly}
+                  disabled={saving}
+                  readOnly={readOnly}
                 />
               </div>
 
@@ -315,15 +315,15 @@ const EditProductDialog = ({
                 <label className="text-xs font-medium text-foreground">
                   Stock Quantity *
                 </label>
-              <Input
+                <Input
                   type="number"
                   min="0"
                   value={formData.stock}
                   onChange={(e) => handleInputChange('stock', e.target.value)}
                   placeholder="0"
                   className="w-full h-9"
-                disabled={saving}
-                readOnly={readOnly}
+                  disabled={saving}
+                  readOnly={readOnly}
                 />
               </div>
 
@@ -331,7 +331,7 @@ const EditProductDialog = ({
                 <label className="text-xs font-medium text-foreground">
                   GST (%) *
                 </label>
-              <Input
+                <Input
                   type="number"
                   step="0.01"
                   min="0"
@@ -340,8 +340,8 @@ const EditProductDialog = ({
                   onChange={(e) => handleInputChange('gst', e.target.value)}
                   placeholder="18"
                   className="w-full h-9"
-                disabled={saving}
-                readOnly={readOnly}
+                  disabled={saving}
+                  readOnly={readOnly}
                 />
               </div>
             </div>

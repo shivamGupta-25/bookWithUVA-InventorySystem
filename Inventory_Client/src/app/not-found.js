@@ -29,12 +29,12 @@ export default function NotFound() {
             {/* Book SVG Icon */}
             <div className="flex justify-center mb-3">
               <div className="relative">
-                <svg 
-                  className="w-12 h-12 sm:w-14 sm:h-14 text-amber-600 dark:text-amber-400 animate-pulse" 
-                  fill="currentColor" 
+                <svg
+                  className="w-12 h-12 sm:w-14 sm:h-14 text-amber-600 dark:text-amber-400 animate-pulse"
+                  fill="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
                 </svg>
                 {/* Question mark overlay */}
                 <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold animate-bounce">
@@ -42,13 +42,13 @@ export default function NotFound() {
                 </div>
               </div>
             </div>
-            
+
             <div className="flex justify-center mb-3">
               <Badge variant="secondary" className="px-3 py-1 text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200">
                 🔍 Page Not Found
               </Badge>
             </div>
-            
+
             <CardTitle className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 mb-2 leading-tight">
               This page doesn&apos;t exist in our system!
             </CardTitle>

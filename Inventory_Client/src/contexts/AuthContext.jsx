@@ -51,10 +51,10 @@ export const AuthProvider = ({ children }) => {
     const initializeAuth = async () => {
       try {
         const storedToken = Cookies.get("accessToken");
-        
+
         if (storedToken && !isTokenExpired(storedToken)) {
           setToken(storedToken);
-          
+
           // Verify token with server
           const response = await fetch(`${API_BASE_URL}/auth/verify`, {
             headers: {
@@ -110,13 +110,13 @@ export const AuthProvider = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         const { accessToken, refreshToken: newRefreshToken } = data.data;
-        
+
         // Store new tokens
         Cookies.set("accessToken", accessToken, { expires: 7 }); // 7 days
         Cookies.set("refreshToken", newRefreshToken, { expires: 30 }); // 30 days
-        
+
         setToken(accessToken);
-        
+
         // Get user profile
         const profileResponse = await fetch(`${API_BASE_URL}/auth/profile`, {
           headers: {
@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
           const profileData = await profileResponse.json();
           setUser(profileData.data.user);
         }
-        
+
         return true;
       } else {
         throw new Error("Failed to refresh token");
@@ -296,34 +296,34 @@ export const AuthProvider = ({ children }) => {
   // Check if user has permission
   const hasPermission = (requiredRole) => {
     if (!user) return false;
-    
+
     const roleHierarchy = {
       viewer: 1,
       manager: 2,
       admin: 3,
     };
-    
+
     return roleHierarchy[user.role] >= roleHierarchy[requiredRole];
   };
 
   // Check if user can perform action
   const canPerformAction = (action, resource) => {
     if (!user) return false;
-    
+
     // Admin can do everything
     if (user.role === "admin") return true;
-    
+
     // Manager can edit but not delete users
     if (user.role === "manager") {
       if (resource === "users" && action === "delete") return false;
       return true;
     }
-    
+
     // Viewer can only view
     if (user.role === "viewer") {
       return action === "view";
     }
-    
+
     return false;
   };
 

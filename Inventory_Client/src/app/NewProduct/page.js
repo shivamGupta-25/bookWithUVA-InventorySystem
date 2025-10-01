@@ -193,192 +193,192 @@ const NewProduct = () => {
   return (
     <ProtectedRoute>
       <div className="min-h-screen p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              onClick={() => router.back()}
-              className="flex items-center gap-2 px-3 py-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-lg transition-all duration-200 font-medium"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Inventory
-            </Button>
-            <div className="text-right">
-              <h1 className="text-3xl font-bold text-foreground">Add New Product</h1>
-              <p className="text-muted-foreground mt-1">Fill in the details to add a new product to your inventory.</p>
+        <div className="max-w-2xl mx-auto">
+          {/* Header */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <Button
+                variant="ghost"
+                onClick={() => router.back()}
+                className="flex items-center gap-2 px-3 py-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-lg transition-all duration-200 font-medium"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Inventory
+              </Button>
+              <div className="text-right">
+                <h1 className="text-3xl font-bold text-foreground">Add New Product</h1>
+                <p className="text-muted-foreground mt-1">Fill in the details to add a new product to your inventory.</p>
+              </div>
             </div>
           </div>
+
+
+          {/* Form */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Product Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Basic Information */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">
+                    Product Title *
+                  </label>
+                  <Input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    placeholder="Enter product title"
+                    className="w-full"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">
+                    Distributor *
+                  </label>
+                  <Combobox
+                    value={formData.distributor}
+                    onValueChange={(value) => handleInputChange('distributor', value)}
+                    options={distributors}
+                    placeholder="Select or enter distributor name"
+                    className="w-full"
+                    allowCustom={true}
+                  />
+                </div>
+
+                {/* Category and Sub-category */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">
+                      Category *
+                    </label>
+                    <Combobox
+                      value={formData.category}
+                      onValueChange={(value) => handleInputChange('category', value)}
+                      options={categories.filter(cat => cat !== 'All')}
+                      placeholder="Select or enter category"
+                      className="w-full"
+                      allowCustom={true}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">
+                      Sub-category *
+                    </label>
+                    <Combobox
+                      value={formData.subCategory}
+                      onValueChange={(value) => handleInputChange('subCategory', value)}
+                      options={subCategories.filter(sub => sub !== 'All')}
+                      placeholder="Select or enter sub-category"
+                      className="w-full"
+                      allowCustom={true}
+                    />
+                  </div>
+                </div>
+
+                {/* Pricing and Stock */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">
+                      Price (₹) *
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={formData.price}
+                      onChange={(e) => handleInputChange('price', e.target.value)}
+                      placeholder="0.00"
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">
+                      Stock Quantity *
+                    </label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={formData.stock}
+                      onChange={(e) => handleInputChange('stock', e.target.value)}
+                      placeholder="0"
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground">
+                      GST (%) *
+                    </label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="100"
+                      value={formData.gst}
+                      onChange={(e) => handleInputChange('gst', e.target.value)}
+                      placeholder="18"
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">
+                    Description
+                  </label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    placeholder="Enter product description (optional)"
+                    className="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent resize-none bg-background text-foreground"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Submit Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border">
+                  <div className="flex-1 sm:flex-none">
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                      className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-2.5 font-medium"
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4 mr-2" />
+                          Create Product
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  <div className="flex-1 sm:flex-none">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => router.back()}
+                      disabled={loading}
+                      className="w-full sm:w-auto px-8 py-2.5 font-medium border-border hover:bg-accent"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
         </div>
-
-
-        {/* Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Product Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Basic Information */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Product Title *
-                </label>
-                <Input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="Enter product title"
-                  className="w-full"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Distributor *
-                </label>
-                <Combobox
-                  value={formData.distributor}
-                  onValueChange={(value) => handleInputChange('distributor', value)}
-                  options={distributors}
-                  placeholder="Select or enter distributor name"
-                  className="w-full"
-                  allowCustom={true}
-                />
-              </div>
-
-              {/* Category and Sub-category */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Category *
-                  </label>
-                  <Combobox
-                    value={formData.category}
-                    onValueChange={(value) => handleInputChange('category', value)}
-                    options={categories.filter(cat => cat !== 'All')}
-                    placeholder="Select or enter category"
-                    className="w-full"
-                    allowCustom={true}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Sub-category *
-                  </label>
-                  <Combobox
-                    value={formData.subCategory}
-                    onValueChange={(value) => handleInputChange('subCategory', value)}
-                    options={subCategories.filter(sub => sub !== 'All')}
-                    placeholder="Select or enter sub-category"
-                    className="w-full"
-                    allowCustom={true}
-                  />
-                </div>
-              </div>
-
-              {/* Pricing and Stock */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Price (₹) *
-                  </label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={formData.price}
-                    onChange={(e) => handleInputChange('price', e.target.value)}
-                    placeholder="0.00"
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Stock Quantity *
-                  </label>
-                  <Input
-                    type="number"
-                    min="0"
-                    value={formData.stock}
-                    onChange={(e) => handleInputChange('stock', e.target.value)}
-                    placeholder="0"
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">
-                    GST (%) *
-                  </label>
-                  <Input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    max="100"
-                    value={formData.gst}
-                    onChange={(e) => handleInputChange('gst', e.target.value)}
-                    placeholder="18"
-                    className="w-full"
-                  />
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground">
-                  Description
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Enter product description (optional)"
-                  className="w-full p-3 border border-input rounded-md focus:ring-2 focus:ring-ring focus:border-transparent resize-none bg-background text-foreground"
-                  rows={3}
-                />
-              </div>
-
-              {/* Submit Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-border">
-                <div className="flex-1 sm:flex-none">
-                  <Button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-2.5 font-medium"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="h-4 w-4 mr-2" />
-                        Create Product
-                      </>
-                    )}
-                  </Button>
-                </div>
-
-                <div className="flex-1 sm:flex-none">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.back()}
-                    disabled={loading}
-                    className="w-full sm:w-auto px-8 py-2.5 font-medium border-border hover:bg-accent"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
       </div>
     </ProtectedRoute>
   );

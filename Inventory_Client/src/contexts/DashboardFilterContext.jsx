@@ -27,10 +27,10 @@ export const DashboardFilterProvider = ({ children }) => {
   // Calculate active filters count
   useEffect(() => {
     let count = 0;
-    
+
     // Date range (only count if not default)
     if (dateRange.preset !== 'all') count++;
-    
+
     setActiveFiltersCount(count);
   }, [dateRange]);
 
@@ -46,7 +46,7 @@ export const DashboardFilterProvider = ({ children }) => {
   // Get current filter parameters for API calls
   const getFilterParams = useCallback(() => {
     const params = {};
-    
+
     // Date range
     if (dateRange.preset === 'custom') {
       if (dateRange.customStart) params.dateFrom = dateRange.customStart.toISOString().split('T')[0];
@@ -55,10 +55,10 @@ export const DashboardFilterProvider = ({ children }) => {
       // Always send the preset, including "all"
       params.preset = dateRange.preset;
     }
-    
+
     // Add timestamp to prevent caching issues
     params._t = Date.now();
-    
+
     return params;
   }, [dateRange]);
 
@@ -78,7 +78,7 @@ export const DashboardFilterProvider = ({ children }) => {
       }
       return 'Custom Range';
     }
-    
+
     const presetLabels = {
       all: 'All Time',
       today: 'Today',
@@ -88,7 +88,7 @@ export const DashboardFilterProvider = ({ children }) => {
       thisMonth: 'This Month',
       lastMonth: 'Last Month'
     };
-    
+
     return presetLabels[dateRange.preset] || 'All Time';
   }, [dateRange]);
 
@@ -97,11 +97,11 @@ export const DashboardFilterProvider = ({ children }) => {
     dateRange,
     isFilterExpanded,
     activeFiltersCount,
-    
+
     // Setters
     setDateRange,
     setIsFilterExpanded,
-    
+
     // Actions
     resetFilters,
     getFilterParams,

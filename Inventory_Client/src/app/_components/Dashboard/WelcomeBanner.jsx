@@ -91,7 +91,7 @@ export default function WelcomeBanner() {
           Last login: {formattedLastLogin || "—"}
         </span>
         <p className="mt-4 sm:text-lg text-white/80 dark:text-white/70">
-        Efficient product inventory management with advanced tracking.
+          Efficient product inventory management with advanced tracking.
         </p>
       </div>
     </div>

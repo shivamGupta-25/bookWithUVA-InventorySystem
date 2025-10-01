@@ -8,12 +8,12 @@ import { Loader2 } from "lucide-react";
 export default function ConditionalNav({ children }) {
   const pathname = usePathname();
   const { user, loading } = useAuth();
-  
+
   // Don't render Nav component on login page
   if (pathname === "/login") {
     return <>{children}</>;
   }
-  
+
   // Show loading spinner while checking authentication
   if (loading) {
     return (
@@ -25,12 +25,12 @@ export default function ConditionalNav({ children }) {
       </div>
     );
   }
-  
+
   // Don't render Nav component if user is not authenticated
   if (!user) {
     return <>{children}</>;
   }
-  
+
   // Render Nav component for authenticated users
   return <Nav>{children}</Nav>;
 }

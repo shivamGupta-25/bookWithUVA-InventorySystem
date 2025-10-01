@@ -28,7 +28,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!email || !password) {
       toast.error("Please fill in all fields");
       return;
@@ -36,11 +36,11 @@ export default function LoginPage() {
 
     setIsLoading(true);
     const result = await login(email, password);
-    
+
     if (result.success) {
       router.push("/");
     }
-    
+
     setIsLoading(false);
   };
 
@@ -67,7 +67,7 @@ export default function LoginPage() {
             Sign in to your inventory management account
           </p>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Sign In</CardTitle>
@@ -89,7 +89,7 @@ export default function LoginPage() {
                   disabled={isLoading}
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -118,7 +118,7 @@ export default function LoginPage() {
                   </Button>
                 </div>
               </div>
-              
+
               <Button
                 type="submit"
                 className="w-full"
@@ -134,10 +134,10 @@ export default function LoginPage() {
                 )}
               </Button>
             </form>
-            
+
             <div className="text-center mt-4">
-              <Link 
-                href="/forgot-password" 
+              <Link
+                href="/forgot-password"
                 className="text-sm text-primary hover:text-primary/80 hover:underline"
               >
                 Forgot your password?
