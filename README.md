@@ -99,6 +99,20 @@ EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-app-password
 EMAIL_FROM=your-email@gmail.com
+
+# Login/Lockout & Rate Limiting
+# Maximum failed login attempts before temporary lockout
+LOGIN_MAX_ATTEMPTS=5
+# Rolling window (ms) in which attempts are counted
+LOGIN_ATTEMPT_WINDOW_MS=900000
+# Lockout duration after exceeding attempts (ms)
+LOGIN_LOCK_DURATION_MS=1800000
+# Rate-limit login requests per IP+email
+LOGIN_RATE_WINDOW_MS=900000
+LOGIN_RATE_MAX=20
+# Rate-limit forgot-password requests per IP+email
+FORGOT_RATE_WINDOW_MS=900000
+FORGOT_RATE_MAX=5
 ```
 
 ### Frontend Environment Variables (.env.local)
@@ -330,6 +344,11 @@ PUT    /api/auth/change-password    # Change password (authenticated)
 GET    /api/auth/verify             # Verify token (authenticated)
 POST   /api/auth/forgot-password    # Request password reset
 POST   /api/auth/reset-password     # Reset password with OTP
+```
+
+### Admin Security Operations
+```
+PUT    /api/users/:id/unlock        # Unlock a user's account (admin only)
 ```
 
 ### User Management Endpoints (Admin Only)

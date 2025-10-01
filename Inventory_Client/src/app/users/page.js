@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
-import { Loader2, Plus, Search, Edit, Trash2, UserCheck, UserX, Eye, User, AlertTriangle, MoreHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, Plus, Search, Edit, Trash2, UserCheck, UserX, Eye, User, AlertTriangle, MoreHorizontal, ChevronLeft, ChevronRight, LockOpen } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -57,6 +57,7 @@ export default function UsersPage() {
   const [userToDelete, setUserToDelete] = useState(null);
   const [toggleStatusDialogOpen, setToggleStatusDialogOpen] = useState(false);
   const [userToToggle, setUserToToggle] = useState(null);
+  const [unlockingUserId, setUnlockingUserId] = useState(null);
 
   // Fetch users
   const fetchUsers = useCallback(async () => {
@@ -272,6 +273,38 @@ export default function UsersPage() {
     }
   };
 
+  const isLocked = (user) => {
+    if (!user?.lockUntil) return false;
+    try {
+      const until = new Date(user.lockUntil);
+      return until > new Date();
+    } catch {
+      return false;
+    }
+  };
+
+  const handleUnlockUser = async (user) => {
+    try {
+      setUnlockingUserId(user._id);
+      const response = await fetch(`${API_BASE_URL}/users/${user._id}/unlock`, {
+        method: "PUT",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        toast.success("User account unlocked");
+        setUsers(users.map(u => u._id === user._id ? { ...u, lockUntil: null } : u));
+      } else {
+        const data = await response.json();
+        toast.error(data.error || "Failed to unlock user");
+      }
+    } catch (e) {
+      console.error("Unlock user error:", e);
+      toast.error("Failed to unlock user");
+    } finally {
+      setUnlockingUserId(null);
+    }
+  };
+
   return (
     <ProtectedRoute requiredRole="admin">
       <div className="space-y-4 sm:space-y-6">
@@ -466,6 +499,7 @@ export default function UsersPage() {
                       <TableHead>Role</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Last Login</TableHead>
+                      <TableHead>Lock</TableHead>
                         <TableHead className="w-[120px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -498,6 +532,13 @@ export default function UsersPage() {
                           {user.lastLogin
                             ? new Date(user.lastLogin).toLocaleDateString()
                             : "Never"}
+                        </TableCell>
+                        <TableCell>
+                          {isLocked(user) ? (
+                            <Badge variant="destructive">Locked</Badge>
+                          ) : (
+                            <Badge variant="outline">OK</Badge>
+                          )}
                         </TableCell>
                         <TableCell>
                             <div className="flex space-x-1">
@@ -538,6 +579,22 @@ export default function UsersPage() {
                                 <Trash2 className="h-4 w-4" />
                               )}
                             </Button>
+                            {isLocked(user) && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleUnlockUser(user)}
+                                disabled={unlockingUserId === user._id}
+                                className="h-8 w-8 p-0"
+                                title="Unlock user"
+                              >
+                                {unlockingUserId === user._id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <LockOpen className="h-4 w-4" />
+                                )}
+                              </Button>
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -588,6 +645,19 @@ export default function UsersPage() {
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit
                               </DropdownMenuItem>
+                              {isLocked(user) && (
+                                <DropdownMenuItem 
+                                  onClick={() => handleUnlockUser(user)}
+                                  disabled={unlockingUserId === user._id}
+                                >
+                                  {unlockingUserId === user._id ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <LockOpen className="mr-2 h-4 w-4" />
+                                  )}
+                                  Unlock
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuItem 
                                 onClick={() => handleToggleStatusClick(user)}
                                 disabled={togglingStatus === user._id}

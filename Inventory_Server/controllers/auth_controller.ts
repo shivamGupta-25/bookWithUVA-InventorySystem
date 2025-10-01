@@ -9,6 +9,8 @@ import {
 	validateEmail
 } from "../utils/authUtils.js";
 import { sendOTPEmail, sendPasswordResetSuccessEmail } from "../utils/emailService.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Register new user (Admin only)
 export const register = async (req: Request, res: Response) => {
@@ -119,8 +121,10 @@ export const login = async (req: Request, res: Response) => {
 			});
 		}
 
-		// Find user by email (including password)
-		const user = await (user_model as any).findByEmail(email).select("+password");
+		// Find user by email (including password and security fields)
+		const user = await (user_model as any)
+			.findByEmail(email)
+			.select("+password +failedLoginAttempts +lastFailedLoginAt +lockUntil");
 		if (!user) {
 			return res.status(401).json({
 				success: false,
@@ -136,13 +140,35 @@ export const login = async (req: Request, res: Response) => {
 			});
 		}
 
+		// Enforce account lockout
+		const MAX_LOGIN_ATTEMPTS = Number(process.env.LOGIN_MAX_ATTEMPTS || 5);
+		const LOGIN_WINDOW_MS = Number(process.env.LOGIN_ATTEMPT_WINDOW_MS || 15 * 60 * 1000);
+		const LOCK_DURATION_MS = Number(process.env.LOGIN_LOCK_DURATION_MS || 30 * 60 * 1000);
+
+		if (typeof (user as any).isAccountLocked === "function" && (user as any).isAccountLocked()) {
+			const unlockAt = (user as any).lockUntil as Date;
+			return res.status(423).json({
+				success: false,
+				error: "Account locked",
+				data: { lockUntil: unlockAt }
+			});
+		}
+
 		// Verify password
 		const isPasswordValid = await user.comparePassword(password);
 		if (!isPasswordValid) {
-			return res.status(401).json({
-				success: false,
-				error: "Invalid email or password",
-			});
+			let attemptsLeft: number | undefined;
+			let lockUntil: Date | undefined;
+			if (typeof (user as any).registerFailedLoginAttempt === "function") {
+				const result = await (user as any).registerFailedLoginAttempt(
+					MAX_LOGIN_ATTEMPTS,
+					LOGIN_WINDOW_MS,
+					LOCK_DURATION_MS
+				);
+				attemptsLeft = result.attemptsLeft;
+				lockUntil = result.lockUntil;
+			}
+			return res.status(401).json({ success: false, error: "Invalid email or password", data: { attemptsLeft, lockUntil } });
 		}
 
 		// Update last login
@@ -150,6 +176,11 @@ export const login = async (req: Request, res: Response) => {
 		// Increment sessionVersion to invalidate previous sessions
 		user.sessionVersion = (user.sessionVersion || 0) + 1;
 		await user.save();
+
+		// Clear failure counters on success
+		if (typeof (user as any).clearLoginFailures === "function") {
+			await (user as any).clearLoginFailures();
+		}
 
 		// Generate tokens
 		const tokenPayload = {
@@ -505,8 +536,10 @@ export const forgotPassword = async (req: Request, res: Response) => {
 			});
 		}
 
-		// Check if user exists
-		const user = await (user_model as any).findByEmail(email);
+		// Check if user exists (include lock fields)
+		const user = await (user_model as any)
+			.findByEmail(email)
+			.select("+failedLoginAttempts +lastFailedLoginAt +lockUntil");
 		if (!user) {
 			return res.status(404).json({
 				success: false,
@@ -520,6 +553,11 @@ export const forgotPassword = async (req: Request, res: Response) => {
 				success: false,
 				error: "Account is deactivated. Please contact administrator.",
 			});
+		}
+
+		// Block if account is currently locked
+		if ((user as any).isAccountLocked && (user as any).isAccountLocked()) {
+			return res.status(423).json({ success: false, error: "Account locked. Contact admin or try later." });
 		}
 
 		// Generate OTP

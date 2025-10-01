@@ -32,7 +32,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 		// Get users with pagination
 		const users = await user_model
 			.find(filter)
-			.select("-password")
+			.select("-password +lockUntil")
 			.sort({ createdAt: -1 })
 			.skip(skip)
 			.limit(Number(limit));
@@ -299,6 +299,40 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
 			error: "Internal server error",
 		});
 	}
+};
+
+// Admin: Unlock a user's account (clears lock and failed attempts)
+export const unlockUserAccount = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const currentUser = (req as any).user;
+
+        const user = await user_model.findById(id).select("+failedLoginAttempts +lastFailedLoginAt +lockUntil");
+        if (!user) {
+            return res.status(404).json({ success: false, error: "User not found" });
+        }
+
+        (user as any).failedLoginAttempts = 0;
+        (user as any).lastFailedLoginAt = null;
+        (user as any).lockUntil = null;
+        await user.save();
+
+        await activityLog_model.logActivity({
+            user: currentUser._id,
+            userName: currentUser.name,
+            userEmail: currentUser.email,
+            activityType: ActivityType.USER_UPDATE,
+            description: `Unlocked user account: ${user.name} (${user.email})`,
+            resource: "User",
+            resourceId: user._id,
+            userAgent: req.get("User-Agent") || "unknown",
+        });
+
+        res.status(200).json({ success: true, message: "User account unlocked" });
+    } catch (error) {
+        console.error("Unlock user account error:", error);
+        res.status(500).json({ success: false, error: "Internal server error" });
+    }
 };
 
 // Get user statistics (Admin only)

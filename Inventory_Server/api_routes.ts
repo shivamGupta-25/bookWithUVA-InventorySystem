@@ -48,6 +48,7 @@ import {
 	toggleUserStatus,
 	getUserStats,
 } from "./controllers/user_controller.js";
+import { unlockUserAccount } from "./controllers/user_controller.js";
 import {
 	getActivityLogs,
 	getActivityLogById,
@@ -65,6 +66,7 @@ import {
 	getAlertStats,
 } from "./controllers/settings_controller.js";
 import { authenticate, authorize, logActivity } from "./utils/authUtils.js";
+import { loginRateLimiter, forgotPasswordRateLimiter } from "./utils/rateLimiter.js";
 import { UserRole } from "./models/user.js";
 import { ActivityType } from "./models/activityLog.js";
 
@@ -72,9 +74,9 @@ export const api_routes = express.Router();
 export default api_routes;
 
 // Authentication routes (public)
-api_routes.post("/auth/login", login);
+api_routes.post("/auth/login", loginRateLimiter, login);
 api_routes.post("/auth/refresh", refreshToken);
-api_routes.post("/auth/forgot-password", forgotPassword);
+api_routes.post("/auth/forgot-password", forgotPasswordRateLimiter, forgotPassword);
 api_routes.post("/auth/reset-password", resetPasswordWithOTP);
 
 // Protected routes (require authentication)
@@ -95,6 +97,7 @@ api_routes.get("/users/:id", authorize(UserRole.ADMIN), getUserById);
 api_routes.put("/users/:id", authorize(UserRole.ADMIN), updateUser);
 api_routes.delete("/users/:id", authorize(UserRole.ADMIN), deleteUser);
 api_routes.put("/users/:id/toggle-status", authorize(UserRole.ADMIN), toggleUserStatus);
+api_routes.put("/users/:id/unlock", authorize(UserRole.ADMIN), unlockUserAccount);
 
 // Activity logs routes (Admin only)
 api_routes.get("/activity-logs", authorize(UserRole.ADMIN), getActivityLogs);

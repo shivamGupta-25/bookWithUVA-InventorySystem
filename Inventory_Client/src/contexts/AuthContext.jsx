@@ -148,36 +148,63 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setLoading(true);
-      
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       const data = await response.json();
+
+      const toIST = (dateVal) => {
+        try {
+          if (!dateVal) return null;
+          const d = new Date(dateVal);
+          return new Intl.DateTimeFormat("en-IN", {
+            timeZone: "Asia/Kolkata",
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(d);
+        } catch {
+          return null;
+        }
+      };
 
       if (response.ok) {
         const { user: userData, accessToken, refreshToken } = data.data;
-        
-        // Store tokens
-        Cookies.set("accessToken", accessToken, { expires: 7 }); // 7 days
-        Cookies.set("refreshToken", refreshToken, { expires: 30 }); // 30 days
-        
+        Cookies.set("accessToken", accessToken, { expires: 7 });
+        Cookies.set("refreshToken", refreshToken, { expires: 30 });
         setUser(userData);
         setToken(accessToken);
-        
-        toast.success("Login successful!");
+        toast.success("Login successful!", { description: toIST(new Date()) || undefined });
         return { success: true, user: userData };
       } else {
-        toast.error(data.error || "Login failed");
-        return { success: false, error: data.error };
+        // Craft helpful error with attempts left and lock info
+        const attemptsLeft = data?.data?.attemptsLeft;
+        const lockUntil = data?.data?.lockUntil;
+        const istLockUntil = toIST(lockUntil);
+        let description;
+        if (typeof attemptsLeft === "number") {
+          description = attemptsLeft > 0
+            ? `Attempts left: ${attemptsLeft}`
+            : istLockUntil
+              ? `Account locked until ${istLockUntil} IST`
+              : undefined;
+        } else if (istLockUntil) {
+          description = `Account locked until ${istLockUntil} IST`;
+        }
+        // Always show a description with IST timestamp if nothing else
+        const fallbackDesc = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata" }).format(new Date());
+        toast.error(data.error || "Login failed", { description: description || fallbackDesc });
+        return { success: false, error: data.error, attemptsLeft, lockUntil };
       }
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
+      toast.error("Login failed. Please try again.", {
+        description: new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata" }).format(new Date()),
+      });
       return { success: false, error: "Network error" };
     } finally {
       setLoading(false);

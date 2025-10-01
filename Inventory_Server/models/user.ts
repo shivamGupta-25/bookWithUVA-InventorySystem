@@ -83,6 +83,22 @@ const UserSchema = new mongoose.Schema(
 			type: Date,
 			select: false,
 		},
+		// Security: login failure tracking and lockout
+		failedLoginAttempts: {
+			type: Number,
+			default: 0,
+			select: false,
+		},
+		lastFailedLoginAt: {
+			type: Date,
+			default: null,
+			select: false,
+		},
+		lockUntil: {
+			type: Date,
+			default: null,
+			select: false,
+		},
 	},
 	{
 		timestamps: true,
@@ -135,6 +151,45 @@ UserSchema.pre("save", function (next) {
 // Instance method to check password
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
 	return await bcrypt.compare(candidatePassword, this.password);
+};
+
+// Instance method: is account currently locked
+UserSchema.methods.isAccountLocked = function (): boolean {
+    if (!this.lockUntil) return false;
+    return this.lockUntil > new Date();
+};
+
+// Instance method: on failed login attempt, update counters and maybe lock
+UserSchema.methods.registerFailedLoginAttempt = async function (
+    maxAttempts: number,
+    windowMs: number,
+    lockDurationMs: number
+): Promise<{ attemptsLeft: number; locked: boolean; lockUntil?: Date }> {
+    const now = new Date();
+    const last = this.lastFailedLoginAt ? this.lastFailedLoginAt.getTime() : 0;
+    // reset window if outside
+    if (!last || now.getTime() - last > windowMs) {
+        this.failedLoginAttempts = 0;
+    }
+    this.failedLoginAttempts = (this.failedLoginAttempts || 0) + 1;
+    this.lastFailedLoginAt = now;
+    if (this.failedLoginAttempts >= maxAttempts) {
+        this.lockUntil = new Date(now.getTime() + lockDurationMs);
+        this.failedLoginAttempts = 0; // reset counter when locking
+        await this.save();
+        return { attemptsLeft: 0, locked: true, lockUntil: this.lockUntil };
+    }
+    const attemptsLeft = Math.max(0, maxAttempts - this.failedLoginAttempts);
+    await this.save();
+    return { attemptsLeft, locked: false };
+};
+
+// Instance method: on successful login, clear counters
+UserSchema.methods.clearLoginFailures = async function (): Promise<void> {
+    this.failedLoginAttempts = 0;
+    this.lastFailedLoginAt = null;
+    this.lockUntil = null;
+    await this.save();
 };
 
 // Instance method to check if password was changed after JWT was issued
