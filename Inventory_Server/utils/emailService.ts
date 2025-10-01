@@ -1,93 +1,54 @@
-import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import sgMail from "@sendgrid/mail";
+import { otpEmailHtml, passwordResetSuccessHtml } from "./emailTemplates.js";
 
 dotenv.config();
 
-// Email configuration
-const EMAIL_HOST = process.env.EMAIL_HOST;
-const EMAIL_PORT = process.env.EMAIL_PORT ? Number(process.env.EMAIL_PORT) : undefined;
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASS = process.env.EMAIL_PASS;
-const EMAIL_FROM = process.env.EMAIL_FROM || EMAIL_USER;
+// SendGrid configuration
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const SENDGRID_FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || process.env.EMAIL_FROM || process.env.EMAIL_USER;
 
-// Create transporter
-const createTransporter = () => {
-	if (!EMAIL_HOST || !EMAIL_PORT || !EMAIL_USER || !EMAIL_PASS) {
-		throw new Error("Email configuration missing. Please set EMAIL_HOST, EMAIL_PORT, EMAIL_USER, and EMAIL_PASS.");
+if (!SENDGRID_API_KEY) {
+	console.warn("SENDGRID_API_KEY is not set. Email sending will fail until it's configured.");
+} else {
+	try {
+		sgMail.setApiKey(SENDGRID_API_KEY);
+	} catch (e) {
+		console.error("Failed to initialize SendGrid SDK:", e);
 	}
-
-	const isSecure = EMAIL_PORT === 465; // true for 465, false for others
-
-	return nodemailer.createTransport({
-		host: EMAIL_HOST,
-		port: EMAIL_PORT,
-		secure: isSecure,
-		auth: {
-			user: EMAIL_USER,
-			pass: EMAIL_PASS,
-		},
-	});
-};
+}
 
 // Send OTP email
 export const sendOTPEmail = async (email: string, otp: string, userName: string): Promise<boolean> => {
 	try {
-		if (!EMAIL_USER || !EMAIL_PASS) {
-			console.error("Email configuration not found. Please set EMAIL_USER and EMAIL_PASS environment variables.");
+		if (!SENDGRID_API_KEY) {
+			console.error("SendGrid configuration not found. Please set SENDGRID_API_KEY environment variable.");
+			return false;
+		}
+		if (!SENDGRID_FROM_EMAIL) {
+			console.error("SENDGRID_FROM_EMAIL is not set. Please set a verified Single Sender email.");
 			return false;
 		}
 
-		const transporter = createTransporter();
-
-		const mailOptions = {
-			from: `"Book with UVA Inventory System" <${EMAIL_FROM}>`,
+		const msg = {
 			to: email,
+			from: {
+				email: String(SENDGRID_FROM_EMAIL),
+				name: "Book with UVA Inventory System",
+			},
 			subject: "Password Reset - OTP Code",
-			html: `
-				<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-					<div style="text-align: center; margin-bottom: 30px;">
-						<h1 style="color: #2563eb; margin: 0;">Book with UVA</h1>
-						<p style="color: #6b7280; margin: 5px 0;">Inventory Management System</p>
-					</div>
-					
-					<div style="background-color: #f8fafc; padding: 30px; border-radius: 8px; margin-bottom: 20px;">
-						<h2 style="color: #1f2937; margin-top: 0;">Password Reset Request</h2>
-						<p style="color: #374151; line-height: 1.6;">
-							Hello ${userName},
-						</p>
-						<p style="color: #374151; line-height: 1.6;">
-							You have requested to reset your password. Please use the following OTP (One-Time Password) to complete the process:
-						</p>
-						
-						<div style="text-align: center; margin: 30px 0;">
-							<div style="background-color: #ffffff; border: 2px dashed #d1d5db; padding: 20px; border-radius: 8px; display: inline-block;">
-								<span style="font-size: 32px; font-weight: bold; color: #2563eb; letter-spacing: 8px;">${otp}</span>
-							</div>
-						</div>
-						
-						<p style="color: #374151; line-height: 1.6;">
-							<strong>Important:</strong>
-						</p>
-						<ul style="color: #374151; line-height: 1.6;">
-							<li>This OTP is valid for 10 minutes only</li>
-							<li>Do not share this code with anyone</li>
-							<li>If you didn't request this password reset, please ignore this email</li>
-						</ul>
-					</div>
-					
-					<div style="text-align: center; color: #6b7280; font-size: 14px;">
-						<p>This is an automated message. Please do not reply to this email.</p>
-						<p>&copy; ${new Date().getFullYear()} Book with UVA. All rights reserved.</p>
-					</div>
-				</div>
-			`,
+			html: otpEmailHtml({ userName, otp }),
 		};
 
-		const info = await transporter.sendMail(mailOptions);
-		console.log("OTP email sent successfully:", info.messageId);
+		const [response] = await sgMail.send(msg);
+		console.log("OTP email sent successfully:", response?.headers?.["x-message-id"] || response?.statusCode);
 		return true;
-	} catch (error) {
-		console.error("Failed to send OTP email:", error);
+	} catch (error: any) {
+		if (error?.response?.body) {
+			console.error("Failed to send OTP email (SendGrid error):", JSON.stringify(error.response.body));
+		} else {
+			console.error("Failed to send OTP email:", error);
+		}
 		return false;
 	}
 };
@@ -95,50 +56,23 @@ export const sendOTPEmail = async (email: string, otp: string, userName: string)
 // Send password reset success email
 export const sendPasswordResetSuccessEmail = async (email: string, userName: string): Promise<boolean> => {
 	try {
-		if (!EMAIL_USER || !EMAIL_PASS) {
-			console.error("Email configuration not found. Please set EMAIL_USER and EMAIL_PASS environment variables.");
+		if (!SENDGRID_API_KEY) {
+			console.error("SendGrid configuration not found. Please set SENDGRID_API_KEY environment variable.");
 			return false;
 		}
 
-		const transporter = createTransporter();
-
-		const mailOptions = {
-			from: `"Book with UVA Inventory System" <${EMAIL_FROM}>`,
+		const msg = {
 			to: email,
+			from: {
+				email: String(SENDGRID_FROM_EMAIL),
+				name: "Book with UVA Inventory System",
+			},
 			subject: "Password Reset Successful",
-			html: `
-				<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-					<div style="text-align: center; margin-bottom: 30px;">
-						<h1 style="color: #2563eb; margin: 0;">Book with UVA</h1>
-						<p style="color: #6b7280; margin: 5px 0;">Inventory Management System</p>
-					</div>
-					
-					<div style="background-color: #f0fdf4; padding: 30px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #22c55e;">
-						<h2 style="color: #1f2937; margin-top: 0;">Password Reset Successful</h2>
-						<p style="color: #374151; line-height: 1.6;">
-							Hello ${userName},
-						</p>
-						<p style="color: #374151; line-height: 1.6;">
-							Your password has been successfully reset. You can now log in to your account using your new password.
-						</p>
-						
-						<div style="background-color: #ffffff; padding: 20px; border-radius: 8px; margin: 20px 0;">
-							<p style="color: #374151; margin: 0; font-weight: 500;">
-								If you did not make this change, please contact your administrator immediately.
-							</p>
-						</div>
-					</div>
-					
-					<div style="text-align: center; color: #6b7280; font-size: 14px;">
-						<p>This is an automated message. Please do not reply to this email.</p>
-						<p>&copy; ${new Date().getFullYear()} Book with UVA. All rights reserved.</p>
-					</div>
-				</div>
-			`,
+			html: passwordResetSuccessHtml({ userName }),
 		};
 
-		const info = await transporter.sendMail(mailOptions);
-		console.log("Password reset success email sent:", info.messageId);
+		const [response] = await sgMail.send(msg);
+		console.log("Password reset success email sent:", response?.headers?.["x-message-id"] || response?.statusCode);
 		return true;
 	} catch (error) {
 		console.error("Failed to send password reset success email:", error);

@@ -294,6 +294,9 @@ export default function ResetPasswordPage() {
             >
             Didn&apos;t receive OTP? Resend
           </Link>
+          <p className="text-xs text-muted-foreground">
+            If you don&apos;t see the email, check your Spam/Junk or Promotions folder.
+          </p>
           <div>
             <Link 
               href="/login" 
