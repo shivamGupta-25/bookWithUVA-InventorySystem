@@ -14,6 +14,8 @@ import { formatCurrency } from '@/lib/monetaryUtils';
 import { getStatusColor, formatDate, blockChartInteraction } from './utils';
 
 export default function OverviewCharts({ stats }) {
+  const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+  const axisTickColor = isDark ? '#ffffff' : '#000000';
   // Order status distribution data
   const orderStatusData = [
     { name: 'Pending', value: stats.orders.pendingOrders, color: '#f59e0b' },
@@ -131,16 +133,16 @@ export default function OverviewCharts({ stats }) {
                   height={60}
                   fontSize={11}
                   interval={0}
-                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  tick={{ fontSize: 9, fill: axisTickColor }}
+                  axisLine={{ stroke: axisTickColor }}
+                  tickLine={{ stroke: axisTickColor }}
                 >
                 </XAxis>
                 <YAxis
                   fontSize={11}
-                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  tick={{ fontSize: 9, fill: axisTickColor }}
+                  axisLine={{ stroke: axisTickColor }}
+                  tickLine={{ stroke: axisTickColor }}
                   tickFormatter={(value) => `₹${value >= 1000 ? (value / 1000).toFixed(1) + 'K' : value}`}
                 >
                 </YAxis>

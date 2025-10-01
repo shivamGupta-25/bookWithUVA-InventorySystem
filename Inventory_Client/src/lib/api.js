@@ -101,7 +101,13 @@ export const api = {
 
 	// Stats endpoint
 	stats: {
-		get: () => fetch(`${API_BASE_URL}/products/stats`, { headers: getHeaders() }),
+		get: (params = {}) => {
+			const queryString = new URLSearchParams(params).toString();
+			return fetch(
+				`${API_BASE_URL}/products/stats${queryString ? `?${queryString}` : ""}`,
+				{ headers: getHeaders() }
+			);
+		},
 		getAging: (params = {}) => {
 			const queryString = new URLSearchParams(params).toString();
 			return fetch(

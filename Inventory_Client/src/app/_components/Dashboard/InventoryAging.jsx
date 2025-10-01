@@ -7,6 +7,8 @@ import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip
 import { blockChartInteraction } from './utils';
 
 export default function InventoryAging({ stats }) {
+  const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+  const axisTickColor = isDark ? '#ffffff' : '#000000';
   const agingBuckets = stats.aging.agingBuckets || [];
   const bucketChartData = agingBuckets.map(b => ({ name: b.label, count: b.count }));
 
@@ -47,19 +49,19 @@ export default function InventoryAging({ stats }) {
                 <XAxis
                   dataKey="name"
                   fontSize={(typeof window !== 'undefined' && window.innerWidth < 640) ? 10 : 11}
-                  tick={{ fontSize: (typeof window !== 'undefined' && window.innerWidth < 640) ? 8 : 9 }}
+                  tick={{ fontSize: (typeof window !== 'undefined' && window.innerWidth < 640) ? 8 : 9, fill: axisTickColor }}
                   interval={0}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  axisLine={{ stroke: axisTickColor }}
+                  tickLine={{ stroke: axisTickColor }}
                   angle={(typeof window !== 'undefined' && window.innerWidth < 640) ? -35 : -10}
                   textAnchor="end"
                   height={(typeof window !== 'undefined' && window.innerWidth < 640) ? 38 : 46}
                 />
                 <YAxis
                   fontSize={(typeof window !== 'undefined' && window.innerWidth < 640) ? 10 : 11}
-                  tick={{ fontSize: (typeof window !== 'undefined' && window.innerWidth < 640) ? 8 : 9 }}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  tick={{ fontSize: (typeof window !== 'undefined' && window.innerWidth < 640) ? 8 : 9, fill: axisTickColor }}
+                  axisLine={{ stroke: axisTickColor }}
+                  tickLine={{ stroke: axisTickColor }}
                 />
                 <Tooltip
                   formatter={(value) => [`${value} products`, 'Count']}

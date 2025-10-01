@@ -9,15 +9,28 @@ import {
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, Legend, Label } from 'recharts';
 import { formatCurrency } from '@/lib/monetaryUtils';
 import { blockChartInteraction } from './utils';
+import { useDashboardFilters } from '@/contexts/DashboardFilterContext';
 
 export default function OrderAnalytics({ stats }) {
-  // Use real-time data from the API
+  const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+  const axisTickColor = isDark ? '#ffffff' : '#000000';
+  const { getDateRangeDisplay } = useDashboardFilters();
+  // Use real-time data from the API with improved date formatting
   const orderTrendsData = stats.trends.orderTrends && stats.trends.orderTrends.length > 0
-    ? stats.trends.orderTrends.map(trend => ({
-      name: new Date(trend.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-      orders: trend.orders || 0,
-      revenue: trend.revenue || 0
-    }))
+    ? stats.trends.orderTrends.map(trend => {
+        const date = new Date(trend.date);
+        // Format date based on the data range
+        const isLongRange = stats.trends.orderTrends.length > 14;
+        const name = isLongRange 
+          ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+          : date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        return {
+          name,
+          orders: trend.orders || 0,
+          revenue: trend.revenue || 0
+        };
+      })
     : [
       // Fallback data if no real-time data is available
       { name: 'No Data', orders: 0, revenue: 0 }
@@ -30,10 +43,10 @@ export default function OrderAnalytics({ stats }) {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Order Trends (Last 7 Days)
+            Order Trends ({getDateRangeDisplay()})
           </CardTitle>
           <CardDescription className="text-sm text-muted-foreground bg-purple-50/50 dark:bg-purple-950/20 border-l-2 border-purple-200 dark:border-purple-800 pl-3 py-2 rounded-r-md">
-            <span className="font-medium text-foreground">Trend Analysis:</span> Daily order count and revenue trends over the past week. Bar chart shows order volume while line chart displays revenue trends to identify business growth patterns.
+            <span className="font-medium text-foreground">Trend Analysis:</span> Daily order count and revenue trends over the selected period. Bar chart shows order volume while line chart displays revenue trends to identify business growth patterns.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-1 sm:p-2">
@@ -46,32 +59,32 @@ export default function OrderAnalytics({ stats }) {
                 <XAxis
                   dataKey="name"
                   fontSize={11}
-                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                  interval={0}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  tick={{ fontSize: 9, fill: axisTickColor }}
+                  interval={stats.trends.orderTrends.length > 14 ? "preserveStartEnd" : 0}
+                  axisLine={{ stroke: axisTickColor }}
+                  tickLine={{ stroke: axisTickColor }}
                 >
-                  <Label value="Date" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
+                  <Label value="Date" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: axisTickColor }} />
                 </XAxis>
                 <YAxis
                   yAxisId="left"
                   fontSize={11}
-                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  tick={{ fontSize: 9, fill: axisTickColor }}
+                  axisLine={{ stroke: axisTickColor }}
+                  tickLine={{ stroke: axisTickColor }}
                 >
-                  <Label value="Number of Orders" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
+                  <Label value="Number of Orders" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: axisTickColor }} />
                 </YAxis>
                 <YAxis
                   yAxisId="right"
                   orientation="right"
                   fontSize={11}
-                  tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                  tick={{ fontSize: 9, fill: axisTickColor }}
+                  axisLine={{ stroke: axisTickColor }}
+                  tickLine={{ stroke: axisTickColor }}
                   tickFormatter={(value) => `₹${value >= 1000 ? (value / 1000).toFixed(1) + 'K' : value}`}
                 >
-                  <Label value="Revenue (₹)" angle={90} position="insideRight" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
+                  <Label value="Revenue (₹)" angle={90} position="insideRight" style={{ textAnchor: 'middle', fontSize: '12px', fill: axisTickColor }} />
                 </YAxis>
                 <Tooltip
                   formatter={(value, name) => {

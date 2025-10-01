@@ -11,6 +11,9 @@ import {
 } from "lucide-react";
 import api from '@/lib/api';
 import { toast } from "sonner";
+import { DashboardFilterProvider, useDashboardFilters } from '@/contexts/DashboardFilterContext';
+import AdvancedFilters from './Dashboard/AdvancedFilters';
+import FilterSummary from './Dashboard/FilterSummary';
 
 // Lazy load components
 const WelcomeBanner = lazy(() => import('./Dashboard/WelcomeBanner'));
@@ -30,7 +33,9 @@ const ComponentLoader = () => (
         </div>
 );
 
-export default function Dashboard() {
+// Dashboard content component that uses filters
+function DashboardContent() {
+  const { getFilterParams } = useDashboardFilters();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     inventory: {
@@ -83,17 +88,25 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+  }, [getFilterParams]);
+
+  // Reload data when filters change
+  useEffect(() => {
+    loadDashboardData();
+  }, [getFilterParams]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
 
-      // Load all dashboard data in parallel
+      // Get current filter parameters
+      const filterParams = getFilterParams();
+
+      // Load all dashboard data in parallel with filter parameters
       const [inventoryResponse, ordersResponse, deliveryResponse, alertsResponse, agingResponse] = await Promise.all([
-        api.stats.get(),
-        api.orders.getStats({ period: '30' }),
-        api.orders.getDeliveryStats({ period: '30' }),
+        api.stats.get(filterParams),
+        api.orders.getStats(filterParams),
+        api.orders.getDeliveryStats(filterParams),
         api.stockAlerts.getAll({ status: 'active', limit: '5' }),
         api.stats.getAging({ thresholdDays: '60', bucket30: '30', bucket60: '60', bucket90: '90' })
       ]);
@@ -194,6 +207,12 @@ export default function Dashboard() {
           </Suspense>
         </div>
 
+        {/* Advanced Filters */}
+        <AdvancedFilters />
+
+        {/* Filter Summary */}
+        <FilterSummary />
+
         {/* Analytics Tabs */}
         <Tabs defaultValue="overview" className="w-full">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -275,5 +294,14 @@ export default function Dashboard() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+// Main Dashboard component with filter provider
+export default function Dashboard() {
+  return (
+    <DashboardFilterProvider>
+      <DashboardContent />
+    </DashboardFilterProvider>
   );
 }

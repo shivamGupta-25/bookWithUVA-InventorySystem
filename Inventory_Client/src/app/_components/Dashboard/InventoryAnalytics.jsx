@@ -13,6 +13,8 @@ import { formatCurrency } from '@/lib/monetaryUtils';
 import { blockChartInteraction } from './utils';
 
 export default function InventoryAnalytics({ stats }) {
+  const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+  const axisTickColor = isDark ? '#ffffff' : '#000000';
   const stockLevelsData = [
     { name: 'In Stock', value: stats.inventory.inStockProducts, color: '#10b981' },
     { name: 'Low Stock', value: stats.inventory.lowStockProducts, color: '#f59e0b' },
@@ -182,19 +184,19 @@ export default function InventoryAnalytics({ stats }) {
                     height={60}
                     fontSize={11}
                     interval={0}
-                    tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fontSize: 9, fill: axisTickColor }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                   >
-                    <Label value="Product Categories" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
+                    <Label value="Product Categories" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: axisTickColor }} />
                   </XAxis>
                   <YAxis
                     fontSize={11}
-                    tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fontSize: 9, fill: axisTickColor }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                   >
-                    <Label value="Number of Products" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
+                    <Label value="Number of Products" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: axisTickColor }} />
                   </YAxis>
                   <Tooltip
                     formatter={(value, name) => [
@@ -248,19 +250,19 @@ export default function InventoryAnalytics({ stats }) {
                     height={60}
                     fontSize={11}
                     interval={0}
-                    tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fontSize: 9, fill: axisTickColor }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                   >
-                    <Label value="Distributor Names" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
+                    <Label value="Distributor Names" offset={-5} position="insideBottom" style={{ textAnchor: 'middle', fontSize: '12px', fill: axisTickColor }} />
                   </XAxis>
                   <YAxis
                     fontSize={11}
-                    tick={{ fontSize: 9, fill: 'hsl(var(--foreground))' }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fontSize: 9, fill: axisTickColor }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                   >
-                    <Label value="Number of Products" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: 'hsl(var(--foreground))' }} />
+                    <Label value="Number of Products" angle={-90} position="insideLeft" style={{ textAnchor: 'middle', fontSize: '12px', fill: axisTickColor }} />
                   </YAxis>
                   <Tooltip
                     formatter={(value, name) => [

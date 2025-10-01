@@ -7,9 +7,22 @@ import { order_model, OrderStatus } from "../models/order.js";
 // GET /api/products/stats - Get inventory statistics
 export const statistcs = async (req: Request, res: Response) => {
 	try {
+		// Extract filter parameters
+		const {
+			preset = "",
+			dateFrom = "",
+			dateTo = ""
+		} = req.query as Record<string, string>;
+
+		// Build base filter
+		const baseFilter: any = { isActive: true };
+
 		// Get current settings to use dynamic thresholds
 		const settings = await (settings_model as any).getSettings();
 		const { lowStockThreshold, outOfStockThreshold } = settings.stockAlertThresholds;
+
+		// Build value range filter for aggregation
+		const valueFilter: any = { ...baseFilter };
 
 		const [
 			totalProducts,
@@ -20,15 +33,15 @@ export const statistcs = async (req: Request, res: Response) => {
 			categoryStats,
 			distributorStats,
 		] = await Promise.all([
-			product_model.countDocuments({ isActive: true }),
-			product_model.countDocuments({ isActive: true, stock: { $gt: lowStockThreshold } }),
+			product_model.countDocuments(baseFilter),
+			product_model.countDocuments({ ...baseFilter, stock: { $gt: lowStockThreshold } }),
 			product_model.countDocuments({
-				isActive: true,
+				...baseFilter,
 				stock: { $gt: outOfStockThreshold, $lte: lowStockThreshold },
 			}),
-			product_model.countDocuments({ isActive: true, stock: { $lte: outOfStockThreshold } }),
+			product_model.countDocuments({ ...baseFilter, stock: { $lte: outOfStockThreshold } }),
 			product_model.aggregate([
-				{ $match: { isActive: true } },
+				{ $match: baseFilter },
 				{
 					$group: {
 						_id: null,
@@ -38,7 +51,7 @@ export const statistcs = async (req: Request, res: Response) => {
 			]),
 			// Category distribution
 			product_model.aggregate([
-				{ $match: { isActive: true } },
+				{ $match: baseFilter },
 				{
 					$group: {
 						_id: "$category",
@@ -51,7 +64,7 @@ export const statistcs = async (req: Request, res: Response) => {
 			]),
 			// Distributor distribution
 			product_model.aggregate([
-				{ $match: { isActive: true } },
+				{ $match: baseFilter },
 				{
 					$lookup: {
 						from: "distributors",

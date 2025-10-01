@@ -16,8 +16,12 @@ import {
 import { PieChart, Pie, Cell, BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, Legend } from 'recharts';
 import { formatCurrency } from '@/lib/monetaryUtils';
 import { getStatusColor, formatDate, blockChartInteraction } from './utils';
+import { useDashboardFilters } from '@/contexts/DashboardFilterContext';
 
 export default function DeliveryAnalytics({ stats }) {
+  const isDark = typeof window !== 'undefined' && document.documentElement.classList.contains('dark');
+  const axisTickColor = isDark ? '#ffffff' : '#000000';
+  const { getDateRangeDisplay } = useDashboardFilters();
   // Delivery performance data
   const deliveryPerformanceData = [
     { name: 'On Time', value: stats.delivery.onTimeDeliveries, color: '#10b981' },
@@ -173,7 +177,7 @@ export default function DeliveryAnalytics({ stats }) {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
               <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />
-              Delivery Trends (Last 7 Days)
+              Delivery Trends ({getDateRangeDisplay()})
             </CardTitle>
             <CardDescription className="text-xs sm:text-sm text-foreground bg-cyan-50/50 dark:bg-cyan-950/20 border-l-2 border-cyan-200 dark:border-cyan-800 pl-3 py-2 rounded-r-md">
               <span className="font-medium text-foreground">Delivery Trends:</span> Daily delivery count and average delivery time. Bar chart shows delivery volume while line chart displays average delivery time in days to track delivery performance trends.
@@ -196,12 +200,13 @@ export default function DeliveryAnalytics({ stats }) {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis
                     dataKey="name"
+                    angle={-90}
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: axisTickColor }}
                     interval={0}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
-                    angle={window.innerWidth < 640 ? -45 : 0}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
+                    dy={16}
                     textAnchor={window.innerWidth < 640 ? 'end' : 'middle'}
                     height={window.innerWidth < 640 ? 50 : 60}
                   >
@@ -209,9 +214,9 @@ export default function DeliveryAnalytics({ stats }) {
                   <YAxis
                     yAxisId="left"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: axisTickColor }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                     width={window.innerWidth < 640 ? 30 : 40}
                   >
                   </YAxis>
@@ -219,9 +224,9 @@ export default function DeliveryAnalytics({ stats }) {
                     yAxisId="right"
                     orientation="right"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: axisTickColor }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                     tickFormatter={(value) => `${value}d`}
                     width={window.innerWidth < 640 ? 30 : 40}
                   >
@@ -408,10 +413,10 @@ export default function DeliveryAnalytics({ stats }) {
                   <XAxis
                     dataKey="day"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: axisTickColor }}
                     interval={0}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                     angle={window.innerWidth < 640 ? -45 : 0}
                     textAnchor={window.innerWidth < 640 ? 'end' : 'middle'}
                     height={window.innerWidth < 640 ? 50 : 60}
@@ -420,9 +425,9 @@ export default function DeliveryAnalytics({ stats }) {
                   <YAxis
                     yAxisId="left"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: axisTickColor }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                     width={window.innerWidth < 640 ? 30 : 40}
                   >
                   </YAxis>
@@ -430,9 +435,9 @@ export default function DeliveryAnalytics({ stats }) {
                     yAxisId="right"
                     orientation="right"
                     fontSize={window.innerWidth < 640 ? 9 : 11}
-                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: 'hsl(var(--foreground))' }}
-                    axisLine={{ stroke: 'hsl(var(--border))' }}
-                    tickLine={{ stroke: 'hsl(var(--border))' }}
+                    tick={{ fontSize: window.innerWidth < 640 ? 8 : 9, fill: axisTickColor }}
+                    axisLine={{ stroke: axisTickColor }}
+                    tickLine={{ stroke: axisTickColor }}
                     tickFormatter={(value) => `${value}d`}
                     width={window.innerWidth < 640 ? 30 : 40}
                   >
