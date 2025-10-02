@@ -10,8 +10,6 @@ export default function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 py-8 md:flex-row">
           <div className="text-center md:text-left">
             <p className="text-sm text-muted-foreground">
-              &copy; {year}{" "}
-              <span className="text-lg font-extrabold align-middle">&#8226;</span>{" "}
               Made with ❤️ for Book with UVA by <span className="font-semibold text-foreground">Shivam Raj Gupta</span>
             </p>
           </div>
