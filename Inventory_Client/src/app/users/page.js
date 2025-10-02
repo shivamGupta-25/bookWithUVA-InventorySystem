@@ -877,7 +877,7 @@ export default function UsersPage() {
               <AlertDialogAction
                 onClick={handleDeleteUser}
                 disabled={deletingUser}
-                className="w-full sm:w-auto h-9 bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                className="w-full sm:w-auto h-9 bg-destructive hover:bg-destructive/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
               >
                 {deletingUser ? (
                   <>

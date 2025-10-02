@@ -2,6 +2,7 @@
 
 import { config } from "dotenv";
 import mongoose from "mongoose";
+import readline from "readline";
 
 // Import real models to keep schema in sync
 import { user_model, UserRole } from "../models/user.ts";
@@ -35,30 +36,46 @@ const pickMany = (arr, n) => {
 const daysAgo = (d) => new Date(Date.now() - d * 24 * 60 * 60 * 1000);
 const hoursAgo = (h) => new Date(Date.now() - h * 60 * 60 * 1000);
 
+// Interactive prompt utility
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Handle Ctrl+C gracefully
+process.on('SIGINT', () => {
+  console.log('\n\n⚠️  Seeding interrupted by user');
+  rl.close();
+  process.exit(0);
+});
+
+function askQuestion(question) {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer.toLowerCase().trim());
+    });
+  });
+}
+
 // Order number generator with predictable dummy IDs per seed run
 function generateOrderNumber(index = 0) {
   // Predictable, clearly dummy, and unique within this seed run
   return `ORD-DUMMY-${String(index + 1).padStart(6, "0")}`;
 }
 
-async function clearCollections() {
-  const collections = [
-    "users",
-    "settings",
-    "distributors",
-    "products",
-    "orders",
-    "stockalerts",
-    "activitylogs",
-  ];
-  for (const name of collections) {
-    try {
-      await mongoose.connection.db.collection(name).deleteMany({});
-      console.log(`Cleared collection: ${name}`);
-    } catch (_) {
-      // ignore if collection doesn't exist yet
-    }
+async function clearCollection(collectionName) {
+  try {
+    await mongoose.connection.db.collection(collectionName).deleteMany({});
+    console.log(`✅ Cleared collection: ${collectionName}`);
+  } catch (_) {
+    // ignore if collection doesn't exist yet
+    console.log(`⚠️  Collection ${collectionName} doesn't exist yet, skipping clear`);
   }
+}
+
+async function promptForCollection(collectionName, description) {
+  const answer = await askQuestion(`\n🗂️  ${description}\nDo you want to clear and seed the '${collectionName}' collection? (y/n): `);
+  return answer === 'y' || answer === 'yes';
 }
 
 function buildDistributors() {
@@ -306,101 +323,232 @@ async function logActivity(user, type, description, extra = {}) {
 }
 
 async function seedDatabase() {
-  try {
-    console.log("Connecting to MongoDB...");
-    await mongoose.connect(MONGODB_URI);
-    console.log("Connected to MongoDB successfully!");
+  let adminUser = null;
+  let users = [];
+  let distributors = [];
+  let distributorsByName = new Map();
+  let products = [];
+  let updatedSettings = null;
+  let seedOrders = false;
+  let seedStockAlerts = false;
+  let seedActivityLogs = false;
 
-    await clearCollections();
+  try {
+    console.log("🔌 Connecting to MongoDB...");
+    await mongoose.connect(MONGODB_URI);
+    console.log("✅ Connected to MongoDB successfully!");
+
+    console.log("\n" + "=".repeat(60));
+    console.log("📦 INTERACTIVE DATABASE SEEDING");
+    console.log("=".repeat(60));
+    console.log("This script will prompt you for each collection.");
+    console.log("Choose 'y' to clear and seed, 'n' to skip.");
+    console.log("Note: Some collections depend on others (e.g., products need distributors)");
+    console.log("=".repeat(60));
 
     // 1) Users
-    const usersInput = buildUsers();
-    const users = [];
-    for (const u of usersInput) {
-      // Secure but predictable dev password
-      const doc = await user_model.create({
-        name: u.name,
-        email: u.email,
-        password: "Admin@123",
-        avatar: u.avatar,
-        role: u.role,
-        isActive: u.isActive,
-        lastLogin: u.lastLogin,
-      });
-      users.push(doc);
-    }
-    const adminUser = users.find((u) => u.role === UserRole.ADMIN);
-    console.log(`Inserted ${users.length} users`);
-    await logActivity(adminUser, ActivityType.USER_CREATE, "Seeded initial users");
-
-    // 2) Settings
-    const settings = await settings_model.getSettings();
-    await settings_model.updateSettings({
-      stockAlertThresholds: { lowStockThreshold: 12, outOfStockThreshold: 0 },
-      notificationSettings: { enableLowStockAlerts: true, enableOutOfStockAlerts: true, alertFrequency: "hourly" },
-    }, adminUser._id.toString());
-    const updatedSettings = await settings_model.getSettings();
-    console.log("Settings initialized");
-    await logActivity(adminUser, ActivityType.UPDATE, "Updated global settings", { resource: "Settings" });
-
-    // 3) Distributors
-    const distributors = await distributor_model.insertMany(buildDistributors());
-    const distributorsByName = new Map(distributors.map((d) => [d.name, d._id]));
-    console.log(`Inserted ${distributors.length} distributors`);
-
-    // 4) Products
-    const productsToInsert = buildProducts(distributorsByName);
-    const products = await product_model.insertMany(productsToInsert);
-    console.log(`Inserted ${products.length} products`);
-    await logActivity(adminUser, ActivityType.CREATE, "Seeded catalog products", { resource: "Product" });
-
-    // 5) Orders
-    const activeProducts = products.filter(p => p.isActive !== false);
-    const ordersInput = buildOrders(activeProducts);
-    const createdOrders = [];
-    for (const data of ordersInput) {
-      const order = await order_model.create(data);
-      createdOrders.push(order);
-      // decrement stock for shipped/processing/delivered
-      if ([OrderStatus.PROCESSING, OrderStatus.SHIPPED, OrderStatus.DELIVERED].includes(order.status)) {
-        for (const item of order.items) {
-          const prod = await product_model.findById(item.product).select("stock");
-          if (!prod) continue;
-          const currentStock = typeof prod.stock === "number" ? prod.stock : 0;
-          const newStock = Math.max(0, currentStock - item.quantity);
-          if (newStock !== currentStock) {
-            await product_model.findByIdAndUpdate(item.product, { $set: { stock: newStock } });
-          }
-        }
+    const seedUsers = await promptForCollection("users", "👥 User accounts (Admin, Manager roles with login credentials)");
+    if (seedUsers) {
+      await clearCollection("users");
+      const usersInput = buildUsers();
+      for (const u of usersInput) {
+        // Secure but predictable dev password
+        const doc = await user_model.create({
+          name: u.name,
+          email: u.email,
+          password: "Admin@123",
+          avatar: u.avatar,
+          role: u.role,
+          isActive: u.isActive,
+          lastLogin: u.lastLogin,
+        });
+        users.push(doc);
+      }
+      adminUser = users.find((u) => u.role === UserRole.ADMIN);
+      console.log(`✅ Inserted ${users.length} users`);
+      if (adminUser) {
+        await logActivity(adminUser, ActivityType.USER_CREATE, "Seeded initial users");
+      }
+    } else {
+      console.log("⏭️  Skipped users collection");
+      // Try to find existing admin user for logging
+      try {
+        adminUser = await user_model.findOne({ role: UserRole.ADMIN });
+      } catch (e) {
+        console.log("⚠️  No existing admin user found for activity logging");
       }
     }
-    console.log(`Inserted ${createdOrders.length} orders`);
-    await logActivity(adminUser, ActivityType.CREATE, "Seeded historical orders", { resource: "Order" });
+
+    // 2) Settings
+    const seedSettings = await promptForCollection("settings", "⚙️  System settings (stock thresholds, notifications)");
+    if (seedSettings) {
+      const settings = await settings_model.getSettings();
+      await settings_model.updateSettings({
+        stockAlertThresholds: { lowStockThreshold: 12, outOfStockThreshold: 0 },
+        notificationSettings: { enableLowStockAlerts: true, enableOutOfStockAlerts: true, alertFrequency: "hourly" },
+      }, adminUser?._id?.toString());
+      updatedSettings = await settings_model.getSettings();
+      console.log("✅ Settings initialized");
+      if (adminUser) {
+        await logActivity(adminUser, ActivityType.UPDATE, "Updated global settings", { resource: "Settings" });
+      }
+    } else {
+      console.log("⏭️  Skipped settings collection");
+      try {
+        updatedSettings = await settings_model.getSettings();
+      } catch (e) {
+        console.log("⚠️  Could not load existing settings");
+      }
+    }
+
+    // 3) Distributors
+    const seedDistributors = await promptForCollection("distributors", "🏢 Distributor/supplier companies");
+    if (seedDistributors) {
+      await clearCollection("distributors");
+      distributors = await distributor_model.insertMany(buildDistributors());
+      distributorsByName = new Map(distributors.map((d) => [d.name, d._id]));
+      console.log(`✅ Inserted ${distributors.length} distributors`);
+    } else {
+      console.log("⏭️  Skipped distributors collection");
+      // Load existing distributors for products
+      try {
+        distributors = await distributor_model.find();
+        distributorsByName = new Map(distributors.map((d) => [d.name, d._id]));
+      } catch (e) {
+        console.log("⚠️  Could not load existing distributors");
+      }
+    }
+
+    // 4) Products
+    const seedProducts = await promptForCollection("products", "📚 Product catalog (books, stationery, etc.)");
+    if (seedProducts) {
+      if (distributorsByName.size === 0) {
+        console.log("⚠️  Warning: No distributors available. Products need distributors to be seeded first.");
+        console.log("⏭️  Skipping products due to missing distributors");
+      } else {
+        await clearCollection("products");
+        const productsToInsert = buildProducts(distributorsByName);
+        products = await product_model.insertMany(productsToInsert);
+        console.log(`✅ Inserted ${products.length} products`);
+        if (adminUser) {
+          await logActivity(adminUser, ActivityType.CREATE, "Seeded catalog products", { resource: "Product" });
+        }
+      }
+    } else {
+      console.log("⏭️  Skipped products collection");
+      // Load existing products for orders
+      try {
+        products = await product_model.find();
+      } catch (e) {
+        console.log("⚠️  Could not load existing products");
+      }
+    }
+
+    // 5) Orders
+    seedOrders = await promptForCollection("orders", "🛒 Customer orders with payment and delivery tracking");
+    if (seedOrders) {
+      if (products.length === 0) {
+        console.log("⚠️  Warning: No products available. Orders need products to be seeded first.");
+        console.log("⏭️  Skipping orders due to missing products");
+      } else {
+        await clearCollection("orders");
+        const activeProducts = products.filter(p => p.isActive !== false);
+        const ordersInput = buildOrders(activeProducts);
+        const createdOrders = [];
+        for (const data of ordersInput) {
+          const order = await order_model.create(data);
+          createdOrders.push(order);
+          // decrement stock for shipped/processing/delivered
+          if ([OrderStatus.PROCESSING, OrderStatus.SHIPPED, OrderStatus.DELIVERED].includes(order.status)) {
+            for (const item of order.items) {
+              const prod = await product_model.findById(item.product).select("stock");
+              if (!prod) continue;
+              const currentStock = typeof prod.stock === "number" ? prod.stock : 0;
+              const newStock = Math.max(0, currentStock - item.quantity);
+              if (newStock !== currentStock) {
+                await product_model.findByIdAndUpdate(item.product, { $set: { stock: newStock } });
+              }
+            }
+          }
+        }
+        console.log(`✅ Inserted ${createdOrders.length} orders`);
+        if (adminUser) {
+          await logActivity(adminUser, ActivityType.CREATE, "Seeded historical orders", { resource: "Order" });
+        }
+      }
+    } else {
+      console.log("⏭️  Skipped orders collection");
+    }
 
     // 6) Stock Alerts
-    const alertsCreated = await createStockAlertsForLowStock(updatedSettings, await product_model.find());
-    console.log(`Created/updated ${alertsCreated} stock alerts`);
-
-    // 7) Activity logs for typical actions (diverse)
-    const manager = users.find((u) => u.role === UserRole.MANAGER);
-    if (manager) {
-      await logActivity(manager, ActivityType.LOGIN, "User logged in", { userAgent: "Chrome/123" });
-      await logActivity(manager, ActivityType.UPDATE, "Updated product price", { resource: "Product" });
-      await logActivity(manager, ActivityType.PASSWORD_RESET_REQUEST, "Requested password reset", { resource: "User" });
-      await logActivity(manager, ActivityType.PASSWORD_RESET, "Completed password reset", { resource: "User" });
-      await logActivity(manager, ActivityType.CREATE, "Created new distributor", { resource: "Distributor" });
-      await logActivity(manager, ActivityType.DELETE, "Deleted obsolete product", { resource: "Product" });
-    }
-    const viewer = users.find((u) => u.role === UserRole.VIEWER && u.isActive);
-    if (viewer) {
-      await logActivity(viewer, ActivityType.LOGIN, "User logged in", { userAgent: "Firefox/118" });
-      await logActivity(viewer, ActivityType.PROFILE_UPDATE, "Updated profile details", { resource: "User" });
+    seedStockAlerts = await promptForCollection("stockalerts", "⚠️  Stock alerts for low/out-of-stock items");
+    if (seedStockAlerts) {
+      if (products.length === 0 || !updatedSettings) {
+        console.log("⚠️  Warning: Stock alerts need products and settings to be available.");
+        console.log("⏭️  Skipping stock alerts due to missing dependencies");
+      } else {
+        await clearCollection("stockalerts");
+        const alertsCreated = await createStockAlertsForLowStock(updatedSettings, products);
+        console.log(`✅ Created ${alertsCreated} stock alerts`);
+      }
+    } else {
+      console.log("⏭️  Skipped stock alerts collection");
     }
 
-    console.log("Database seeded successfully!");
+    // 7) Activity Logs
+    seedActivityLogs = await promptForCollection("activitylogs", "📋 User activity logs and audit trail");
+    if (seedActivityLogs) {
+      if (users.length === 0) {
+        console.log("⚠️  Warning: Activity logs need users to be available.");
+        console.log("⏭️  Skipping activity logs due to missing users");
+      } else {
+        await clearCollection("activitylogs");
+        // Create sample activity logs
+        const manager = users.find((u) => u.role === UserRole.MANAGER);
+        if (manager) {
+          await logActivity(manager, ActivityType.LOGIN, "User logged in", { userAgent: "Chrome/123" });
+          await logActivity(manager, ActivityType.UPDATE, "Updated product price", { resource: "Product" });
+          await logActivity(manager, ActivityType.PASSWORD_RESET_REQUEST, "Requested password reset", { resource: "User" });
+          await logActivity(manager, ActivityType.PASSWORD_RESET, "Completed password reset", { resource: "User" });
+          await logActivity(manager, ActivityType.CREATE, "Created new distributor", { resource: "Distributor" });
+          await logActivity(manager, ActivityType.DELETE, "Deleted obsolete product", { resource: "Product" });
+        }
+        const viewer = users.find((u) => u.role === UserRole.VIEWER && u.isActive);
+        if (viewer) {
+          await logActivity(viewer, ActivityType.LOGIN, "User logged in", { userAgent: "Firefox/118" });
+          await logActivity(viewer, ActivityType.PROFILE_UPDATE, "Updated profile details", { resource: "User" });
+        }
+        console.log("✅ Created sample activity logs");
+      }
+    } else {
+      console.log("⏭️  Skipped activity logs collection");
+    }
+
+    console.log("\n" + "=".repeat(60));
+    console.log("🎉 Database seeding completed successfully!");
+    console.log("=".repeat(60));
+    
+    // Summary of what was seeded
+    console.log("\n📊 SEEDING SUMMARY:");
+    console.log(`👥 Users: ${users.length > 0 ? `${users.length} seeded` : 'skipped'}`);
+    console.log(`⚙️  Settings: ${updatedSettings ? 'configured' : 'skipped'}`);
+    console.log(`🏢 Distributors: ${distributors.length > 0 ? `${distributors.length} seeded` : 'skipped'}`);
+    console.log(`📚 Products: ${products.length > 0 ? `${products.length} seeded` : 'skipped'}`);
+    console.log(`🛒 Orders: ${seedOrders && products.length > 0 ? 'seeded' : 'skipped'}`);
+    console.log(`⚠️  Stock Alerts: ${seedStockAlerts && products.length > 0 && updatedSettings ? 'created' : 'skipped'}`);
+    console.log(`📋 Activity Logs: ${seedActivityLogs && users.length > 0 ? 'created' : 'skipped'}`);
+    
+    if (users.length > 0) {
+      console.log("\n🔑 LOGIN CREDENTIALS:");
+      console.log("Email: guptashivam25oct@gmail.com | Password: Admin@123 (Admin)");
+      console.log("Email: japanishweeb@gmail.com | Password: Admin@123 (Manager)");
+    }
+    
+    rl.close();
     process.exit(0);
   } catch (error) {
-    console.error("Error seeding database:", error?.message || error);
+    console.error("❌ Error seeding database:", error?.message || error);
+    rl.close();
     process.exit(1);
   }
 }

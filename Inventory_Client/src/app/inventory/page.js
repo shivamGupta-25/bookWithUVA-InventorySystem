@@ -1055,7 +1055,7 @@ const Inventory = () => {
               <AlertDialogAction
                 onClick={handleDeleteConfirm}
                 disabled={deleting}
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-destructive hover:bg-destructive/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
               >
                 {deleting ? (
                   <>
@@ -1074,24 +1074,24 @@ const Inventory = () => {
         <AlertDialog open={deleteAllDialogOpen} onOpenChange={setDeleteAllDialogOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle className="text-red-600">Delete All Products</AlertDialogTitle>
+              <AlertDialogTitle className="text-destructive dark:text-red-400">Delete All Products</AlertDialogTitle>
               <div className="space-y-2">
-                <AlertDialogDescription className="font-semibold text-gray-900">
+                <AlertDialogDescription className="font-semibold text-foreground">
                   ⚠️ WARNING: This action is irreversible!
                 </AlertDialogDescription>
                 <AlertDialogDescription>
                   You are about to delete <strong>ALL {products.length} products</strong> from your database.
                 </AlertDialogDescription>
-                <AlertDialogDescription className="text-sm text-gray-600">
+                <AlertDialogDescription className="text-sm text-muted-foreground">
                   This will permanently remove all product data including:
                 </AlertDialogDescription>
-                <ul className="text-sm text-gray-600 list-disc list-inside ml-4 space-y-1">
+                <ul className="text-sm text-muted-foreground list-disc list-inside ml-4 space-y-1">
                   <li>Product titles and descriptions</li>
                   <li>Pricing and stock information</li>
                   <li>Category and distributor data</li>
                   <li>All associated product details</li>
                 </ul>
-                <AlertDialogDescription className="font-medium text-red-600">
+                <AlertDialogDescription className="font-medium text-destructive dark:text-red-400">
                   Are you absolutely sure you want to proceed?
                 </AlertDialogDescription>
               </div>
@@ -1101,7 +1101,7 @@ const Inventory = () => {
               <AlertDialogAction
                 onClick={handleDeleteAllConfirm}
                 disabled={deletingAll}
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-destructive text-white hover:bg-destructive/90 dark:bg-red-600 dark:hover:bg-red-700"
               >
                 {deletingAll ? (
                   <>

@@ -481,7 +481,7 @@ const DistributorsPage = () => {
           <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 w-full sm:w-auto"
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 w-full sm:w-auto text-white"
               onClick={async () => {
                 setDeleting(true);
                 try {
@@ -521,7 +521,7 @@ const DistributorsPage = () => {
           <AlertDialogFooter className="flex-col sm:flex-row gap-2">
             <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 w-full sm:w-auto"
+              className="bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 w-full sm:w-auto text-white"
               onClick={async () => {
                 if (!deleteTarget) return;
                 setDeleting(true);

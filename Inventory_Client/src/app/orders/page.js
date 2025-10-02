@@ -1004,7 +1004,7 @@ const OrdersPage = () => {
               <AlertDialogAction
                 onClick={handleDeleteConfirm}
                 disabled={deleting}
-                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                className="bg-destructive hover:bg-destructive/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
               >
                 {deleting ? (
                   <>
@@ -1034,7 +1034,7 @@ const OrdersPage = () => {
               <AlertDialogAction
                 onClick={handleDeleteAllConfirm}
                 disabled={deletingAll}
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-destructive hover:bg-destructive/90 text-white dark:bg-red-600 dark:hover:bg-red-700"
               >
                 {deletingAll ? (
                   <>
